@@ -51,6 +51,9 @@ public class ExpensesPanel extends JPanel implements ActionListener {
         Collections.sort(monthKeys, Collections.reverseOrder());  // sort it descending.
         int totalTablesHeight = 10;  // initial gap before displaying first table.
         for (int monthTableKey : monthKeys) {
+            String prevDate;
+            String thisDate;
+            // MONTH TITLE
             int monthInt = Integer.parseInt(Integer.toString(monthTableKey).substring(4));  // extract monthInt from monthTableID.
             String monthString = new DateFormatSymbols().getMonths()[monthInt-1];  // convert monthInt to String.
             JLabel monthHeader = new JLabel(monthString);
@@ -59,13 +62,25 @@ public class ExpensesPanel extends JPanel implements ActionListener {
             this.add(monthHeader);
             totalTablesHeight += MONTH_HEADER_HEIGHT + 10;
 
+            // HEADER ROW
             HeaderTable headerTable = new HeaderTable();
             int headerTableHeight = headerTable.getRowCount() * headerTable.getRowHeight();
             headerTable.setBounds(10, totalTablesHeight, config.DISPLAY_WIDTH - 30, headerTableHeight);
             this.add(headerTable);
-            totalTablesHeight += headerTableHeight + 10;
+            totalTablesHeight += headerTableHeight;
 
+            // TABLE OF DATA
             JTable table = tablesHashMap.get(monthTableKey);  // get JTable.
+            prevDate = table.getValueAt(0, 0).toString();
+            for (int i = 1; i < table.getRowCount(); i++) {
+                thisDate = table.getValueAt(i, 0).toString();
+                if (thisDate.equals(prevDate)) {
+                    table.setValueAt("", i, 0);
+                }
+                else {
+                    prevDate = thisDate;
+                }
+            }
             int tableHeight = table.getRowCount() * table.getRowHeight();  // work out the height of this table.
             table.setBounds(10, totalTablesHeight, config.DISPLAY_WIDTH - 30, tableHeight);  // set bounds of this table.
             this.add(table);  // add table to panel.

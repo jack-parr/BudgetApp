@@ -19,7 +19,7 @@ import com.opencsv.*;
 public class CSVHandler {
 
     static Config config = new Config();
-    final static Font MONTH_TABLE_FONT = new Font("Arial Rounded MT Bold", Font.PLAIN, 14);
+    // final static Font MONTH_TABLE_FONT = new Font("Arial Rounded MT Bold", Font.PLAIN, 14);
 
     CSVHandler() {
 
@@ -115,7 +115,7 @@ public class CSVHandler {
 
         // Applies all the necessary formatting to the JTable. This is called whenever a new JTable is generated for monthly data.
 
-        baseTable.setFont(MONTH_TABLE_FONT);
+        baseTable.setFont(config.MONTH_TABLE_FONT);
         baseTable.setShowVerticalLines(false);
         baseTable.setFocusable(false);
         baseTable.setEnabled(false);
