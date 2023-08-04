@@ -35,10 +35,12 @@ public class AppFrame extends JFrame implements ActionListener{
 
         // LOADING DATA
         ArrayList<DataEntry> dataList = CSVHandler.readDataFromCSV("data.csv");
-        for (DataEntry dataEntry : dataList) {
-            System.out.println(dataEntry);
-        }
 
+        // for (DataEntry dataEntry : dataList) {
+        //     System.out.println(dataEntry);
+        // }
+
+        // PRINTING ALL FONTS
         // GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         // Font[] allFonts = ge.getAllFonts();
         // for (Font font : allFonts) {
@@ -46,10 +48,8 @@ public class AppFrame extends JFrame implements ActionListener{
         // }
 
         tablesHashMap = CSVHandler.createMonthTables(dataList);
-        // System.out.println(tablesHashMap);
         
-        // CSVHandler.saveDataToCSV(dataList, "testFile.csv");
-
+        // SAVE DATA ON CLOSE
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         this.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {  // X window button is pressed.
@@ -57,8 +57,6 @@ public class AppFrame extends JFrame implements ActionListener{
                 System.exit(0);  // exits programme.
             }
         });
-
-        dataList.add(CSVHandler.createDataEntry(new String[] {"2023-04-01", "Education", "12"}));
 
         this.setTitle("Expenses Tracker");
         this.setSize(config.DISPLAY_WIDTH, config.DISPLAY_HEIGHT);
@@ -180,6 +178,14 @@ public class AppFrame extends JFrame implements ActionListener{
             break;
         }
 
+    }
+
+    public void addData() {
+        
+        // Adds a new DataEntry to 'dataList' and then updates 'tablesHashMap'.
+
+        dataList.add(CSVHandler.createDataEntry(new String[] {"2023-04-01", "Education", "12"}));
+        tablesHashMap = CSVHandler.createMonthTables(dataList);
     }
     
 }
