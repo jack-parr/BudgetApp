@@ -17,7 +17,9 @@ public class Config {
     public final Color SAVINGS_COLOR = Color.red;
     public final Color CHART_COLOR = Color.orange;
 
-    public final Color TABLE_TEXT_COLOR = new Color(235, 235, 235);
+    public final Color GENERAL_TEXT_COLOR = new Color(235, 235, 235);
+    public final Font GENERAL_FONT = new Font("Arial Rounded MT Bold", Font.PLAIN, 16);
+    public final Font MENU_FONT = new Font("Arial Rounded MT Bold", Font.PLAIN, 14);
     public final Font MONTH_TABLE_FONT = new Font("Arial Rounded MT Bold", Font.PLAIN, 14);
     public final Font HEADER_TABLE_FONT = new Font("Arial Rounded MT Bold", Font.PLAIN, 12);
 

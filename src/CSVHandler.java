@@ -122,7 +122,7 @@ public class CSVHandler {
         baseTable.setRowHeight(30);
         baseTable.setGridColor(new Color(204, 0, 0));
         baseTable.setBackground(config.EXPENSES_COLOR);
-        baseTable.setForeground(config.TABLE_TEXT_COLOR);
+        baseTable.setForeground(config.GENERAL_TEXT_COLOR);
 
         return baseTable;
     }
