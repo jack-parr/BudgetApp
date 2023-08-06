@@ -2,13 +2,9 @@
  * This is the CSV Reader for extracting the saved data.
  */
 
-import java.awt.Color;
-import java.awt.Font;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
-import javax.swing.*;
-import javax.swing.table.*;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
@@ -19,7 +15,6 @@ import com.opencsv.*;
 public class CSVHandler {
 
     static Config config = new Config();
-    // final static Font MONTH_TABLE_FONT = new Font("Arial Rounded MT Bold", Font.PLAIN, 14);
 
     CSVHandler() {
 
@@ -67,69 +62,37 @@ public class CSVHandler {
 
     }
 
-    public static HashMap<Integer, JTable> createMonthTables(ArrayList<DataEntry> dataList) {
+    public static HashMap<Integer, ArrayList<DataEntry>> createMonthLists(ArrayList<DataEntry> dataList) {
 
-        HashMap<Integer, JTable> dataMonthTables = new HashMap<>();
-        HashMap<Integer, List<Integer>> monthTableSortLists = new HashMap<>();
-        JTable extractedTable;
+        // Creates a HashMap with a list of relevant data entries for every month of each year.
+
+        HashMap<Integer, ArrayList<DataEntry>> dataMonthLists = new HashMap<>();
+        ArrayList<DataEntry> extractedList;
 
         for (DataEntry dataEntry : dataList) {  // loops through each DataEntry.
             LocalDate date = dataEntry.getDate();  // extract the date of the DataEntry.
-            int monthTableID = makeMonthTableID(date);
-            extractedTable = dataMonthTables.get(monthTableID);
-            if (extractedTable == null) {  // there is no JTable for this month yet.
-                // Creating new JTable for this month.
-                DefaultTableModel tableModel = new DefaultTableModel();
-                tableModel.addColumn("Date");
-                tableModel.addColumn("Category");
-                tableModel.addColumn("Value");
-                tableModel.addRow(new Object[]{dateToTableString(dataEntry.date), dataEntry.category, dataEntry.value});
-                JTable newTable = new JTable(tableModel);  // creates the JTable using the DefaultTableModel.
-                JTable formattedTable = formatTable(newTable);  // formats the JTable.
-                dataMonthTables.put(monthTableID, formattedTable);  // adds JTable to HashMap.
-
-                // Creating new array of sort codes for this table and adding it to the HashMap.
-                List<Integer> newSortList = new ArrayList<Integer>();
-                newSortList.add(dataEntry.sortCode);
-                monthTableSortLists.put(monthTableID, newSortList);
+            int monthListID = makeMonthListID(date);
+            extractedList = dataMonthLists.get(monthListID);
+            if (extractedList == null) {  // there is no list for this month yet.
+                // Creating new list for this month.
+                ArrayList<DataEntry> newMonthList = new ArrayList<>();
+                newMonthList.add(dataEntry);
+                dataMonthLists.put(monthListID, newMonthList);  // adds list to HashMap.
             }
-            else {  // JTable for this month has been extracted from HashMap.
-                List<Integer> tableSortList = monthTableSortLists.get(monthTableID);  // get sort code list for existing table.
-                tableSortList.add(dataEntry.getSortCode());  // add new sort code to list.
-                Collections.sort(tableSortList);  // sort list into ascending order.
-                int sortCodeIndex = tableSortList.indexOf(dataEntry.sortCode);  // find index of sort code in list.
-
-                DefaultTableModel tableModel = (DefaultTableModel) extractedTable.getModel();  // extracting the DefaultTableModel.
-                tableModel.insertRow(sortCodeIndex, new Object[]{dateToTableString(dataEntry.date), dataEntry.category, dataEntry.value});  // adding to the DefaultTableModel.
-                JTable updatedTable = new JTable(tableModel);  // create new Table using the updated DefaultTableModel.
-                JTable formattedTable = formatTable(updatedTable);
-                dataMonthTables.put(monthTableID, formattedTable);  // overwriting into HashMap.
+            else {  // List for this month has been extracted from HashMap.
+                extractedList = dataMonthLists.get(monthListID);
+                extractedList.add(dataEntry);
+                dataMonthLists.put(monthListID, extractedList);  // overwriting into HashMap.
             }
         }
 
-        return dataMonthTables;
+        return dataMonthLists;
 
     }
 
-    public static JTable formatTable(JTable baseTable) {
+    public static int makeMonthListID(LocalDate date) {
 
-        // Applies all the necessary formatting to the JTable. This is called whenever a new JTable is generated for monthly data.
-
-        baseTable.setFont(config.MONTH_TABLE_FONT);
-        baseTable.setShowVerticalLines(false);
-        baseTable.setFocusable(false);
-        baseTable.setEnabled(false);
-        baseTable.setRowHeight(30);
-        baseTable.setGridColor(new Color(204, 0, 0));
-        baseTable.setBackground(config.EXPENSES_COLOR);
-        baseTable.setForeground(config.GENERAL_TEXT_COLOR);
-
-        return baseTable;
-    }
-
-    public static int makeMonthTableID(LocalDate date) {
-
-        // turns a LocalDate object into a MonthTableID for identifying which JTable it belongs to.
+        // turns a LocalDate object into a MonthListID for identifying which list it belongs to.
         // Eg: June 2023 = 202306, December 2021 = 202112
 
         int month = date.getMonthValue();
@@ -137,47 +100,6 @@ public class CSVHandler {
         int monthID = Integer.parseInt(Integer.toString(year) + (month < 10 ? "0" : "") + month); 
         return monthID;
         
-    }
-
-    public static Object[][] getTableArray(JTable table) {
-
-        // Returns a double array containing the data from 'table'.
-
-        int numRows = table.getModel().getRowCount();
-        Object[][] tableData = new Object[numRows][];  // initialise with length.
-
-        for (int i = 0; i < numRows; i++) {
-            Object[] thisRow = getRowArray(table, i);  // get row from table.
-            tableData[i] = thisRow;  // put row into array.
-        }
-
-        return tableData;
-
-    }
-
-    public static Object[] getRowArray(JTable table, int row) {
-
-        // Returns an array containing the row data from 'table', at index 'row'.
-
-        int numColumns = table.getModel().getColumnCount();
-        Object[] rowData = new Object[numColumns];  // initialise with length.
-
-        for (int i = 0; i < numColumns; i++) {
-            Object thisCell = table.getModel().getValueAt(row, i);  // get cell from table row.
-            rowData[i] = thisCell;  // put cell into array.
-        }
-
-        return rowData;
-        
-    }
-
-    public static String dateToTableString(LocalDate date) {
-
-        // Returns a string of day/month based on the LocalDate 'date'.
-
-        String dateString = date.getDayOfMonth() + "/" + date.getMonthValue();
-        return dateString;
-
     }
 
     public static void saveDataToCSV(ArrayList<DataEntry> dataList, String filePath) {

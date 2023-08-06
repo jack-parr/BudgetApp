@@ -13,9 +13,9 @@ public class ExpensesPanel extends JPanel implements ActionListener {
     Config config = new Config();
 
     final static int PANEL_HEADER_HEIGHT = 40;
-
+    
     ExpensesSubPanel1 headerPanel;
-    ExpensesSubPanel2 tablesPanel;
+    ExpensesSubPanel2 dataPanel;
 
     ExpensesPanel() {
 
@@ -27,9 +27,9 @@ public class ExpensesPanel extends JPanel implements ActionListener {
         headerPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, PANEL_HEADER_HEIGHT));
         this.add(headerPanel, BorderLayout.NORTH);
 
-        tablesPanel = new ExpensesSubPanel2(2023);
-        tablesPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT - PANEL_HEADER_HEIGHT));
-        this.add(tablesPanel, BorderLayout.SOUTH);
+        dataPanel = new ExpensesSubPanel2(2023);
+        dataPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT - PANEL_HEADER_HEIGHT));
+        this.add(dataPanel, BorderLayout.SOUTH);
         
         this.setVisible(true);
 

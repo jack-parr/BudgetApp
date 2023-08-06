@@ -1,54 +1,38 @@
 /*
- * This is the JFrame that acts as the window.
- * The JFrame is used as a container for panels, which contain the actual functionality.
- * The JFrame contains a bar of buttons that goes along the top, enabling switching between tabs.
+ * This is the initial JFrame that contains the menu bar and the current panel.
  */
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+import java.util.HashMap;
 
-import javax.swing.*;
-import java.awt.event.*;
-import java.util.*;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 public class AppFrame extends JFrame implements ActionListener{
 
-    CSVHandler csvReader = new CSVHandler();;
     Config config = new Config();
-    ExpensesPanel expensesPanel;
-    JPanel currentPanel;
-
-    JButton summaryButton;
-    JButton incomeButton;
-    JButton expensesButton;
-    JButton savingsButton;
-    JButton chartButton;
-
+    static JPanel currentPanel;
     ArrayList<DataEntry> dataList;
-    static HashMap<Integer, JTable> tablesHashMap;
+    static HashMap<Integer, ArrayList<DataEntry>> listsHashMap;
 
-    final String SUMMARY_ACTION_COMMAND = "summaryButton";
-    final String INCOME_ACTION_COMMAND = "incomeButton";
-    final String EXPENSES_ACTION_COMMAND = "expensesButton";
-    final String SAVINGS_ACTION_COMMAND = "savingsButton";
-    final String DATA_ACTION_COMMAND = "dataButton";
+    final static String SUMMARY_ACTION_COMMAND = "summaryButton";
+    final static String INCOME_ACTION_COMMAND = "incomeButton";
+    final static String EXPENSES_ACTION_COMMAND = "expensesButton";
+    final static String SAVINGS_ACTION_COMMAND = "savingsButton";
+    final static String DATA_ACTION_COMMAND = "dataButton";
 
     AppFrame() {
 
         // LOADING DATA
         ArrayList<DataEntry> dataList = CSVHandler.readDataFromCSV("data.csv");
+        listsHashMap = CSVHandler.createMonthLists(dataList);
 
-        // for (DataEntry dataEntry : dataList) {
-        //     System.out.println(dataEntry);
-        // }
-
-        // PRINTING ALL FONTS
-        // GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        // Font[] allFonts = ge.getAllFonts();
-        // for (Font font : allFonts) {
-        //     System.out.println(font.getFontName(Locale.US));
-        // }
-
-        tablesHashMap = CSVHandler.createMonthTables(dataList);
-        
         // SAVE DATA ON CLOSE
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         this.addWindowListener(new WindowAdapter() {
@@ -57,74 +41,39 @@ public class AppFrame extends JFrame implements ActionListener{
                 System.exit(0);  // exits programme.
             }
         });
-
+        
         this.setTitle("Expenses Tracker");
-        this.setSize(config.DISPLAY_WIDTH, config.DISPLAY_HEIGHT);
-        this.setLocationRelativeTo(null);
         this.setResizable(false);
-        this.setLayout(null);
+        this.setLayout(new BorderLayout());
 
-        // TAB BUTTONS TO NAVIGATE BETWEEN PANELS
-        summaryButton = new JButton("Summary");
-        summaryButton.setBounds(0, 0, config.DISPLAY_WIDTH/5, config.MENU_HEIGHT);
-        summaryButton.setFocusable(false);
-        summaryButton.setBackground(config.SUMMARY_COLOR);
-        summaryButton.addActionListener(this);
-        summaryButton.setActionCommand(SUMMARY_ACTION_COMMAND);
-        summaryButton.setBorderPainted(false);
+        // CREATING MENU PANEL
+        MenuPanel menuPanel = new MenuPanel();
 
-        incomeButton = new JButton("Income");
-        incomeButton.setBounds(config.DISPLAY_WIDTH * 1/5, 0, config.DISPLAY_WIDTH/5, config.MENU_HEIGHT);
-        incomeButton.setFocusable(false);
-        incomeButton.setBackground(config.INCOME_COLOR);
-        incomeButton.addActionListener(this);
-        incomeButton.setActionCommand(INCOME_ACTION_COMMAND);
-        incomeButton.setBorderPainted(false);
-        
-        expensesButton = new JButton("Expenses");
-        expensesButton.setBounds(config.DISPLAY_WIDTH * 2/5, 0, config.DISPLAY_WIDTH/5, config.MENU_HEIGHT);
-        expensesButton.setFocusable(false);
-        expensesButton.setBackground(config.EXPENSES_COLOR);
-        expensesButton.addActionListener(this);
-        expensesButton.setActionCommand(EXPENSES_ACTION_COMMAND);
-        expensesButton.setBorderPainted(false);
-        
-        savingsButton = new JButton("Savings");
-        savingsButton.setBounds(config.DISPLAY_WIDTH * 3/5, 0, config.DISPLAY_WIDTH/5, config.MENU_HEIGHT);
-        savingsButton.setFocusable(false);
-        savingsButton.setBackground(config.SAVINGS_COLOR);
-        savingsButton.addActionListener(this);
-        savingsButton.setActionCommand(SAVINGS_ACTION_COMMAND);
-        savingsButton.setBorderPainted(false);
-        
-        chartButton = new JButton("Charts");
-        chartButton.setBounds(config.DISPLAY_WIDTH * 4/5, 0, config.DISPLAY_WIDTH/5, config.MENU_HEIGHT);
-        chartButton.setFocusable(false);
-        chartButton.setBackground(config.CHART_COLOR);
-        chartButton.addActionListener(this);
-        chartButton.setActionCommand(DATA_ACTION_COMMAND);
-        chartButton.setBorderPainted(false);
+        menuPanel.summaryButton.addActionListener(this);
+        menuPanel.summaryButton.setActionCommand(SUMMARY_ACTION_COMMAND);
+        menuPanel.incomeButton.addActionListener(this);
+        menuPanel.incomeButton.setActionCommand(INCOME_ACTION_COMMAND);
+        menuPanel.expensesButton.addActionListener(this);
+        menuPanel.expensesButton.setActionCommand(EXPENSES_ACTION_COMMAND);
 
-        // summaryPanel = new SummaryPanel();  // start by presenting the summary panel.
-        // summaryPanel.setBounds(0, config.MENU_HEIGHT, config.DISPLAY_WIDTH, config.PANEL_HEIGHT);
-        // currentPanel = summaryPanel;
-        expensesPanel = new ExpensesPanel();  // start by presenting the summary panel.
-        expensesPanel.setBounds(0, config.MENU_HEIGHT, config.DISPLAY_WIDTH, config.PANEL_HEIGHT);
-        currentPanel = expensesPanel;
+        menuPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.MENU_HEIGHT));
+        this.add(menuPanel, BorderLayout.NORTH);
 
-        // ADDING TO FRAME
-        this.add(summaryButton);
-        this.add(incomeButton);
-        this.add(expensesButton);
-        this.add(savingsButton);
-        this.add(chartButton);
-        this.add(expensesPanel);
+        // CREATING CURRENT PANEL
+        SummaryPanel summaryPanel = new SummaryPanel();  // defaults to summary panel.
+        currentPanel = summaryPanel;
+        currentPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT));
+        this.add(currentPanel, BorderLayout.SOUTH);
+
+        this.pack();
+        this.setLocationRelativeTo(null);
         this.setVisible(true);
 
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
+
         // HANDLE CLICKING OF TAB BUTTONS
         
         switch (e.getActionCommand()) {
@@ -132,45 +81,30 @@ public class AppFrame extends JFrame implements ActionListener{
         case SUMMARY_ACTION_COMMAND:
             this.remove(currentPanel);
             SummaryPanel summaryPanel = new SummaryPanel();
-            summaryPanel.setBounds(0, config.MENU_HEIGHT, config.DISPLAY_WIDTH, config.PANEL_HEIGHT);
             currentPanel = summaryPanel;
-            this.add(summaryPanel);
+            currentPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT));
+            this.add(currentPanel, BorderLayout.SOUTH);
+            this.pack();
             this.repaint();
             break;
 
         case INCOME_ACTION_COMMAND:
             this.remove(currentPanel);
             IncomePanel incomePanel = new IncomePanel();
-            incomePanel.setBounds(0, config.MENU_HEIGHT, config.DISPLAY_WIDTH, config.PANEL_HEIGHT);
             currentPanel = incomePanel;
-            this.add(incomePanel);
+            currentPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT));
+            this.add(currentPanel, BorderLayout.SOUTH);
+            this.pack();
             this.repaint();
             break;
             
         case EXPENSES_ACTION_COMMAND:
             this.remove(currentPanel);
             ExpensesPanel expensesPanel = new ExpensesPanel();
-            expensesPanel.setBounds(0, config.MENU_HEIGHT, config.DISPLAY_WIDTH, config.PANEL_HEIGHT);
             currentPanel = expensesPanel;
-            this.add(expensesPanel);
-            this.repaint();
-            break;
-
-        case SAVINGS_ACTION_COMMAND:
-            this.remove(currentPanel);
-            SavingsPanel savingsPanel = new SavingsPanel();
-            savingsPanel.setBounds(0, config.MENU_HEIGHT, config.DISPLAY_WIDTH, config.PANEL_HEIGHT);
-            currentPanel = savingsPanel;
-            this.add(savingsPanel);
-            this.repaint();
-            break;
-
-        case DATA_ACTION_COMMAND:
-            this.remove(currentPanel);
-            ChartPanel dataPanel = new ChartPanel();
-            dataPanel.setBounds(0, config.MENU_HEIGHT, config.DISPLAY_WIDTH, config.PANEL_HEIGHT);
-            currentPanel = dataPanel;
-            this.add(dataPanel);
+            currentPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT));
+            this.add(currentPanel, BorderLayout.SOUTH);
+            this.pack();
             this.repaint();
             break;
 
@@ -178,14 +112,6 @@ public class AppFrame extends JFrame implements ActionListener{
             break;
         }
 
-    }
-
-    public void addData() {
-        
-        // Adds a new DataEntry to 'dataList' and then updates 'tablesHashMap'.
-
-        dataList.add(CSVHandler.createDataEntry(new String[] {"2023-04-01", "Education", "12"}));
-        tablesHashMap = CSVHandler.createMonthTables(dataList);
     }
     
 }

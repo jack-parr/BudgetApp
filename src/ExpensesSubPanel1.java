@@ -10,7 +10,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -27,7 +26,7 @@ public class ExpensesSubPanel1 extends JPanel {
         this.setBackground(config.EXPENSES_COLOR);
 
         // POPULATING YEAR SELECTOR
-        List<Integer> monthKeys = new ArrayList<Integer>(TestAppFrame.tablesHashMap.keySet().stream().toList());  // get list of monthTableIDs.
+        List<Integer> monthKeys = new ArrayList<Integer>(AppFrame.listsHashMap.keySet().stream().toList());  // get list of monthTableIDs.
         Collections.sort(monthKeys, Collections.reverseOrder());  // sort it descending.
 
         List<Integer> yearsFromMonthKeys = monthKeys.stream().map(key -> ExpensesPanel.getYearFromMonthKey(key)).collect(Collectors.toList());  // extracts years from monthKeys.
