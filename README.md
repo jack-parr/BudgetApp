@@ -1,5 +1,6 @@
 Budget and expenses tracking application.
-Data is stored in variables 'dataList' and 'tablesHashMap' within AppFrame.java.
+Data is stored in variables 'dataList' and 'listsHashMap' within AppFrame.java.
+AppFrame acts as the actionListener for all components. Uses actionCommands to identify what is being requested.
 
 - Set and track savings goals.
 - Manage income.
@@ -11,8 +12,5 @@ Data is stored in variables 'dataList' and 'tablesHashMap' within AppFrame.java.
 # TO DO:
 
 ## Expenses Panel:
-YEAR SELECTOR (check code at bottom of ExpensesSubPanel1 for yearComboBox).
-ADD TOTAL OUT LABEL FOR EACH MONTH.
-JSCROLLPANE WITH SIZE BASED ON TOTAL SIZE NEEDED.
-'REMOVE ITEM' CAPABILITY.
+JSCROLLPANE FOR DATA PANEL.
 'ADD ITEM' CAPABILITY.

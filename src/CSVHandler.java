@@ -31,13 +31,16 @@ public class CSVHandler {
             String line = br.readLine();  // read first line.
 
             // loop until all lines are read.
+            int i = 0;
             while (line != null) {
                 String[] attributes = line.split(",");
                 DataEntry dataEntry = createDataEntry(attributes);
+                dataEntry.setId(i);
                 dataList.add(dataEntry);
 
                 // read next line before looping. If end of file is reached, this will be null.
                 line = br.readLine();
+                i += 1;
             }
 
         }
@@ -53,12 +56,13 @@ public class CSVHandler {
 
         // takes a String array of attributes and turns them into the correct datatypes for the DataEntry class.
 
+        int id = Integer.parseInt(metadata[0]);
         DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
-        LocalDate date = LocalDate.parse(metadata[0], formatter);
-        String category = metadata[1];
-        float value = Float.parseFloat(metadata[2]);
+        LocalDate date = LocalDate.parse(metadata[1], formatter);
+        String category = metadata[2];
+        float value = Float.parseFloat(metadata[3]);
 
-        return new DataEntry(date, category, value);
+        return new DataEntry(id, date, category, value);
 
     }
 
@@ -138,10 +142,11 @@ public class CSVHandler {
 
         // Returns a String array based on a DataEntry.
 
-        String[] stringArray = new String[3];
-        stringArray[0] = dataEntry.getDate().toString();
-        stringArray[1] = dataEntry.getCategory();
-        stringArray[2] = String.valueOf(dataEntry.getValue());
+        String[] stringArray = new String[4];
+        stringArray[0] = Integer.toString(dataEntry.getId());
+        stringArray[1] = dataEntry.getDate().toString();
+        stringArray[2] = dataEntry.getCategory();
+        stringArray[3] = String.valueOf(dataEntry.getValue());
 
         return stringArray;
     }
@@ -154,9 +159,11 @@ class DataEntry {
     String category;
     float value;
     int sortCode;
+    int id;
 
-    public DataEntry(LocalDate date, String category, float value) {
+    public DataEntry(int id, LocalDate date, String category, float value) {
 
+        this.id = id;
         this.date = date;
         this.category = category;
         this.value = value;
@@ -170,9 +177,17 @@ class DataEntry {
         // When codes are sorted from lowest to highest, sorts descending by day, then ascending by first letter of 'category'.
 
         int day = date.getDayOfMonth();  // get numeric day of the month.
-        int firstLetter = Character.getNumericValue(category.charAt(0));  // get numerical value of first letter.
-        int sortCode = Integer.parseInt(Integer.toString(31 - day) + Integer.toString(firstLetter));  // concat two numbers together.
+        int firstLetter = Character.getNumericValue(category.charAt(0));  // get numerical value of first letter. Note the count starts at 10.
+        int sortCode = Integer.parseInt(Integer.toString(32 - day) + Integer.toString(firstLetter));  // concat two numbers together.
         return sortCode;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public LocalDate getDate() {
@@ -209,7 +224,7 @@ class DataEntry {
 
     @Override
     public String toString() {
-        return "DataEntry [date=" + date + ", category=" + category + ", value=" + value + ", sortCode=" + sortCode + "]";
+        return "DataEntry [id=" + id + ", date=" + date + ", category=" + category + ", value=" + value + ", sortCode=" + sortCode + "]";
     }
 
 }

@@ -33,6 +33,7 @@ public class ExpensesSubPanel1 extends JPanel {
         List<Integer> uniqueYears = new ArrayList<Integer>(new HashSet<Integer>(yearsFromMonthKeys));  // gets the unique years from the list.
         Collections.sort(uniqueYears, Collections.reverseOrder());  // sort it descending.
         uniqueYears.forEach(i -> yearComboBox.addItem(i));  // adding each unique year to JComboBox.
+        yearComboBox.addItem(null);  // adding the null entry for when there is no data.
 
         // PAINTING PANEL
         yearSelectLabel.setFont(config.GENERAL_FONT);
@@ -40,9 +41,6 @@ public class ExpensesSubPanel1 extends JPanel {
         yearSelectLabel.setPreferredSize(new Dimension(100, ExpensesPanel.PANEL_HEADER_HEIGHT));
         this.add(yearSelectLabel);
 
-        // yearComboBox.addActionListener(e -> {
-        //     ExpensesPanel.newYearSelected(e);
-        // });  // adds an action listener to detect changes to the combo box.
         yearComboBox.setPreferredSize(new Dimension(100, ExpensesPanel.PANEL_HEADER_HEIGHT));
         this.add(yearComboBox);
 

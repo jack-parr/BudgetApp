@@ -3,6 +3,7 @@
  */
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -11,12 +12,15 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class AppFrame extends JFrame implements ActionListener{
 
     Config config = new Config();
+    MenuPanel menuPanel;
+    ExpensesPanel expensesPanel;
     static JPanel currentPanel;
     ArrayList<DataEntry> dataList;
     static HashMap<Integer, ArrayList<DataEntry>> listsHashMap;
@@ -30,7 +34,7 @@ public class AppFrame extends JFrame implements ActionListener{
     AppFrame() {
 
         // LOADING DATA
-        ArrayList<DataEntry> dataList = CSVHandler.readDataFromCSV("data.csv");
+        dataList = CSVHandler.readDataFromCSV("data.csv");
         listsHashMap = CSVHandler.createMonthLists(dataList);
 
         // SAVE DATA ON CLOSE
@@ -47,7 +51,7 @@ public class AppFrame extends JFrame implements ActionListener{
         this.setLayout(new BorderLayout());
 
         // CREATING MENU PANEL
-        MenuPanel menuPanel = new MenuPanel();
+        menuPanel = new MenuPanel();
 
         menuPanel.summaryButton.addActionListener(this);
         menuPanel.summaryButton.setActionCommand(SUMMARY_ACTION_COMMAND);
@@ -74,43 +78,121 @@ public class AppFrame extends JFrame implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent e) {
 
-        // HANDLE CLICKING OF TAB BUTTONS
-        
-        switch (e.getActionCommand()) {
+        String actionCommand = e.getActionCommand();
 
+        switch (actionCommand) {
+
+        // HANDLE CLICKING OF TAB BUTTONS
         case SUMMARY_ACTION_COMMAND:
             this.remove(currentPanel);
-            SummaryPanel summaryPanel = new SummaryPanel();
-            currentPanel = summaryPanel;
-            currentPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT));
-            this.add(currentPanel, BorderLayout.SOUTH);
-            this.pack();
-            this.repaint();
+            createSummaryPanel();
             break;
 
         case INCOME_ACTION_COMMAND:
             this.remove(currentPanel);
-            IncomePanel incomePanel = new IncomePanel();
-            currentPanel = incomePanel;
-            currentPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT));
-            this.add(currentPanel, BorderLayout.SOUTH);
-            this.pack();
-            this.repaint();
+            createIncomePanel();
             break;
             
         case EXPENSES_ACTION_COMMAND:
             this.remove(currentPanel);
-            ExpensesPanel expensesPanel = new ExpensesPanel();
-            currentPanel = expensesPanel;
-            currentPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT));
-            this.add(currentPanel, BorderLayout.SOUTH);
-            this.pack();
-            this.repaint();
+            createExpensesPanel();
             break;
 
         default: 
             break;
         }
+
+        // HANDLING YEAR CHANGE
+        if (e.getSource() == expensesPanel.headerPanel.yearComboBox) {
+            expensesPanel.remove(expensesPanel.dataPanel);  // remove old dataPanel.
+            expensesPanel.dataPanel = new ExpensesSubPanel2((Integer) expensesPanel.headerPanel.yearComboBox.getSelectedItem());  // create new dataPanel.
+            assignDeleteButtons();  // assign listeners to delete row buttons.
+            expensesPanel.dataPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT - ExpensesPanel.PANEL_HEADER_HEIGHT));
+            expensesPanel.add(expensesPanel.dataPanel, BorderLayout.SOUTH);  // add the new dataPanel.
+            expensesPanel.revalidate();
+            expensesPanel.repaint();
+        }
+
+        // HANDLING DELETE ROW BUTTONS
+        if (actionCommand.substring(0, 6).equals("delete")) {
+            deleteDataEntry(Integer.parseInt(actionCommand.substring(6)));  // calls the method for deleting DataEntry according to int id.
+        }
+
+    }
+
+    public void createSummaryPanel() {
+
+        // Creates and paints the summary panel.
+
+        SummaryPanel summaryPanel = new SummaryPanel();
+        currentPanel = summaryPanel;
+        currentPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT));
+        this.add(currentPanel, BorderLayout.SOUTH);
+        this.pack();
+        this.repaint();
+
+    }
+
+    public void createIncomePanel() {
+
+        // Creates and paints the income panel.
+
+        IncomePanel incomePanel = new IncomePanel();
+        currentPanel = incomePanel;
+        currentPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT));
+        this.add(currentPanel, BorderLayout.SOUTH);
+        this.pack();
+        this.repaint();
+        
+    }
+
+    public void createExpensesPanel() {
+
+        // Creates and paints the expenses panel.
+
+        expensesPanel = new ExpensesPanel();
+
+        // SETTING ACTION LISTENER FOR yearComboBox
+        expensesPanel.headerPanel.yearComboBox.addActionListener(this);
+
+        // SETTING ACTION LISTENERS FOR DELETE BUTTONS
+        assignDeleteButtons();
+
+        currentPanel = expensesPanel;
+        currentPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT));
+        this.add(currentPanel, BorderLayout.SOUTH);
+        this.pack();
+        this.repaint();
+        
+    }
+
+    public void assignDeleteButtons() {
+
+        // Assigns listeners to the delete buttons in the expenses panel. This is a separate method so that changing the year can trigger it.
+
+        HashMap<String, Component> deleteButtonsMap = expensesPanel.dataPanel.deleteButtons;
+        Object[] mapKeys = deleteButtonsMap.keySet().toArray();  // makes an array of the keySet.
+        for (Object key : mapKeys) {
+            JButton deleteButton = (JButton) deleteButtonsMap.get(key);
+            deleteButton.addActionListener(this);
+        }
+
+    }
+
+    public void deleteDataEntry(int id) {
+
+        // Deletes the DataEntry corresponding to id.
+
+        for (DataEntry dataEntry : dataList) {
+            if (dataEntry.getId() == id) {
+                dataList.remove(dataEntry);
+                break;
+            }
+        }
+
+        listsHashMap = CSVHandler.createMonthLists(dataList);  // remakes the listsHashMap
+        this.remove(currentPanel);  // removes the old expenses panel.
+        createExpensesPanel();  // recreates the expenses panel.
 
     }
     
