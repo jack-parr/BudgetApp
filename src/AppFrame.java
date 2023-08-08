@@ -113,6 +113,14 @@ public class AppFrame extends JFrame implements ActionListener{
             expensesPanel.repaint();
         }
 
+        // HANDLING NEW DATA BUTTON
+        if (e.getSource() == expensesPanel.headerPanel.newDataButton) {
+            this.remove(currentPanel);  // removes expenses panel.
+            createNewExpensePanel();
+            this.revalidate();
+            this.repaint();
+        }
+
         // HANDLING DELETE ROW BUTTONS
         if (actionCommand.substring(0, 6).equals("delete")) {
             deleteDataEntry(Integer.parseInt(actionCommand.substring(6)));  // calls the method for deleting DataEntry according to int id.
@@ -152,18 +160,35 @@ public class AppFrame extends JFrame implements ActionListener{
 
         expensesPanel = new ExpensesPanel();
 
-        // SETTING ACTION LISTENER FOR yearComboBox
+        // SETTING ACTION LISTENERS
         expensesPanel.headerPanel.yearComboBox.addActionListener(this);
-
-        // SETTING ACTION LISTENERS FOR DELETE BUTTONS
+        expensesPanel.headerPanel.newDataButton.addActionListener(this);
         assignDeleteButtons();
 
+        // PAINTING PANEL
         currentPanel = expensesPanel;
         currentPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT));
         this.add(currentPanel, BorderLayout.SOUTH);
         this.pack();
         this.repaint();
         
+    }
+
+    public void createNewExpensePanel() {
+
+        // Creates and paints the new data panel.
+
+        NewExpensePanel newExpensePanel = new NewExpensePanel();
+
+        // SETTING ACTION LISTENERS
+
+        // PAINTING PANEL
+        currentPanel = newExpensePanel;
+        currentPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT));
+        this.add(currentPanel);
+        this.revalidate();
+        this.repaint();
+
     }
 
     public void assignDeleteButtons() {

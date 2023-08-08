@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -19,6 +20,7 @@ public class ExpensesSubPanel1 extends JPanel {
     Config config = new Config();
     JLabel yearSelectLabel = new JLabel("Year:");
     JComboBox<Integer> yearComboBox = new JComboBox<>();
+    JButton newDataButton;
 
     ExpensesSubPanel1() {
 
@@ -43,6 +45,10 @@ public class ExpensesSubPanel1 extends JPanel {
 
         yearComboBox.setPreferredSize(new Dimension(100, ExpensesPanel.PANEL_HEADER_HEIGHT));
         this.add(yearComboBox);
+
+        newDataButton = new JButton("Add Data");
+        newDataButton.setPreferredSize(new Dimension(100, ExpensesPanel.PANEL_HEADER_HEIGHT));
+        this.add(newDataButton);
 
     }
     

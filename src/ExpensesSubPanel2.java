@@ -18,6 +18,7 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
 public class ExpensesSubPanel2 extends JPanel {
@@ -48,7 +49,7 @@ public class ExpensesSubPanel2 extends JPanel {
         }
         else {
 
-            List<Integer> monthKeys = new ArrayList<Integer>(AppFrame.listsHashMap.keySet().stream().toList());  // get list of monthTableIDs.
+            List<Integer> monthKeys = new ArrayList<Integer>(AppFrame.listsHashMap.keySet().stream().toList());  // get list of monthListIDs.
 
             for (int monthListKey : monthKeys) {
                 if (ExpensesPanel.getYearFromMonthKey(monthListKey) != year) {

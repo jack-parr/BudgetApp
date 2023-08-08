@@ -3,6 +3,7 @@
  */
 
 import javax.swing.*;
+import javax.xml.crypto.Data;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -23,7 +24,6 @@ public class ExpensesPanel extends JPanel {
 
         // PAINTING THE PANEL
         headerPanel = new ExpensesSubPanel1();
-        //headerPanel.yearComboBox.addActionListener(this);
         headerPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, PANEL_HEADER_HEIGHT));
         this.add(headerPanel, BorderLayout.NORTH);
 
