@@ -12,5 +12,7 @@ AppFrame acts as the actionListener for all components. Uses actionCommands to i
 # TO DO:
 
 ## Expenses Panel:
-JSCROLLPANE FOR DATA PANEL.
-'ADD ITEM' CAPABILITY.
+- JSCROLLPANE FOR DATA PANEL.
+- 'ADD ITEM' CAPABILITY.
+    - Add listeners to category shortcut buttons.
+    - Finish making AddDataEntry panel.

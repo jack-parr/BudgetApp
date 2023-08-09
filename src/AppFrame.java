@@ -80,9 +80,10 @@ public class AppFrame extends JFrame implements ActionListener{
 
         String actionCommand = e.getActionCommand();
 
-        switch (actionCommand) {
-
         // HANDLE CLICKING OF TAB BUTTONS
+
+        switch (actionCommand) {
+        
         case SUMMARY_ACTION_COMMAND:
             this.remove(currentPanel);
             createSummaryPanel();
@@ -102,29 +103,36 @@ public class AppFrame extends JFrame implements ActionListener{
             break;
         }
 
-        // HANDLING YEAR CHANGE
-        if (e.getSource() == expensesPanel.headerPanel.yearComboBox) {
-            expensesPanel.remove(expensesPanel.dataPanel);  // remove old dataPanel.
-            expensesPanel.dataPanel = new ExpensesSubPanel2((Integer) expensesPanel.headerPanel.yearComboBox.getSelectedItem());  // create new dataPanel.
-            assignDeleteButtons();  // assign listeners to delete row buttons.
-            expensesPanel.dataPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT - ExpensesPanel.PANEL_HEADER_HEIGHT));
-            expensesPanel.add(expensesPanel.dataPanel, BorderLayout.SOUTH);  // add the new dataPanel.
-            expensesPanel.revalidate();
-            expensesPanel.repaint();
+        // EXPENSES PANEL ACTIONS
+        if (currentPanel instanceof ExpensesPanel) {
+            
+            // HANDLING YEAR CHANGE
+            if (e.getSource() == expensesPanel.headerPanel.yearComboBox) {
+                expensesPanel.remove(expensesPanel.dataPanel);  // remove old dataPanel.
+                expensesPanel.dataPanel = new ExpensesSubPanel2((Integer) expensesPanel.headerPanel.yearComboBox.getSelectedItem());  // create new dataPanel.
+                assignDeleteButtons();  // assign listeners to delete row buttons.
+                expensesPanel.dataPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT - ExpensesPanel.PANEL_HEADER_HEIGHT));
+                expensesPanel.add(expensesPanel.dataPanel, BorderLayout.SOUTH);  // add the new dataPanel.
+                expensesPanel.revalidate();
+                expensesPanel.repaint();
+            }
+
+            // HANDLING NEW DATA BUTTON
+            if (e.getSource() == expensesPanel.headerPanel.newDataButton) {
+                this.remove(currentPanel);  // removes expenses panel.
+                createNewExpensePanel();
+                this.revalidate();
+                this.repaint();
+            }
+
+            // HANDLING DELETE ROW BUTTONS
+            if (actionCommand.substring(0, 6).equals("delete")) {
+                deleteDataEntry(Integer.parseInt(actionCommand.substring(6)));  // calls the method for deleting DataEntry according to int id.
+            }
+
         }
 
-        // HANDLING NEW DATA BUTTON
-        if (e.getSource() == expensesPanel.headerPanel.newDataButton) {
-            this.remove(currentPanel);  // removes expenses panel.
-            createNewExpensePanel();
-            this.revalidate();
-            this.repaint();
-        }
-
-        // HANDLING DELETE ROW BUTTONS
-        if (actionCommand.substring(0, 6).equals("delete")) {
-            deleteDataEntry(Integer.parseInt(actionCommand.substring(6)));  // calls the method for deleting DataEntry according to int id.
-        }
+        
 
     }
 
