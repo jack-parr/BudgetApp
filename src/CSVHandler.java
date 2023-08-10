@@ -1,5 +1,5 @@
 /*
- * This is the CSV Reader for extracting the saved data.
+ * This is the CSV Reader for extracting the saved data. Note that ID column values do not bear any meaning as the data is read in, as they get reassigned.
  */
 
 import java.io.*;
@@ -31,17 +31,16 @@ public class CSVHandler {
             String line = br.readLine();  // read first line.
 
             // loop until all lines are read.
-            int i = 0;
             while (line != null) {
                 String[] attributes = line.split(",");
                 DataEntry dataEntry = createDataEntry(attributes);
-                dataEntry.setId(i);
                 dataList.add(dataEntry);
 
                 // read next line before looping. If end of file is reached, this will be null.
                 line = br.readLine();
-                i += 1;
             }
+
+            labelIDs(dataList);
 
         }
         catch (IOException ioe) {
@@ -149,17 +148,30 @@ public class CSVHandler {
         stringArray[3] = String.valueOf(dataEntry.getValue());
 
         return stringArray;
+
+    }
+
+    public static void labelIDs(ArrayList<DataEntry> dataList) {
+
+        // Labels each DataEntry with a unique integer ID.
+
+        int i = 0;
+        for (DataEntry dataEntry : dataList) {
+            dataEntry.setId(i);
+            i += 1;
+        }
+
     }
     
 }
 
 class DataEntry {
 
+    int id;
     LocalDate date;
     String category;
     float value;
     int sortCode;
-    int id;
 
     public DataEntry(int id, LocalDate date, String category, float value) {
 
@@ -180,6 +192,7 @@ class DataEntry {
         int firstLetter = Character.getNumericValue(category.charAt(0));  // get numerical value of first letter. Note the count starts at 10.
         int sortCode = Integer.parseInt(Integer.toString(32 - day) + Integer.toString(firstLetter));  // concat two numbers together.
         return sortCode;
+
     }
 
     public int getId() {

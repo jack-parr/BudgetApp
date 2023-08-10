@@ -19,12 +19,14 @@ import javax.swing.JPanel;
 public class AppFrame extends JFrame implements ActionListener{
 
     Config config = new Config();
-    MenuPanel menuPanel;
-    ExpensesPanel expensesPanel;
-    static JPanel currentPanel;
     ArrayList<DataEntry> dataList;
     static HashMap<Integer, ArrayList<DataEntry>> listsHashMap;
 
+    static JPanel currentPanel;
+    MenuPanel menuPanel;
+    ExpensesPanel expensesPanel;
+    NewExpensePanel newExpensePanel;
+    
     final static String SUMMARY_ACTION_COMMAND = "summaryButton";
     final static String INCOME_ACTION_COMMAND = "incomeButton";
     final static String EXPENSES_ACTION_COMMAND = "expensesButton";
@@ -34,7 +36,7 @@ public class AppFrame extends JFrame implements ActionListener{
     AppFrame() {
 
         // LOADING DATA
-        dataList = CSVHandler.readDataFromCSV("data.csv");
+        dataList = CSVHandler.readDataFromCSV("tempDataIn.csv");
         listsHashMap = CSVHandler.createMonthLists(dataList);
 
         // SAVE DATA ON CLOSE
@@ -118,7 +120,7 @@ public class AppFrame extends JFrame implements ActionListener{
             }
 
             // HANDLING NEW DATA BUTTON
-            if (e.getSource() == expensesPanel.headerPanel.newDataButton) {
+            else if (e.getSource() == expensesPanel.headerPanel.newDataButton) {
                 this.remove(currentPanel);  // removes expenses panel.
                 createNewExpensePanel();
                 this.revalidate();
@@ -126,13 +128,31 @@ public class AppFrame extends JFrame implements ActionListener{
             }
 
             // HANDLING DELETE ROW BUTTONS
-            if (actionCommand.substring(0, 6).equals("delete")) {
+            else if (actionCommand.substring(0, 6).equals("delete")) {
                 deleteDataEntry(Integer.parseInt(actionCommand.substring(6)));  // calls the method for deleting DataEntry according to int id.
             }
 
         }
 
-        
+        // NEW EXPENSE PANEL ACTIONS
+        if (currentPanel instanceof NewExpensePanel) {
+
+            if (e.getSource() == newExpensePanel.cancelButton) {
+                this.remove(currentPanel);
+                createExpensesPanel();
+            }
+
+            else if (e.getSource() == newExpensePanel.confirmButton) {
+                addDataEntry();
+            }
+
+            // will need input checks to make sure all inputs are present and valid
+
+            else if (actionCommand.substring(0, 8).equals("category")) {
+                ((NewExpensePanel) currentPanel).categoryInput.setText(actionCommand.substring(8));
+            }
+
+        }
 
     }
 
@@ -186,9 +206,18 @@ public class AppFrame extends JFrame implements ActionListener{
 
         // Creates and paints the new data panel.
 
-        NewExpensePanel newExpensePanel = new NewExpensePanel();
+        newExpensePanel = new NewExpensePanel();
 
         // SETTING ACTION LISTENERS
+        HashMap<String, JButton> shortcutButtonsMap = newExpensePanel.categoryShortcutButtonsMap;
+        Object[] mapKeys = shortcutButtonsMap.keySet().toArray();  // makes an array of the keySet.
+        for (Object key : mapKeys) {
+            JButton categoryShortcutButton = (JButton) shortcutButtonsMap.get(key);
+            categoryShortcutButton.addActionListener(this);
+        }
+
+        newExpensePanel.cancelButton.addActionListener(this);
+        newExpensePanel.confirmButton.addActionListener(this);
 
         // PAINTING PANEL
         currentPanel = newExpensePanel;
@@ -203,7 +232,7 @@ public class AppFrame extends JFrame implements ActionListener{
 
         // Assigns listeners to the delete buttons in the expenses panel. This is a separate method so that changing the year can trigger it.
 
-        HashMap<String, Component> deleteButtonsMap = expensesPanel.dataPanel.deleteButtons;
+        HashMap<String, Component> deleteButtonsMap = expensesPanel.dataPanel.deleteButtonsMap;
         Object[] mapKeys = deleteButtonsMap.keySet().toArray();  // makes an array of the keySet.
         for (Object key : mapKeys) {
             JButton deleteButton = (JButton) deleteButtonsMap.get(key);
@@ -226,6 +255,36 @@ public class AppFrame extends JFrame implements ActionListener{
         listsHashMap = CSVHandler.createMonthLists(dataList);  // remakes the listsHashMap
         this.remove(currentPanel);  // removes the old expenses panel.
         createExpensesPanel();  // recreates the expenses panel.
+
+    }
+
+    public void addDataEntry() {
+
+        // Adds a DataEntry based on information currently in the newExpensesPanel.
+
+        // INPUT CHECKS
+        System.out.println("UNIMPLEMENTED INPUT CHECKS");
+
+        // ADDING DATA ENTRY
+        String[] metadata = new String[4];  // creating metadata.
+        metadata[0] = "0";  // placeholder id.
+        metadata[1] = newExpensePanel.yearSelect.getSelectedItem() + "-" + String.format("%02d", newExpensePanel.monthSelect.getSelectedItem()) + "-" + String.format("%02d", newExpensePanel.daySelect.getSelectedItem());  // date in correct format.
+        metadata[2] = newExpensePanel.categoryInput.getText();  // category.
+        metadata[3] = newExpensePanel.valueInput.getText();  // value.
+
+        DataEntry newDataEntry = CSVHandler.createDataEntry(metadata);
+        dataList.add(newDataEntry);
+
+        // RELABELLING IDs
+        CSVHandler.labelIDs(dataList);
+
+        // REMAKE HASHMAP
+        listsHashMap = CSVHandler.createMonthLists(dataList);
+
+        // change this for something in the app.
+        System.out.println("New Data Successfully Added.");
+        newExpensePanel.categoryInput.setText("");
+        newExpensePanel.valueInput.setText("");
 
     }
     

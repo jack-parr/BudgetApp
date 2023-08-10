@@ -26,7 +26,7 @@ public class MenuPanel extends JPanel {
         summaryButton.setFocusable(false);
         summaryButton.setBackground(config.SUMMARY_COLOR);
         summaryButton.setFont(config.MENU_FONT);
-        summaryButton.setForeground(config.GENERAL_TEXT_COLOR);
+        summaryButton.setForeground(config.PRIMARY_TEXT_COLOR);
         summaryButton.setBorderPainted(false);
 
         incomeButton = new JButton("Income");
@@ -34,7 +34,7 @@ public class MenuPanel extends JPanel {
         incomeButton.setFocusable(false);
         incomeButton.setBackground(config.INCOME_COLOR);
         incomeButton.setFont(config.MENU_FONT);
-        incomeButton.setForeground(config.GENERAL_TEXT_COLOR);
+        incomeButton.setForeground(config.PRIMARY_TEXT_COLOR);
         incomeButton.setBorderPainted(false);
         
         expensesButton = new JButton("Expenses");
@@ -42,7 +42,7 @@ public class MenuPanel extends JPanel {
         expensesButton.setFocusable(false);
         expensesButton.setBackground(config.EXPENSES_COLOR);
         expensesButton.setFont(config.MENU_FONT);
-        expensesButton.setForeground(config.GENERAL_TEXT_COLOR);
+        expensesButton.setForeground(config.PRIMARY_TEXT_COLOR);
         expensesButton.setBorderPainted(false);
 
         this.add(summaryButton);

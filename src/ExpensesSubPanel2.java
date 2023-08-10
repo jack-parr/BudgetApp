@@ -1,5 +1,5 @@
 /*
- * This is the subpanel that displays the monthly data tables in the expenses panel.
+ * This is the subpanel that displays the monthly data in the expenses panel.
  */
 
 import java.awt.Color;
@@ -28,12 +28,11 @@ public class ExpensesSubPanel2 extends JPanel {
     final int MONTH_HEADER_HEIGHT = 50;  // height of the month labels.
     final Font MONTH_HEADER_FONT = new Font("Arial Rounded MT Bold", Font.PLAIN, 40);
     final Font HEADER_ROW_FONT = new Font("Arial Rounded MT Bold", Font.PLAIN, 12);
-    final Color HEADER_ROW_COLOR = new Color(150, 150, 150);
     final int DATA_ROW_HEIGHT = 30;
     final Font DATA_ROW_FONT = new Font("Arial Rounded MT Bold", Font.PLAIN, 14);
     final int DELETE_BUTTON_WIDTH = 50;
 
-    HashMap<String, Component> deleteButtons = new HashMap<>();
+    HashMap<String, Component> deleteButtonsMap = new HashMap<>();
 
     ExpensesSubPanel2(Integer year) {
 
@@ -42,18 +41,19 @@ public class ExpensesSubPanel2 extends JPanel {
 
         if (year == null) {
             JLabel nullLabel = new JLabel("No Data", SwingConstants.CENTER);
-            nullLabel.setFont(config.GENERAL_FONT);
-            nullLabel.setForeground(HEADER_ROW_COLOR);       
+            nullLabel.setFont(config.PRIMARY_FONT);
+            nullLabel.setForeground(config.SECONDARY_TEXT_COLOR);       
             nullLabel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT - ExpensesPanel.PANEL_HEADER_HEIGHT));
             this.add(nullLabel);
         }
         else {
 
             List<Integer> monthKeys = new ArrayList<Integer>(AppFrame.listsHashMap.keySet().stream().toList());  // get list of monthListIDs.
+            Collections.sort(monthKeys, Collections.reverseOrder());  // sort it descending.
 
             for (int monthListKey : monthKeys) {
                 if (ExpensesPanel.getYearFromMonthKey(monthListKey) != year) {
-                    continue;  // passes if data table is not relevant to year.
+                    continue;  // passes if data list is not relevant to year.
                 }
 
                 ArrayList<DataEntry> monthList = AppFrame.listsHashMap.get(monthListKey);  // get list.
@@ -63,7 +63,7 @@ public class ExpensesSubPanel2 extends JPanel {
                 String monthString = new DateFormatSymbols().getMonths()[monthInt-1];  // convert monthInt to String.
                 JLabel monthHeader = new JLabel(monthString);
                 monthHeader.setFont(MONTH_HEADER_FONT);
-                monthHeader.setForeground(config.GENERAL_TEXT_COLOR);
+                monthHeader.setForeground(config.PRIMARY_TEXT_COLOR);
                 monthHeader.setPreferredSize(new Dimension(250, MONTH_HEADER_HEIGHT));
                 this.add(monthHeader);
 
@@ -74,7 +74,7 @@ public class ExpensesSubPanel2 extends JPanel {
                 }
                 JLabel totalLabel = new JLabel("Month Total: £" + String.format("%.2f", monthTotal));
                 totalLabel.setFont(DATA_ROW_FONT);
-                totalLabel.setForeground(config.GENERAL_TEXT_COLOR);
+                totalLabel.setForeground(config.PRIMARY_TEXT_COLOR);
                 totalLabel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH - monthHeader.getPreferredSize().width, MONTH_HEADER_HEIGHT));
                 this.add(totalLabel);
 
@@ -143,7 +143,7 @@ public class ExpensesSubPanel2 extends JPanel {
                     this.add(deleteRowButton);
 
                     // ADD DELETE BUTTON TO HASHMAP
-                    deleteButtons.put(deleteRowButton.getName(), deleteRowButton);
+                    deleteButtonsMap.put(deleteRowButton.getName(), deleteRowButton);
 
                 }
                 
@@ -159,15 +159,15 @@ public class ExpensesSubPanel2 extends JPanel {
 
         JLabel dateLabel = new JLabel("Date");
         dateLabel.setFont(HEADER_ROW_FONT);
-        dateLabel.setForeground(HEADER_ROW_COLOR);
+        dateLabel.setForeground(config.SECONDARY_TEXT_COLOR);
 
         JLabel categoryLabel = new JLabel("Category");
         categoryLabel.setFont(HEADER_ROW_FONT);
-        categoryLabel.setForeground(HEADER_ROW_COLOR);
+        categoryLabel.setForeground(config.SECONDARY_TEXT_COLOR);
 
         JLabel valueLabel = new JLabel("Value");
         valueLabel.setFont(HEADER_ROW_FONT);
-        valueLabel.setForeground(HEADER_ROW_COLOR);
+        valueLabel.setForeground(config.SECONDARY_TEXT_COLOR);
 
         ArrayList<Component> componentList = new ArrayList<>();
         componentList.add(dateLabel);
@@ -184,15 +184,15 @@ public class ExpensesSubPanel2 extends JPanel {
 
         JLabel dateLabel = new JLabel(dateToLabelString(dataEntry.getDate()));
         dateLabel.setFont(DATA_ROW_FONT);
-        dateLabel.setForeground(config.GENERAL_TEXT_COLOR);
+        dateLabel.setForeground(config.PRIMARY_TEXT_COLOR);
 
         JLabel categoryLabel = new JLabel(dataEntry.getCategory());
         categoryLabel.setFont(DATA_ROW_FONT);
-        categoryLabel.setForeground(config.GENERAL_TEXT_COLOR);
+        categoryLabel.setForeground(config.PRIMARY_TEXT_COLOR);
 
         JLabel valueLabel = new JLabel(String.format("%.2f", dataEntry.getValue()));
         valueLabel.setFont(DATA_ROW_FONT);
-        valueLabel.setForeground(config.GENERAL_TEXT_COLOR);
+        valueLabel.setForeground(config.PRIMARY_TEXT_COLOR);
 
         ArrayList<Component> componentList = new ArrayList<>();
         componentList.add(dateLabel);
@@ -217,7 +217,7 @@ public class ExpensesSubPanel2 extends JPanel {
         // Makes a colored label to insert throughout the panel.
 
         JLabel spacerLabel = new JLabel();
-        spacerLabel.setBackground(HEADER_ROW_COLOR);
+        spacerLabel.setBackground(config.SECONDARY_TEXT_COLOR);
         spacerLabel.setOpaque(true);
 
         return spacerLabel;

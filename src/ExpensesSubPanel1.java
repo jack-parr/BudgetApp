@@ -28,7 +28,7 @@ public class ExpensesSubPanel1 extends JPanel {
         this.setBackground(config.EXPENSES_COLOR);
 
         // POPULATING YEAR SELECTOR
-        List<Integer> monthKeys = new ArrayList<Integer>(AppFrame.listsHashMap.keySet().stream().toList());  // get list of monthTableIDs.
+        List<Integer> monthKeys = new ArrayList<Integer>(AppFrame.listsHashMap.keySet().stream().toList());  // get list of monthListIDs.
         Collections.sort(monthKeys, Collections.reverseOrder());  // sort it descending.
 
         List<Integer> yearsFromMonthKeys = monthKeys.stream().map(key -> ExpensesPanel.getYearFromMonthKey(key)).collect(Collectors.toList());  // extracts years from monthKeys.
@@ -38,8 +38,8 @@ public class ExpensesSubPanel1 extends JPanel {
         yearComboBox.addItem(null);  // adding the null entry for when there is no data.
 
         // PAINTING PANEL
-        yearSelectLabel.setFont(config.GENERAL_FONT);
-        yearSelectLabel.setForeground(config.GENERAL_TEXT_COLOR);
+        yearSelectLabel.setFont(config.PRIMARY_FONT);
+        yearSelectLabel.setForeground(config.PRIMARY_TEXT_COLOR);
         yearSelectLabel.setPreferredSize(new Dimension(100, ExpensesPanel.PANEL_HEADER_HEIGHT));
         this.add(yearSelectLabel);
 
