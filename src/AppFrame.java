@@ -9,8 +9,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.nio.file.attribute.DosFileAttributeView;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 
 import javax.swing.JButton;
@@ -36,12 +38,24 @@ public class AppFrame extends JFrame implements ActionListener{
 
     AppFrame() {
 
+        // TEMP TESTING - DELETE WHEN NOT NEEDED ANYMORE
+        // ArrayList<Integer> testList = new ArrayList<>();
+        // testList.add(1);
+        // while (!testList.isEmpty()) {
+        //     testList.removeAll(testList);
+        //     System.out.println("Still running");
+        //     System.out.println("Here too");
+        // }
+
         // LOADING DATA
         dataList = CSVHandler.readDataFromCSV("tempDataIn.csv");
         // for (DataEntry dataEntry : dataList) {
         //     System.out.println(dataEntry);
         // }
-        listsHashMap = CSVHandler.createMonthLists(dataList);
+        CSVHandler.assignIds(dataList);  // assigning IDs.
+        listsHashMap = CSVHandler.createMonthLists(dataList);  // creating the listsHashMap.
+        checkRecurringEntryGenerators(dataList);  // checking the generators.
+        //System.out.println(dataList.get(0).getStartDate().plusDays(1));
 
         // SAVE DATA ON CLOSE
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -132,8 +146,8 @@ public class AppFrame extends JFrame implements ActionListener{
             }
 
             // HANDLING DELETE ROW BUTTONS
-            else if (actionCommand.substring(0, 6).equals("delete")) {
-                deleteDataEntry(Integer.parseInt(actionCommand.substring(6)));  // calls the method for deleting DataEntry according to int id.
+            else if (actionCommand.startsWith("delete")) {
+                deleteDataEntry(actionCommand.substring(6));  // calls the method for deleting DataEntry according to int id.
             }
 
         }
@@ -174,7 +188,7 @@ public class AppFrame extends JFrame implements ActionListener{
             }
 
             else if (e.getSource() == newExpensePanel.confirmButton) {
-                addNewDataEntry();
+                addNewDataEntryFromUser();
             }
 
             // will need input checks to make sure all inputs are present and valid
@@ -275,12 +289,12 @@ public class AppFrame extends JFrame implements ActionListener{
 
     }
 
-    public void deleteDataEntry(int id) {
+    public void deleteDataEntry(String id) {
 
         // Deletes the DataEntry corresponding to id.
 
         for (DataEntry dataEntry : dataList) {
-            if (dataEntry.getId() == id) {
+            if (dataEntry.getId().equals(id)) {
                 dataList.remove(dataEntry);
                 break;
             }
@@ -292,36 +306,32 @@ public class AppFrame extends JFrame implements ActionListener{
 
     }
 
-    public void addNewDataEntry() {
+    public void addNewDataEntryFromUser() {
 
         // Adds a DataEntry based on information currently in the newExpensesPanel.
-
-        // TO DO:
-        // add all the extra readings from new data panel into metadata.
-        // read the sign input as the actioncommand for the selected button in signButtonGroup.
 
         // INPUT CHECKS
         System.out.println("UNIMPLEMENTED INPUT CHECKS");
 
         // ADDING DATA ENTRY
-        String[] metadata = new String[8];  // creating metadata.
+        String[] metadata = new String[9];  // creating metadata.
         metadata[0] = "0";  // placeholder id.
         metadata[1] = newExpensePanel.isExpenseButtonGroup.getSelection().getActionCommand();
         metadata[2] = newExpensePanel.isRecurringButtonGroup.getSelection().getActionCommand();
         metadata[3] = (String) newExpensePanel.frequencyInput.getSelectedItem();
         metadata[4] = newExpensePanel.startDateYearInput.getSelectedItem() + "-" + String.format("%02d", newExpensePanel.startDateMonthInput.getSelectedItem()) + "-" + String.format("%02d", newExpensePanel.startDateDayInput.getSelectedItem());  // date in correct format.
         metadata[5] = newExpensePanel.endDateYearInput.getSelectedItem() + "-" + String.format("%02d", newExpensePanel.endDateMonthInput.getSelectedItem()) + "-" + String.format("%02d", newExpensePanel.endDateDayInput.getSelectedItem());  // date in correct format.
-        metadata[6] = newExpensePanel.categoryInput.getText();  // category.
-        metadata[7] = newExpensePanel.valueInput.getText();  // value.
+        metadata[6] = metadata[4];  // this is irrelevant, just needs to be a readable date.
+        metadata[7] = newExpensePanel.categoryInput.getText();  // category.
+        metadata[8] = newExpensePanel.valueInput.getText();  // value.
 
         DataEntry newDataEntry = CSVHandler.createDataEntry(metadata);
         dataList.add(newDataEntry);
 
-        // RELABELLING IDs
-        CSVHandler.labelIDs(dataList);
-
-        // REMAKE HASHMAP
-        listsHashMap = CSVHandler.createMonthLists(dataList);
+        // POST PROCESSING
+        CSVHandler.assignIds(dataList);  // reassigning IDs.
+        checkRecurringEntryGenerators(dataList);  // check for any due generators and handle these.
+        listsHashMap = CSVHandler.createMonthLists(dataList);   // create monthLists.
 
         // change this for something in the app.
         System.out.println("New Data Successfully Added.");
@@ -329,5 +339,73 @@ public class AppFrame extends JFrame implements ActionListener{
         newExpensePanel.valueInput.setText("");
 
     }
-    
+
+    public void checkRecurringEntryGenerators(ArrayList<DataEntry> dataList) {
+
+        // This checks all the recurring entry generators for if they're due a new DataEntry, and handles it.
+
+        ArrayList<DataEntry> tempAddList = new ArrayList<>();
+        tempAddList.add(dataList.get(0));  // add one to begin the while loop.
+
+        while (!tempAddList.isEmpty()) {  // will end once a pass has been made with no additions.
+
+            tempAddList.clear();
+
+            for (DataEntry dataEntry : dataList) {
+                if (dataEntry.isRecurring && dataEntry.getNextDueDate().isBefore(Collections.min(Arrays.asList(LocalDate.now().plusDays(1), dataEntry.getEndDate())))) {
+
+                    // CREATE NEW ONE-OFF DataEntry
+                    String[] metadata = new String[9];
+                    metadata[0] = "0";  // placeholder id.
+                    metadata[1] = Boolean.toString(dataEntry.getIsExpense());
+                    metadata[2] = "false";  // makes it a one-off entry instead of a generator.
+                    metadata[3] = "";  // frequency.
+                    metadata[4] = dataEntry.getNextDueDate().toString();  // the due date in correct format.
+                    metadata[5] = dataEntry.getNextDueDate().toString();  // the due date in correct format.
+                    metadata[6] = metadata[4];  // this is irrelevant, just needs to be a readable date.
+                    metadata[7] = dataEntry.getCategory();  // category.
+                    metadata[8] = Float.toString(dataEntry.getValue());  // value.
+
+                    DataEntry newDataEntry = CSVHandler.createDataEntry(metadata);
+                    tempAddList.add(newDataEntry);
+
+                    // UPDATING GENERATOR
+                    switch (dataEntry.getFrequency()) {
+                    case "Daily":
+                        dataEntry.setStartDate(dataEntry.getNextDueDate());
+                        dataEntry.setNextDueDate(dataEntry.getStartDate().plusDays(1));
+                        break;
+                    case "Weekly":
+                        dataEntry.setStartDate(dataEntry.getNextDueDate());
+                        dataEntry.setNextDueDate(dataEntry.getStartDate().plusWeeks(1));
+                        break;
+                    case "Fortnightly":
+                        dataEntry.setStartDate(dataEntry.getNextDueDate());
+                        dataEntry.setNextDueDate(dataEntry.getStartDate().plusWeeks(2));
+                        break;
+                    case "Monthly":
+                        dataEntry.setStartDate(dataEntry.getNextDueDate());
+                        dataEntry.setNextDueDate(dataEntry.getStartDate().plusMonths(1));
+                        break;
+                    case "Annually":
+                        dataEntry.setStartDate(dataEntry.getNextDueDate());
+                        dataEntry.setNextDueDate(dataEntry.getStartDate().plusYears(1));
+                        break;
+                    default:
+                        break;
+                    }
+                }
+            }
+
+            if (!tempAddList.isEmpty()) {
+                tempAddList.forEach(de -> dataList.add(de));
+            }
+
+        }
+
+        CSVHandler.assignIds(dataList);  // reassigning IDs after all the new entries.
+
+    }
+
 }
+

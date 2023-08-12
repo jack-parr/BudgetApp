@@ -11,6 +11,8 @@ Make sure all action command checks happen AFTER source checks, and happen in de
 - Visualise data by month.
 
 # TO DO:
-- JSCROLLPANE FOR EXPENSE PANEL.
-- Change expenseSubPanel2 display to differentiate between income and expense data.
-- Change way the sum handles the different signage of data values.
+- JScrollPane for ViewDataPanel.
+- Format ViewDataPanel.
+- Format AddNewDataPanel.
+- Code RecurringPanel.
+- Code SummaryPanel.

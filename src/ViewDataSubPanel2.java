@@ -69,12 +69,23 @@ public class ViewDataSubPanel2 extends JPanel {
 
                 // MONTH TOTAL
                 float monthTotal = 0;
+                int sign = 0;
                 for (DataEntry dataEntry : monthList) {
-                    monthTotal += dataEntry.getValue();
+                    if (dataEntry.getIsExpense()) {sign = -1;} 
+                    else {sign = 1;}
+                    monthTotal += sign * dataEntry.getValue();
                 }
-                JLabel totalLabel = new JLabel("Month Total: £" + String.format("%.2f", monthTotal));
+
+                JLabel totalLabel = new JLabel();
+                if (monthTotal < 0) {
+                    totalLabel.setText("Month Total:   - £" + String.format("%.2f", Math.abs(monthTotal)));
+                    totalLabel.setForeground(Color.RED);
+                }
+                else {
+                    totalLabel.setText("Month Total:   + £" + String.format("%.2f", Math.abs(monthTotal)));
+                    totalLabel.setForeground(Color.GREEN);
+                }
                 totalLabel.setFont(DATA_ROW_FONT);
-                totalLabel.setForeground(config.PRIMARY_TEXT_COLOR);
                 totalLabel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH - monthHeader.getPreferredSize().width, MONTH_HEADER_HEIGHT));
                 this.add(totalLabel);
 
@@ -137,8 +148,8 @@ public class ViewDataSubPanel2 extends JPanel {
                     deleteRowButton.setFocusable(false);
                     deleteRowButton.setBorderPainted(false);
                     deleteRowButton.setBackground(Color.RED);
-                    deleteRowButton.setName("deleteButton" + Integer.toString(dataEntry.getId()));
-                    deleteRowButton.setActionCommand("delete" + Integer.toString(dataEntry.getId()));
+                    deleteRowButton.setName("deleteButton" + dataEntry.getId());
+                    deleteRowButton.setActionCommand("delete" + dataEntry.getId());
                     deleteRowButton.setPreferredSize(new Dimension(DELETE_BUTTON_WIDTH, DATA_ROW_HEIGHT));
                     this.add(deleteRowButton);
 
@@ -190,9 +201,16 @@ public class ViewDataSubPanel2 extends JPanel {
         categoryLabel.setFont(DATA_ROW_FONT);
         categoryLabel.setForeground(config.PRIMARY_TEXT_COLOR);
 
-        JLabel valueLabel = new JLabel(String.format("%.2f", dataEntry.getValue()));
+        JLabel valueLabel = new JLabel();
         valueLabel.setFont(DATA_ROW_FONT);
-        valueLabel.setForeground(config.PRIMARY_TEXT_COLOR);
+        if (dataEntry.getIsExpense()) {
+            valueLabel.setText("- £" + String.format("%.2f", Math.abs(dataEntry.getValue())));
+            valueLabel.setForeground(Color.RED);
+        }
+        else {
+            valueLabel.setText("+ £" + String.format("%.2f", Math.abs(dataEntry.getValue())));
+            valueLabel.setForeground(Color.GREEN);
+        }
 
         ArrayList<Component> componentList = new ArrayList<>();
         componentList.add(dateLabel);

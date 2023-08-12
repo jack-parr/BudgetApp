@@ -40,8 +40,6 @@ public class CSVHandler {
                 line = br.readLine();
             }
 
-            labelIDs(dataList);
-
         }
         catch (IOException ioe) {
             ioe.printStackTrace();
@@ -55,17 +53,18 @@ public class CSVHandler {
 
         // takes a String array of attributes and turns them into the correct datatypes for the DataEntry class.
 
-        int id = Integer.parseInt(metadata[0]);
+        String id = metadata[0];
         boolean isExpense = Boolean.parseBoolean(metadata[1]);
         boolean isRecurring = Boolean.parseBoolean(metadata[2]);
         String frequency = metadata[3];
         DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
         LocalDate startDate = LocalDate.parse(metadata[4], formatter);
         LocalDate endDate = LocalDate.parse(metadata[5], formatter);
-        String category = metadata[6];
-        float value = Float.parseFloat(metadata[7]);
+        LocalDate nextDueDate = startDate;  // this is so recurring entry generators start at startDate.
+        String category = metadata[7];
+        float value = Float.parseFloat(metadata[8]);
 
-        return new DataEntry(id, isExpense, isRecurring, frequency, startDate, endDate, category, value);
+        return new DataEntry(id, isExpense, isRecurring, frequency, startDate, endDate, nextDueDate, category, value);
 
     }
 
@@ -77,20 +76,26 @@ public class CSVHandler {
         ArrayList<DataEntry> extractedList;
 
         for (DataEntry dataEntry : dataList) {  // loops through each DataEntry.
-            LocalDate date = dataEntry.getStartDate();  // extract the date of the DataEntry.
-            int monthListID = makeMonthListID(date);
-            extractedList = dataMonthLists.get(monthListID);
-            if (extractedList == null) {  // there is no list for this month yet.
-                // Creating new list for this month.
-                ArrayList<DataEntry> newMonthList = new ArrayList<>();
-                newMonthList.add(dataEntry);
-                dataMonthLists.put(monthListID, newMonthList);  // adds list to HashMap.
-            }
-            else {  // List for this month has been extracted from HashMap.
+
+            if (dataEntry.getId().startsWith("ONE")) {  // skips the recurring entry generators.
+
+                LocalDate date = dataEntry.getStartDate();  // extract the date of the DataEntry.
+                int monthListID = makeMonthListID(date);
                 extractedList = dataMonthLists.get(monthListID);
-                extractedList.add(dataEntry);
-                dataMonthLists.put(monthListID, extractedList);  // overwriting into HashMap.
+                if (extractedList == null) {  // there is no list for this month yet.
+                    // Creating new list for this month.
+                    ArrayList<DataEntry> newMonthList = new ArrayList<>();
+                    newMonthList.add(dataEntry);
+                    dataMonthLists.put(monthListID, newMonthList);  // adds list to HashMap.
+                }
+                else {  // List for this month has been extracted from HashMap.
+                    extractedList = dataMonthLists.get(monthListID);
+                    extractedList.add(dataEntry);
+                    dataMonthLists.put(monthListID, extractedList);  // overwriting into HashMap.
+                }
+
             }
+            
         }
 
         return dataMonthLists;
@@ -145,28 +150,38 @@ public class CSVHandler {
 
         // Returns a String array based on a DataEntry. Used when writing the dataList to CSV.
 
-        String[] stringArray = new String[8];
-        stringArray[0] = Integer.toString(dataEntry.getId());
+        String[] stringArray = new String[9];
+        stringArray[0] = dataEntry.getId();
         stringArray[1] = Boolean.toString(dataEntry.getIsExpense());
         stringArray[2] = Boolean.toString(dataEntry.getIsRecurring());
         stringArray[3] = dataEntry.getFrequency();
         stringArray[4] = dataEntry.getStartDate().toString();
         stringArray[5] = dataEntry.getEndDate().toString();
-        stringArray[6] = dataEntry.getCategory();
-        stringArray[7] = String.valueOf(dataEntry.getValue());
+        stringArray[6] = dataEntry.getNextDueDate().toString();
+        stringArray[7] = dataEntry.getCategory();
+        stringArray[8] = String.valueOf(dataEntry.getValue());
 
         return stringArray;
 
     }
 
-    public static void labelIDs(ArrayList<DataEntry> dataList) {
+    public static void assignIds(ArrayList<DataEntry> dataList) {
 
         // Labels each DataEntry with a unique integer ID.
+        // Format: ONE_1 for one-offs, REC_1 for recurring entry generators.
 
-        int i = 0;
+        int oneOffI = 1;
+        int recI = 1;
         for (DataEntry dataEntry : dataList) {
-            dataEntry.setId(i);
-            i += 1;
+            if (dataEntry.getIsRecurring()) {
+                dataEntry.setId("REC_" + recI);
+                recI += 1;
+            }
+            else {
+                dataEntry.setId("ONE_" + oneOffI);
+                oneOffI += 1;
+            }
+                
         }
 
     }
@@ -175,17 +190,18 @@ public class CSVHandler {
 
 class DataEntry {
 
-    int id;  // unique to each DataEntry.
-    boolean isRecurring;  // either true (recurring) or false (one-off).
+    String id;  // unique to each DataEntry.
+    boolean isRecurring;  // either true (recurring entry generator) or false (one-off).
     boolean isExpense;  // either true (expense) or false (income).
     String frequency;  // code to say how often it repeats.
     LocalDate startDate;  // first occurance.
-    LocalDate endDate;  // if type == "1OFF", then this is the same as startDate.
+    LocalDate endDate;  // if isRecurring == false, then this is the same as startDate.
+    LocalDate nextDueDate;  // if isRecurring == true, this is the next date this is due to recur.
     String category;  // category of the DataEntry.
     float value;  // value of the DataEntry.
     int sortCode;  // used for sorting into correct order when displaying.
 
-    public DataEntry(int id, boolean isExpense, boolean isRecurring, String frequency, LocalDate startDate, LocalDate endDate, String category, float value) {
+    public DataEntry(String id, boolean isExpense, boolean isRecurring, String frequency, LocalDate startDate, LocalDate endDate, LocalDate nextDueDate, String category, float value) {
 
         this.id = id;
         this.isExpense = isExpense;
@@ -193,6 +209,7 @@ class DataEntry {
         this.frequency = frequency;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.nextDueDate = nextDueDate;
         this.category = category;
         this.value = value;
         this.sortCode = makeSortCode(startDate, category);
@@ -211,11 +228,11 @@ class DataEntry {
 
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -259,6 +276,14 @@ class DataEntry {
         this.endDate = endDate;
     }
 
+    public LocalDate getNextDueDate() {
+        return nextDueDate;
+    }
+
+    public void setNextDueDate(LocalDate nextDueDate) {
+        this.nextDueDate = nextDueDate;
+    }
+
     public String getCategory() {
         return category;
     }
@@ -285,7 +310,7 @@ class DataEntry {
 
     @Override
     public String toString() {
-        return "DataEntry [id=" + id + ", isExpense=" + isExpense + ", isRecurring=" + isRecurring + ", frequency=" + frequency + ", startDate=" + startDate + ", endDate=" + endDate + ", category=" + category + ", value=" + value + ", sortCode=" + sortCode + "]";
+        return "DataEntry [id=" + id + ", isExpense=" + isExpense + ", isRecurring=" + isRecurring + ", frequency=" + frequency + ", startDate=" + startDate + ", endDate=" + endDate + ", nextDueDate=" + nextDueDate + ", category=" + category + ", value=" + value + ", sortCode=" + sortCode + "]";
     }
 
 }

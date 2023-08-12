@@ -154,7 +154,7 @@ public class AddNewDataPanel extends JPanel {
     public void paintFrequencyInput() {
 
         // Paints the frequency select row.
-        // On generation, isRecurring = false, so this is disables.
+        // On generation, isRecurring = false, so this is disabled.
 
         frequencyHeading = new JLabel("Frequency: ");
         frequencyHeading.setFont(config.PRIMARY_FONT);
@@ -164,6 +164,7 @@ public class AddNewDataPanel extends JPanel {
 
         frequencyInput = new JComboBox<>();
         frequencyList.forEach(i -> frequencyInput.addItem(i));
+        frequencyInput.setSelectedIndex(-1);
         frequencyInput.setEnabled(false);
         frequencyInput.setPreferredSize(new Dimension(100, INPUT_ROW_HEIGHT));
         this.add(frequencyInput);
