@@ -21,7 +21,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
-public class ExpensesSubPanel2 extends JPanel {
+public class ViewDataSubPanel2 extends JPanel {
 
     Config config = new Config();
 
@@ -34,7 +34,7 @@ public class ExpensesSubPanel2 extends JPanel {
 
     HashMap<String, Component> deleteButtonsMap = new HashMap<>();
 
-    ExpensesSubPanel2(Integer year) {
+    ViewDataSubPanel2(Integer year) {
 
         this.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
         this.setBackground(config.EXPENSES_COLOR);
@@ -43,7 +43,7 @@ public class ExpensesSubPanel2 extends JPanel {
             JLabel nullLabel = new JLabel("No Data", SwingConstants.CENTER);
             nullLabel.setFont(config.PRIMARY_FONT);
             nullLabel.setForeground(config.SECONDARY_TEXT_COLOR);       
-            nullLabel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT - ExpensesPanel.PANEL_HEADER_HEIGHT));
+            nullLabel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT - ViewDataPanel.PANEL_HEADER_HEIGHT));
             this.add(nullLabel);
         }
         else {
@@ -52,7 +52,7 @@ public class ExpensesSubPanel2 extends JPanel {
             Collections.sort(monthKeys, Collections.reverseOrder());  // sort it descending.
 
             for (int monthListKey : monthKeys) {
-                if (ExpensesPanel.getYearFromMonthKey(monthListKey) != year) {
+                if (ViewDataPanel.getYearFromMonthKey(monthListKey) != year) {
                     continue;  // passes if data list is not relevant to year.
                 }
 
@@ -115,7 +115,7 @@ public class ExpensesSubPanel2 extends JPanel {
                     Component dataValueLabel = dataRowComponents.get(2);
                     dataValueLabel.setPreferredSize(new Dimension((config.DISPLAY_WIDTH - DELETE_BUTTON_WIDTH) / 3, DATA_ROW_HEIGHT));
 
-                    thisDate = dateToLabelString(dataEntry.getDate());
+                    thisDate = dateToLabelString(dataEntry.getStartDate());
                     if (thisDate.equals(prevDate)) {
                         // no spacer, empty date label.
                         JLabel emptyDateLabel = new JLabel();
@@ -182,7 +182,7 @@ public class ExpensesSubPanel2 extends JPanel {
 
         // Makes a list of components of a data row from a DataEntry.
 
-        JLabel dateLabel = new JLabel(dateToLabelString(dataEntry.getDate()));
+        JLabel dateLabel = new JLabel(dateToLabelString(dataEntry.getStartDate()));
         dateLabel.setFont(DATA_ROW_FONT);
         dateLabel.setForeground(config.PRIMARY_TEXT_COLOR);
 

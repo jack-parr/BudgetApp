@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.nio.file.attribute.DosFileAttributeView;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -24,8 +25,8 @@ public class AppFrame extends JFrame implements ActionListener{
 
     static JPanel currentPanel;
     MenuPanel menuPanel;
-    ExpensesPanel expensesPanel;
-    NewExpensePanel newExpensePanel;
+    ViewDataPanel expensesPanel;
+    AddNewDataPanel newExpensePanel;
     
     final static String SUMMARY_ACTION_COMMAND = "summaryButton";
     final static String INCOME_ACTION_COMMAND = "incomeButton";
@@ -37,6 +38,9 @@ public class AppFrame extends JFrame implements ActionListener{
 
         // LOADING DATA
         dataList = CSVHandler.readDataFromCSV("tempDataIn.csv");
+        // for (DataEntry dataEntry : dataList) {
+        //     System.out.println(dataEntry);
+        // }
         listsHashMap = CSVHandler.createMonthLists(dataList);
 
         // SAVE DATA ON CLOSE
@@ -106,14 +110,14 @@ public class AppFrame extends JFrame implements ActionListener{
         }
 
         // EXPENSES PANEL ACTIONS
-        if (currentPanel instanceof ExpensesPanel) {
+        if (currentPanel instanceof ViewDataPanel) {
             
             // HANDLING YEAR CHANGE
             if (e.getSource() == expensesPanel.headerPanel.yearComboBox) {
                 expensesPanel.remove(expensesPanel.dataPanel);  // remove old dataPanel.
-                expensesPanel.dataPanel = new ExpensesSubPanel2((Integer) expensesPanel.headerPanel.yearComboBox.getSelectedItem());  // create new dataPanel.
+                expensesPanel.dataPanel = new ViewDataSubPanel2((Integer) expensesPanel.headerPanel.yearComboBox.getSelectedItem());  // create new dataPanel.
                 assignDeleteButtons();  // assign listeners to delete row buttons.
-                expensesPanel.dataPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT - ExpensesPanel.PANEL_HEADER_HEIGHT));
+                expensesPanel.dataPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT - ViewDataPanel.PANEL_HEADER_HEIGHT));
                 expensesPanel.add(expensesPanel.dataPanel, BorderLayout.SOUTH);  // add the new dataPanel.
                 expensesPanel.revalidate();
                 expensesPanel.repaint();
@@ -135,21 +139,48 @@ public class AppFrame extends JFrame implements ActionListener{
         }
 
         // NEW EXPENSE PANEL ACTIONS
-        if (currentPanel instanceof NewExpensePanel) {
+        if (currentPanel instanceof AddNewDataPanel) {
+            
+            if (e.getSource() == newExpensePanel.oneOffButton) {
+                // Disables frequencyInput and endDateInput.
+                newExpensePanel.frequencyHeading.setForeground(config.SECONDARY_TEXT_COLOR);
+                newExpensePanel.frequencyInput.setSelectedIndex(-1);  // clears selection.
+                newExpensePanel.frequencyInput.setEnabled(false);  // disables.
+                newExpensePanel.startDateHeading.setText("Date: ");
+                newExpensePanel.endDateHeading.setForeground(config.SECONDARY_TEXT_COLOR);
+                newExpensePanel.endDateDayInput.setSelectedItem(newExpensePanel.startDateDayInput.getSelectedItem());
+                newExpensePanel.endDateDayInput.setEnabled(false);
+                newExpensePanel.endDateMonthInput.setSelectedItem(newExpensePanel.startDateMonthInput.getSelectedItem());
+                newExpensePanel.endDateMonthInput.setEnabled(false);
+                newExpensePanel.endDateYearInput.setSelectedItem(newExpensePanel.startDateYearInput.getSelectedItem());
+                newExpensePanel.endDateYearInput.setEnabled(false);
+            }
 
-            if (e.getSource() == newExpensePanel.cancelButton) {
+            else if (e.getSource() == newExpensePanel.recurringButton) {
+                // Enables frequencyInput and endDateInput.
+                newExpensePanel.frequencyHeading.setForeground(config.PRIMARY_TEXT_COLOR);
+                newExpensePanel.frequencyInput.setEnabled(true);
+                newExpensePanel.frequencyInput.setSelectedIndex(0);  // sets selection to first option.
+                newExpensePanel.startDateHeading.setText("Start Date: ");
+                newExpensePanel.endDateHeading.setForeground(config.PRIMARY_TEXT_COLOR);
+                newExpensePanel.endDateDayInput.setEnabled(true);
+                newExpensePanel.endDateMonthInput.setEnabled(true);
+                newExpensePanel.endDateYearInput.setEnabled(true);
+            }
+
+            else if (e.getSource() == newExpensePanel.cancelButton) {
                 this.remove(currentPanel);
                 createExpensesPanel();
             }
 
             else if (e.getSource() == newExpensePanel.confirmButton) {
-                addDataEntry();
+                addNewDataEntry();
             }
 
             // will need input checks to make sure all inputs are present and valid
 
             else if (actionCommand.substring(0, 8).equals("category")) {
-                ((NewExpensePanel) currentPanel).categoryInput.setText(actionCommand.substring(8));
+                ((AddNewDataPanel) currentPanel).categoryInput.setText(actionCommand.substring(8));
             }
 
         }
@@ -186,7 +217,7 @@ public class AppFrame extends JFrame implements ActionListener{
 
         // Creates and paints the expenses panel.
 
-        expensesPanel = new ExpensesPanel();
+        expensesPanel = new ViewDataPanel();
 
         // SETTING ACTION LISTENERS
         expensesPanel.headerPanel.yearComboBox.addActionListener(this);
@@ -206,9 +237,12 @@ public class AppFrame extends JFrame implements ActionListener{
 
         // Creates and paints the new data panel.
 
-        newExpensePanel = new NewExpensePanel();
+        newExpensePanel = new AddNewDataPanel();
 
         // SETTING ACTION LISTENERS
+        newExpensePanel.oneOffButton.addActionListener(this);
+        newExpensePanel.recurringButton.addActionListener(this);
+
         HashMap<String, JButton> shortcutButtonsMap = newExpensePanel.categoryShortcutButtonsMap;
         Object[] mapKeys = shortcutButtonsMap.keySet().toArray();  // makes an array of the keySet.
         for (Object key : mapKeys) {
@@ -258,19 +292,27 @@ public class AppFrame extends JFrame implements ActionListener{
 
     }
 
-    public void addDataEntry() {
+    public void addNewDataEntry() {
 
         // Adds a DataEntry based on information currently in the newExpensesPanel.
+
+        // TO DO:
+        // add all the extra readings from new data panel into metadata.
+        // read the sign input as the actioncommand for the selected button in signButtonGroup.
 
         // INPUT CHECKS
         System.out.println("UNIMPLEMENTED INPUT CHECKS");
 
         // ADDING DATA ENTRY
-        String[] metadata = new String[4];  // creating metadata.
+        String[] metadata = new String[8];  // creating metadata.
         metadata[0] = "0";  // placeholder id.
-        metadata[1] = newExpensePanel.yearSelect.getSelectedItem() + "-" + String.format("%02d", newExpensePanel.monthSelect.getSelectedItem()) + "-" + String.format("%02d", newExpensePanel.daySelect.getSelectedItem());  // date in correct format.
-        metadata[2] = newExpensePanel.categoryInput.getText();  // category.
-        metadata[3] = newExpensePanel.valueInput.getText();  // value.
+        metadata[1] = newExpensePanel.isExpenseButtonGroup.getSelection().getActionCommand();
+        metadata[2] = newExpensePanel.isRecurringButtonGroup.getSelection().getActionCommand();
+        metadata[3] = (String) newExpensePanel.frequencyInput.getSelectedItem();
+        metadata[4] = newExpensePanel.startDateYearInput.getSelectedItem() + "-" + String.format("%02d", newExpensePanel.startDateMonthInput.getSelectedItem()) + "-" + String.format("%02d", newExpensePanel.startDateDayInput.getSelectedItem());  // date in correct format.
+        metadata[5] = newExpensePanel.endDateYearInput.getSelectedItem() + "-" + String.format("%02d", newExpensePanel.endDateMonthInput.getSelectedItem()) + "-" + String.format("%02d", newExpensePanel.endDateDayInput.getSelectedItem());  // date in correct format.
+        metadata[6] = newExpensePanel.categoryInput.getText();  // category.
+        metadata[7] = newExpensePanel.valueInput.getText();  // value.
 
         DataEntry newDataEntry = CSVHandler.createDataEntry(metadata);
         dataList.add(newDataEntry);

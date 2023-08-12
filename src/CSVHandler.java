@@ -56,12 +56,16 @@ public class CSVHandler {
         // takes a String array of attributes and turns them into the correct datatypes for the DataEntry class.
 
         int id = Integer.parseInt(metadata[0]);
+        boolean isExpense = Boolean.parseBoolean(metadata[1]);
+        boolean isRecurring = Boolean.parseBoolean(metadata[2]);
+        String frequency = metadata[3];
         DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
-        LocalDate date = LocalDate.parse(metadata[1], formatter);
-        String category = metadata[2];
-        float value = Float.parseFloat(metadata[3]);
+        LocalDate startDate = LocalDate.parse(metadata[4], formatter);
+        LocalDate endDate = LocalDate.parse(metadata[5], formatter);
+        String category = metadata[6];
+        float value = Float.parseFloat(metadata[7]);
 
-        return new DataEntry(id, date, category, value);
+        return new DataEntry(id, isExpense, isRecurring, frequency, startDate, endDate, category, value);
 
     }
 
@@ -73,7 +77,7 @@ public class CSVHandler {
         ArrayList<DataEntry> extractedList;
 
         for (DataEntry dataEntry : dataList) {  // loops through each DataEntry.
-            LocalDate date = dataEntry.getDate();  // extract the date of the DataEntry.
+            LocalDate date = dataEntry.getStartDate();  // extract the date of the DataEntry.
             int monthListID = makeMonthListID(date);
             extractedList = dataMonthLists.get(monthListID);
             if (extractedList == null) {  // there is no list for this month yet.
@@ -139,13 +143,17 @@ public class CSVHandler {
 
     public static String[] dataEntryToStringArray(DataEntry dataEntry) {
 
-        // Returns a String array based on a DataEntry.
+        // Returns a String array based on a DataEntry. Used when writing the dataList to CSV.
 
-        String[] stringArray = new String[4];
+        String[] stringArray = new String[8];
         stringArray[0] = Integer.toString(dataEntry.getId());
-        stringArray[1] = dataEntry.getDate().toString();
-        stringArray[2] = dataEntry.getCategory();
-        stringArray[3] = String.valueOf(dataEntry.getValue());
+        stringArray[1] = Boolean.toString(dataEntry.getIsExpense());
+        stringArray[2] = Boolean.toString(dataEntry.getIsRecurring());
+        stringArray[3] = dataEntry.getFrequency();
+        stringArray[4] = dataEntry.getStartDate().toString();
+        stringArray[5] = dataEntry.getEndDate().toString();
+        stringArray[6] = dataEntry.getCategory();
+        stringArray[7] = String.valueOf(dataEntry.getValue());
 
         return stringArray;
 
@@ -167,19 +175,27 @@ public class CSVHandler {
 
 class DataEntry {
 
-    int id;
-    LocalDate date;
-    String category;
-    float value;
-    int sortCode;
+    int id;  // unique to each DataEntry.
+    boolean isRecurring;  // either true (recurring) or false (one-off).
+    boolean isExpense;  // either true (expense) or false (income).
+    String frequency;  // code to say how often it repeats.
+    LocalDate startDate;  // first occurance.
+    LocalDate endDate;  // if type == "1OFF", then this is the same as startDate.
+    String category;  // category of the DataEntry.
+    float value;  // value of the DataEntry.
+    int sortCode;  // used for sorting into correct order when displaying.
 
-    public DataEntry(int id, LocalDate date, String category, float value) {
+    public DataEntry(int id, boolean isExpense, boolean isRecurring, String frequency, LocalDate startDate, LocalDate endDate, String category, float value) {
 
         this.id = id;
-        this.date = date;
+        this.isExpense = isExpense;
+        this.isRecurring = isRecurring;
+        this.frequency = frequency;
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.category = category;
         this.value = value;
-        this.sortCode = makeSortCode(date, category);
+        this.sortCode = makeSortCode(startDate, category);
 
     }
 
@@ -203,12 +219,44 @@ class DataEntry {
         this.id = id;
     }
 
-    public LocalDate getDate() {
-        return date;
+    public boolean getIsExpense() {
+        return isExpense;
     }
 
-    public void setDate(LocalDate date) {
-        this.date = date;
+    public void setIsExpense(boolean isExpense) {
+        this.isExpense = isExpense;
+    }
+
+    public boolean getIsRecurring() {
+        return isRecurring;
+    }
+
+    public void setIsRecurring(boolean isRecurring) {
+        this.isRecurring = isRecurring;
+    }
+
+    public String getFrequency() {
+        return frequency;
+    }
+
+    public void setFrequency(String frequency) {
+        this.frequency = frequency;
+    }
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
     }
 
     public String getCategory() {
@@ -237,7 +285,7 @@ class DataEntry {
 
     @Override
     public String toString() {
-        return "DataEntry [id=" + id + ", date=" + date + ", category=" + category + ", value=" + value + ", sortCode=" + sortCode + "]";
+        return "DataEntry [id=" + id + ", isExpense=" + isExpense + ", isRecurring=" + isRecurring + ", frequency=" + frequency + ", startDate=" + startDate + ", endDate=" + endDate + ", category=" + category + ", value=" + value + ", sortCode=" + sortCode + "]";
     }
 
 }

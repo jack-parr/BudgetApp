@@ -1,4 +1,3 @@
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.time.LocalDate;
@@ -9,30 +8,44 @@ import java.util.HashMap;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.JToggleButton;
 
-public class NewExpensePanel extends JPanel {
+public class AddNewDataPanel extends JPanel {
 
     Config config = new Config();
     final int INPUT_ROW_HEIGHT = 30;
     final int DATE_SEPARATOR_WIDTH = 15;
 
-    JComboBox<Integer> daySelect;
-    JComboBox<Integer> monthSelect;
-    JComboBox<Integer> yearSelect;
+    ButtonGroup isExpenseButtonGroup;
+    ButtonGroup isRecurringButtonGroup;
+    JToggleButton oneOffButton;
+    JToggleButton recurringButton;
+    JLabel frequencyHeading;
+    JComboBox<String> frequencyInput;
+    JLabel startDateHeading = new JLabel("Date: ");
+    JComboBox<Integer> startDateDayInput = new JComboBox<>();
+    JComboBox<Integer> startDateMonthInput = new JComboBox<>();
+    JComboBox<Integer> startDateYearInput = new JComboBox<>();
+    JLabel endDateHeading = new JLabel("Until: ");
+    JComboBox<Integer> endDateDayInput = new JComboBox<>();
+    JComboBox<Integer> endDateMonthInput = new JComboBox<>();
+    JComboBox<Integer> endDateYearInput = new JComboBox<>();
     JTextField categoryInput;
     JTextField valueInput;
     JButton cancelButton;
     JButton confirmButton;
 
-    ArrayList<String> categoryShortcuts = new ArrayList<String>();
+    ArrayList<String> categoryShortcuts = new ArrayList<>();
     HashMap<String, JButton> categoryShortcutButtonsMap = new HashMap<>();
+    ArrayList<String> frequencyList = new ArrayList<>();
 
-    NewExpensePanel() {
+    AddNewDataPanel() {
 
         // POPULATING categoryShortcuts
         categoryShortcuts.add("Groceries");
@@ -48,18 +61,39 @@ public class NewExpensePanel extends JPanel {
         categoryShortcuts.add("Holiday");
         categoryShortcuts.add("Education");
 
-        this.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 10));
+        // POPULATING frequencyList
+        frequencyList.add("Daily");
+        frequencyList.add("Monthly");
+        frequencyList.add("Annually");
+
+        this.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 8));
         this.setBackground(config.EXPENSES_COLOR);
 
         JLabel panelHeading = new JLabel("Add Data");
         panelHeading.setFont(config.HEADING_FONT);
         panelHeading.setForeground(config.PRIMARY_TEXT_COLOR);
-        panelHeading.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, 50));
+        panelHeading.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, 40));
         this.add(panelHeading);
 
-        // DATE INPUT
+        // SIGN INPUT
         paintRowSeparator();
-        paintDateInput();
+        paintSignInput();
+        
+        // TYPE INPUT
+        paintRowSeparator();
+        paintIsRecurringInput();
+
+        // STARTDATE INPUT
+        paintRowSeparator();
+        paintDateInput(true, startDateHeading, startDateDayInput, startDateMonthInput, startDateYearInput);
+
+        // FREQUENCY INPUT
+        paintRowSeparator();
+        paintFrequencyInput();
+
+        // ENDDATE INPUT
+        paintRowSeparator();
+        paintDateInput(false, endDateHeading, endDateDayInput, endDateMonthInput, endDateYearInput);
 
         // CATEGORY INPUT
         paintRowSeparator();
@@ -75,42 +109,108 @@ public class NewExpensePanel extends JPanel {
 
     }
 
-    public void paintDateInput() {
+    public void paintSignInput() {
+
+        // Paints the income or expense select row.
+
+        isExpenseButtonGroup = new ButtonGroup();
+
+        JToggleButton incomeButton = new JToggleButton("Income");
+        incomeButton.setActionCommand("false");
+        isExpenseButtonGroup.add(incomeButton);
+        incomeButton.setPreferredSize(new Dimension(100, INPUT_ROW_HEIGHT));
+        this.add(incomeButton);
+
+        JToggleButton expenseButton = new JToggleButton("Expense");
+        expenseButton.setActionCommand("true");
+        expenseButton.setSelected(true);
+        isExpenseButtonGroup.add(expenseButton);
+        expenseButton.setPreferredSize(new Dimension(100, INPUT_ROW_HEIGHT));
+        this.add(expenseButton);
+
+    }
+
+    public void paintIsRecurringInput() {
+
+        // Paints the isRecurring select row.
+
+        isRecurringButtonGroup = new ButtonGroup();
+
+        oneOffButton = new JToggleButton("One-Off");
+        oneOffButton.setActionCommand("false");
+        oneOffButton.setSelected(true);
+        isRecurringButtonGroup.add(oneOffButton);
+        oneOffButton.setPreferredSize(new Dimension(100, INPUT_ROW_HEIGHT));
+        this.add(oneOffButton);
+
+        recurringButton = new JToggleButton("Recurring");
+        recurringButton.setActionCommand("true");
+        isRecurringButtonGroup.add(recurringButton);
+        recurringButton.setPreferredSize(new Dimension(100, INPUT_ROW_HEIGHT));
+        this.add(recurringButton);
+
+    }
+    
+    public void paintFrequencyInput() {
+
+        // Paints the frequency select row.
+        // On generation, isRecurring = false, so this is disables.
+
+        frequencyHeading = new JLabel("Frequency: ");
+        frequencyHeading.setFont(config.PRIMARY_FONT);
+        frequencyHeading.setForeground(config.SECONDARY_TEXT_COLOR);
+        frequencyHeading.setPreferredSize(new Dimension(100, INPUT_ROW_HEIGHT));
+        this.add(frequencyHeading);
+
+        frequencyInput = new JComboBox<>();
+        frequencyList.forEach(i -> frequencyInput.addItem(i));
+        frequencyInput.setEnabled(false);
+        frequencyInput.setPreferredSize(new Dimension(100, INPUT_ROW_HEIGHT));
+        this.add(frequencyInput);
+
+    }
+
+    public void paintDateInput(boolean defaultEnabled, JLabel dateHeading, JComboBox<Integer> dayInput, JComboBox<Integer> monthInput, JComboBox<Integer> yearInput) {
 
         // Paints the date input row.
 
         LocalDate todayDate = LocalDate.now();
 
-        JLabel dateHeading = new JLabel("Date:");
         dateHeading.setFont(config.PRIMARY_FONT);
         dateHeading.setForeground(config.PRIMARY_TEXT_COLOR);
-        dateHeading.setPreferredSize(new Dimension(70, INPUT_ROW_HEIGHT));
+        dateHeading.setPreferredSize(new Dimension(100, INPUT_ROW_HEIGHT));
         this.add(dateHeading);
 
-        daySelect = new JComboBox<>();
-        IntStream.range(1, 32).boxed().collect(Collectors.toList()).forEach(i -> daySelect.addItem(i));
-        daySelect.setSelectedItem(todayDate.getDayOfMonth());
-        daySelect.setFont(config.PRIMARY_FONT);
-        daySelect.setPreferredSize(new Dimension(50, INPUT_ROW_HEIGHT));
-        this.add(daySelect);
+        IntStream.range(1, 32).boxed().collect(Collectors.toList()).forEach(i -> dayInput.addItem(i));
+        dayInput.setSelectedItem(todayDate.getDayOfMonth());
+        dayInput.setFont(config.PRIMARY_FONT);
+        dayInput.setPreferredSize(new Dimension(50, INPUT_ROW_HEIGHT));
+        this.add(dayInput);
 
         paintDateSeparator();
 
-        monthSelect = new JComboBox<>();
-        IntStream.range(1, 13).boxed().collect(Collectors.toList()).forEach(i -> monthSelect.addItem(i));
-        monthSelect.setSelectedItem(todayDate.getMonthValue());
-        monthSelect.setFont(config.PRIMARY_FONT);
-        monthSelect.setPreferredSize(new Dimension(50, INPUT_ROW_HEIGHT));
-        this.add(monthSelect);
+        IntStream.range(1, 13).boxed().collect(Collectors.toList()).forEach(i -> monthInput.addItem(i));
+        monthInput.setSelectedItem(todayDate.getMonthValue());
+        monthInput.setFont(config.PRIMARY_FONT);
+        monthInput.setPreferredSize(new Dimension(50, INPUT_ROW_HEIGHT));
+        this.add(monthInput);
 
         paintDateSeparator();
 
-        yearSelect = new JComboBox<>();
         Integer currentYear = Year.now().getValue();  // gets current year.
-        IntStream.range(currentYear - 10, currentYear + 1).boxed().sorted(Collections.reverseOrder()).collect(Collectors.toList()).forEach(i -> yearSelect.addItem(i));  // populated yearSelect with last 10 years.
-        yearSelect.setFont(config.PRIMARY_FONT);
-        yearSelect.setPreferredSize(new Dimension(70, INPUT_ROW_HEIGHT));
-        this.add(yearSelect);
+        IntStream.range(currentYear - 10, currentYear + 11).boxed().sorted(Collections.reverseOrder()).collect(Collectors.toList()).forEach(i -> yearInput.addItem(i));  // populates yearInput with +- 10 years from current year.
+        yearInput.setSelectedItem(currentYear);
+        yearInput.setFont(config.PRIMARY_FONT);
+        yearInput.setPreferredSize(new Dimension(70, INPUT_ROW_HEIGHT));
+        this.add(yearInput);
+
+        // MODIFYING IF DEFAULT STATE IS DISABLED
+        if (!defaultEnabled) {
+            dateHeading.setForeground(config.SECONDARY_TEXT_COLOR);
+            dayInput.setEnabled(false);
+            monthInput.setEnabled(false);
+            yearInput.setEnabled(false);
+        }
 
     }
 
