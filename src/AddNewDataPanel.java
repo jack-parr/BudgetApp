@@ -67,10 +67,10 @@ public class AddNewDataPanel extends JPanel {
         frequencyList.add("Annually");
 
         this.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 8));
-        this.setBackground(config.EXPENSES_COLOR);
+        this.setBackground(config.VIEW_DATA_PANEL_COLOR);
 
         JLabel panelHeading = new JLabel("Add Data");
-        panelHeading.setFont(config.HEADING_FONT);
+        panelHeading.setFont(config.HEADINGS_FONT);
         panelHeading.setForeground(config.PRIMARY_TEXT_COLOR);
         panelHeading.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, 40));
         this.add(panelHeading);
@@ -233,7 +233,7 @@ public class AddNewDataPanel extends JPanel {
         // FILLING GAP IN REST OF ROW BEFORE SHORTCUT BUTTONS ARE ADDED
         JLabel categoryGapFiller = new JLabel();
         categoryGapFiller.setPreferredSize(new Dimension(config.DISPLAY_WIDTH - (categoryHeading.getPreferredSize().width + categoryInput.getPreferredSize().width), INPUT_ROW_HEIGHT));
-        categoryGapFiller.setBackground(config.EXPENSES_COLOR);
+        categoryGapFiller.setBackground(config.VIEW_DATA_PANEL_COLOR);
         categoryGapFiller.setOpaque(true);
         this.add(categoryGapFiller);
 

@@ -15,7 +15,7 @@ public class SummaryPanel extends JPanel implements ActionListener{
         
         this.setLayout(null);
         this.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT));
-        this.setBackground(config.SUMMARY_COLOR);
+        this.setBackground(config.SUMMARY_PANEL_COLOR);
 
         this.setVisible(true);
 

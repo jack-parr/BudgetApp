@@ -1,5 +1,5 @@
 /*
- * This is the first subpanel within the expenses panel. Contains the year selector and the add new data button.
+ * This is the first subpanel within the ViewDataPanel. Contains the year selector and the add new data button.
  */
 
 import java.awt.Dimension;
@@ -25,7 +25,7 @@ public class ViewDataSubPanel1 extends JPanel {
     ViewDataSubPanel1() {
 
         this.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        this.setBackground(config.EXPENSES_COLOR);
+        this.setBackground(config.VIEW_DATA_PANEL_COLOR);
 
         // POPULATING YEAR SELECTOR
         List<Integer> monthKeys = new ArrayList<Integer>(AppFrame.listsHashMap.keySet().stream().toList());  // get list of monthListIDs.

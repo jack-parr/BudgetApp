@@ -23,7 +23,7 @@ import javax.swing.JScrollPane;
 public class AppFrame extends JFrame implements ActionListener{
 
     Config config = new Config();
-    ArrayList<DataEntry> dataList;
+    static ArrayList<DataEntry> dataList;
     static HashMap<Integer, ArrayList<DataEntry>> listsHashMap;
 
     static JPanel currentPanel;
@@ -32,7 +32,7 @@ public class AppFrame extends JFrame implements ActionListener{
     AddNewDataPanel addNewDataPanel;
     
     final static String SUMMARY_ACTION_COMMAND = "summaryButton";
-    final static String INCOME_ACTION_COMMAND = "incomeButton";
+    final static String GENERATORS_ACTION_COMMAND = "generatorsButton";
     final static String VIEWDATA_ACTION_COMMAND = "viewDataButton";
     final static String SAVINGS_ACTION_COMMAND = "savingsButton";
     final static String DATA_ACTION_COMMAND = "dataButton";
@@ -77,7 +77,7 @@ public class AppFrame extends JFrame implements ActionListener{
         menuPanel.summaryButton.addActionListener(this);
         menuPanel.summaryButton.setActionCommand(SUMMARY_ACTION_COMMAND);
         menuPanel.incomeButton.addActionListener(this);
-        menuPanel.incomeButton.setActionCommand(INCOME_ACTION_COMMAND);
+        menuPanel.incomeButton.setActionCommand(GENERATORS_ACTION_COMMAND);
         menuPanel.expensesButton.addActionListener(this);
         menuPanel.expensesButton.setActionCommand(VIEWDATA_ACTION_COMMAND);
 
@@ -101,8 +101,7 @@ public class AppFrame extends JFrame implements ActionListener{
 
         String actionCommand = e.getActionCommand();
 
-        // HANDLE CLICKING OF TAB BUTTONS
-
+        // HANDLING CLICKING OF TAB BUTTONS
         switch (actionCommand) {
         
         case SUMMARY_ACTION_COMMAND:
@@ -110,9 +109,9 @@ public class AppFrame extends JFrame implements ActionListener{
             createSummaryPanel();
             break;
 
-        case INCOME_ACTION_COMMAND:
+        case GENERATORS_ACTION_COMMAND:
             this.remove(currentPanel);
-            createIncomePanel();
+            createGeneratorsPanel();
             break;
             
         case VIEWDATA_ACTION_COMMAND:
@@ -132,8 +131,8 @@ public class AppFrame extends JFrame implements ActionListener{
                 viewDataPanel.remove(viewDataPanel.dataPanelScrollPane);  // remove old dataPanel.
                 viewDataPanel.dataPanel = new ViewDataSubPanel2((Integer) viewDataPanel.headerPanel.yearComboBox.getSelectedItem());
                 viewDataPanel.dataPanelScrollPane = new JScrollPane(viewDataPanel.dataPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-                viewDataPanel.dataPanelScrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(viewDataPanel.dataPanel.SCROLL_BAR_WIDTH, 0));
-                viewDataPanel.dataPanelScrollPane.getVerticalScrollBar().setUnitIncrement(10);
+                viewDataPanel.dataPanelScrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(config.SCROLLBAR_WIDTH, 0));
+                viewDataPanel.dataPanelScrollPane.getVerticalScrollBar().setUnitIncrement(config.SCROLLBAR_INCREMENT);
                 viewDataPanel.dataPanelScrollPane.setBorder(null);
                 assignDeleteButtons();  // assign listeners to delete row buttons.
                 viewDataPanel.dataPanelScrollPane.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT - ViewDataPanel.PANEL_HEADER_HEIGHT));
@@ -218,12 +217,12 @@ public class AppFrame extends JFrame implements ActionListener{
 
     }
 
-    public void createIncomePanel() {
+    public void createGeneratorsPanel() {
 
         // Creates and paints the income panel.
 
-        IncomePanel incomePanel = new IncomePanel();
-        currentPanel = incomePanel;
+        GeneratorsPanel generatorsPanel = new GeneratorsPanel();
+        currentPanel = generatorsPanel;
         currentPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT));
         this.add(currentPanel, BorderLayout.SOUTH);
         this.pack();

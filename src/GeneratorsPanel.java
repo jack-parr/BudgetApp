@@ -1,33 +1,31 @@
 /*
- * This is the expenses tab panel.
+ * This is the panel for managing recurring entry generators.
  */
 
 import javax.swing.*;
+import java.awt.*;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-
-public class ViewDataPanel extends JPanel {
+public class GeneratorsPanel extends JPanel {
 
     Config config = new Config();
 
-    final static int PANEL_HEADER_HEIGHT = 40;  // height of the first subpanel.
-    
-    ViewDataSubPanel1 headerPanel;
-    ViewDataSubPanel2 dataPanel;
+    final static int PANEL_HEADER_HEIGHT = 40;
+
+    GeneratorsSubPanel1 headerPanel;
+    GeneratorsSubPanel2 dataPanel;
     JScrollPane dataPanelScrollPane;
 
-    ViewDataPanel() {
+    GeneratorsPanel() {
 
         this.setLayout(new BorderLayout());
-        this.setBackground(config.VIEW_DATA_PANEL_COLOR);
-
+        this.setBackground(config.GENERATORS_PANEL_COLOR);
+        
         // PAINTING THE PANEL
-        headerPanel = new ViewDataSubPanel1();
+        headerPanel = new GeneratorsSubPanel1();
         headerPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, PANEL_HEADER_HEIGHT));
         this.add(headerPanel, BorderLayout.NORTH);
 
-        dataPanel = new ViewDataSubPanel2((Integer) headerPanel.yearComboBox.getSelectedItem());
+        dataPanel = new GeneratorsSubPanel2(headerPanel.typeComboBox.getSelectedItem().equals("Expense"));
         dataPanelScrollPane = new JScrollPane(dataPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         dataPanelScrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(config.SCROLLBAR_WIDTH, 0));
         dataPanelScrollPane.getVerticalScrollBar().setUnitIncrement(config.SCROLLBAR_INCREMENT);
@@ -39,12 +37,4 @@ public class ViewDataPanel extends JPanel {
 
     }
 
-    public static int getYearFromMonthKey(int i) {
-
-        // Rrturns the int year from a month key.
-
-        return Integer.valueOf(Integer.toString(i).substring(0, 4));
-
-    }
-    
 }
