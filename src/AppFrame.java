@@ -36,9 +36,7 @@ public class AppFrame extends JFrame implements ActionListener{
     
     final static String SUMMARY_ACTION_COMMAND = "summaryButton";
     final static String GENERATORS_ACTION_COMMAND = "generatorsButton";
-    final static String VIEWDATA_ACTION_COMMAND = "viewDataButton";
-    final static String SAVINGS_ACTION_COMMAND = "savingsButton";
-    final static String DATA_ACTION_COMMAND = "dataButton";
+    final static String VIEW_DATA_ACTION_COMMAND = "viewDataButton";
 
     AppFrame() {
 
@@ -82,7 +80,7 @@ public class AppFrame extends JFrame implements ActionListener{
         menuPanel.incomeButton.addActionListener(this);
         menuPanel.incomeButton.setActionCommand(GENERATORS_ACTION_COMMAND);
         menuPanel.expensesButton.addActionListener(this);
-        menuPanel.expensesButton.setActionCommand(VIEWDATA_ACTION_COMMAND);
+        menuPanel.expensesButton.setActionCommand(VIEW_DATA_ACTION_COMMAND);
 
         menuPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.MENU_HEIGHT));
         this.add(menuPanel, BorderLayout.NORTH);
@@ -117,7 +115,7 @@ public class AppFrame extends JFrame implements ActionListener{
             createGeneratorsPanel("Expense");
             break;
             
-        case VIEWDATA_ACTION_COMMAND:
+        case VIEW_DATA_ACTION_COMMAND:
             this.remove(currentPanel);
             createViewDataPanel(0);
             break;
