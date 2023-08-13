@@ -406,14 +406,15 @@ public class AppFrame extends JFrame implements ActionListener{
 
         ArrayList<DataEntry> tempAddList = new ArrayList<>();
         tempAddList.add(dataList.get(0));  // add one to begin the while loop.
+        ArrayList<DataEntry> tempDeleteList = new ArrayList<>();
 
         while (!tempAddList.isEmpty()) {  // will end once a pass has been made with no additions.
 
             tempAddList.clear();
 
             for (DataEntry dataEntry : dataList) {
-                if (dataEntry.isRecurring && dataEntry.getNextDueDate().isBefore(Collections.min(Arrays.asList(LocalDate.now().plusDays(1), dataEntry.getEndDate())))) {
-
+                if (dataEntry.isRecurring && dataEntry.getNextDueDate().isBefore(Collections.min(Arrays.asList(LocalDate.now().plusDays(1), dataEntry.getEndDate().plusDays(1))))) {
+                    
                     // CREATE NEW ONE-OFF DataEntry
                     String[] metadata = new String[9];
                     metadata[0] = "0";  // placeholder id.
@@ -455,10 +456,21 @@ public class AppFrame extends JFrame implements ActionListener{
                         break;
                     }
                 }
+                else if (dataEntry.isRecurring && dataEntry.getEndDate().isBefore(LocalDate.now())) {
+                    
+                    // PREPARING TO DELETE THE DATAENTRY
+                    tempDeleteList.add(dataEntry);
+                    
+                }
             }
 
             if (!tempAddList.isEmpty()) {
                 tempAddList.forEach(de -> dataList.add(de));
+            }
+
+            if (!tempDeleteList.isEmpty()) {
+                JPanel tempPanel = new JPanel();  // this is only to fulfil the arguments below.
+                tempDeleteList.forEach(de -> deleteDataEntry(de.getId(), tempPanel, ""));
             }
 
         }

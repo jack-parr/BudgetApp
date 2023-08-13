@@ -13,5 +13,7 @@ Make sure all action command checks happen AFTER source checks, and happen in de
 # TO DO:
 - Format ViewDataPanel.
 - Format AddNewDataPanel.
-- Code RecurringPanel.
+- Format GeneratorsPanel.
+
 - Code SummaryPanel.
+- Add deleting capability to AppFrame.checkRecurringEntryGenerators (this should only occur if the check for a due entry generation comes back false).
