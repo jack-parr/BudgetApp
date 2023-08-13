@@ -5,9 +5,7 @@
 import java.awt.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Locale.Category;
 
-import javax.management.ValueExp;
 import javax.swing.JLabel;
 
 public class Config {

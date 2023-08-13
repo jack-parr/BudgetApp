@@ -15,13 +15,14 @@ public class GeneratorsPanel extends JPanel {
     GeneratorsSubPanel2 dataPanel;
     JScrollPane dataPanelScrollPane;
 
-    GeneratorsPanel() {
+    GeneratorsPanel(String selectedType) {
 
         this.setLayout(new BorderLayout());
         this.setBackground(config.GENERATORS_PANEL_COLOR);
         
         // PAINTING THE PANEL
         headerPanel = new GeneratorsSubPanel1();
+        headerPanel.typeComboBox.setSelectedItem(selectedType);
         headerPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, PANEL_HEADER_HEIGHT));
         this.add(headerPanel, BorderLayout.NORTH);
 

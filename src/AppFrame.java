@@ -19,6 +19,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.text.View;
 
 public class AppFrame extends JFrame implements ActionListener{
 
@@ -28,6 +29,8 @@ public class AppFrame extends JFrame implements ActionListener{
 
     static JPanel currentPanel;
     MenuPanel menuPanel;
+    SummaryPanel summaryPanel;
+    GeneratorsPanel generatorsPanel;
     ViewDataPanel viewDataPanel;
     AddNewDataPanel addNewDataPanel;
     
@@ -111,16 +114,49 @@ public class AppFrame extends JFrame implements ActionListener{
 
         case GENERATORS_ACTION_COMMAND:
             this.remove(currentPanel);
-            createGeneratorsPanel();
+            createGeneratorsPanel("Expense");
             break;
             
         case VIEWDATA_ACTION_COMMAND:
             this.remove(currentPanel);
-            createViewDataPanel();
+            createViewDataPanel(0);
             break;
 
         default: 
             break;
+
+        }
+
+        // GENERATORS PANEL ACTIONS
+        if (currentPanel instanceof GeneratorsPanel) {
+
+            // HANDLING YEAR CHANGE
+            if (e.getSource() == generatorsPanel.headerPanel.typeComboBox) {
+                generatorsPanel.remove(generatorsPanel.dataPanelScrollPane);  // remove old dataPanel.
+                generatorsPanel.dataPanel = new GeneratorsSubPanel2(generatorsPanel.headerPanel.typeComboBox.getSelectedItem().equals("Expense"));
+                generatorsPanel.dataPanelScrollPane = new JScrollPane(generatorsPanel.dataPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+                generatorsPanel.dataPanelScrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(config.SCROLLBAR_WIDTH, 0));
+                generatorsPanel.dataPanelScrollPane.getVerticalScrollBar().setUnitIncrement(config.SCROLLBAR_INCREMENT);
+                generatorsPanel.dataPanelScrollPane.setBorder(null);
+                assignDeleteButtons(generatorsPanel);  // assign listeners to delete row buttons.
+                generatorsPanel.dataPanelScrollPane.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT - ViewDataPanel.PANEL_HEADER_HEIGHT));
+                generatorsPanel.add(generatorsPanel.dataPanelScrollPane, BorderLayout.SOUTH);
+                generatorsPanel.revalidate();
+            }
+
+            // HANDLING NEW DATA BUTTON
+            else if (e.getSource() == generatorsPanel.headerPanel.newDataButton) {
+                this.remove(currentPanel);
+                createAddNewDataPanel();
+                this.revalidate();
+                this.repaint();
+            }
+
+            // HANDLING DELETE ROW BUTTONS
+            else if (actionCommand.startsWith("delete")) {
+                deleteDataEntry(actionCommand.substring(6), generatorsPanel, (String) generatorsPanel.headerPanel.typeComboBox.getSelectedItem());  // calls the method for deleting DataEntry according to int id.
+            }
+
         }
 
         // VIEWDATA PANEL ACTIONS
@@ -134,7 +170,7 @@ public class AppFrame extends JFrame implements ActionListener{
                 viewDataPanel.dataPanelScrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(config.SCROLLBAR_WIDTH, 0));
                 viewDataPanel.dataPanelScrollPane.getVerticalScrollBar().setUnitIncrement(config.SCROLLBAR_INCREMENT);
                 viewDataPanel.dataPanelScrollPane.setBorder(null);
-                assignDeleteButtons();  // assign listeners to delete row buttons.
+                assignDeleteButtons(viewDataPanel);  // assign listeners to delete row buttons.
                 viewDataPanel.dataPanelScrollPane.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT - ViewDataPanel.PANEL_HEADER_HEIGHT));
                 viewDataPanel.add(viewDataPanel.dataPanelScrollPane, BorderLayout.SOUTH);
                 viewDataPanel.revalidate();
@@ -142,20 +178,20 @@ public class AppFrame extends JFrame implements ActionListener{
 
             // HANDLING NEW DATA BUTTON
             else if (e.getSource() == viewDataPanel.headerPanel.newDataButton) {
-                this.remove(currentPanel);  // removes expenses panel.
-                createNewExpensePanel();
+                this.remove(currentPanel);
+                createAddNewDataPanel();
                 this.revalidate();
                 this.repaint();
             }
 
             // HANDLING DELETE ROW BUTTONS
             else if (actionCommand.startsWith("delete")) {
-                deleteDataEntry(actionCommand.substring(6));  // calls the method for deleting DataEntry according to int id.
+                deleteDataEntry(actionCommand.substring(6), viewDataPanel, Integer.toString((Integer) viewDataPanel.headerPanel.yearComboBox.getSelectedItem()));  // calls the method for deleting DataEntry according to int id.
             }
 
         }
 
-        // NEW EXPENSE PANEL ACTIONS
+        // ADD NEW DATA PANEL ACTIONS
         if (currentPanel instanceof AddNewDataPanel) {
             
             if (e.getSource() == addNewDataPanel.oneOffButton) {
@@ -187,7 +223,7 @@ public class AppFrame extends JFrame implements ActionListener{
 
             else if (e.getSource() == addNewDataPanel.closeButton) {
                 this.remove(currentPanel);
-                createViewDataPanel();
+                createViewDataPanel(0);
             }
 
             else if (e.getSource() == addNewDataPanel.confirmButton) {
@@ -208,7 +244,7 @@ public class AppFrame extends JFrame implements ActionListener{
 
         // Creates and paints the summary panel.
 
-        SummaryPanel summaryPanel = new SummaryPanel();
+        summaryPanel = new SummaryPanel();
         currentPanel = summaryPanel;
         currentPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT));
         this.add(currentPanel, BorderLayout.SOUTH);
@@ -217,11 +253,17 @@ public class AppFrame extends JFrame implements ActionListener{
 
     }
 
-    public void createGeneratorsPanel() {
+    public void createGeneratorsPanel(String selectedType) {
 
         // Creates and paints the income panel.
 
-        GeneratorsPanel generatorsPanel = new GeneratorsPanel();
+        generatorsPanel = new GeneratorsPanel(selectedType);
+
+        // SETTING ACTION LISTENERS
+        generatorsPanel.headerPanel.typeComboBox.addActionListener(this);
+        generatorsPanel.headerPanel.newDataButton.addActionListener(this);
+        assignDeleteButtons(generatorsPanel);
+
         currentPanel = generatorsPanel;
         currentPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT));
         this.add(currentPanel, BorderLayout.SOUTH);
@@ -230,16 +272,16 @@ public class AppFrame extends JFrame implements ActionListener{
         
     }
 
-    public void createViewDataPanel() {
+    public void createViewDataPanel(int selectedYear) {
 
         // Creates and paints the expenses panel.
 
-        viewDataPanel = new ViewDataPanel();
+        viewDataPanel = new ViewDataPanel(selectedYear);
 
         // SETTING ACTION LISTENERS
         viewDataPanel.headerPanel.yearComboBox.addActionListener(this);
         viewDataPanel.headerPanel.newDataButton.addActionListener(this);
-        assignDeleteButtons();
+        assignDeleteButtons(viewDataPanel);
 
         // PAINTING PANEL
         currentPanel = viewDataPanel;
@@ -250,7 +292,7 @@ public class AppFrame extends JFrame implements ActionListener{
         
     }
 
-    public void createNewExpensePanel() {
+    public void createAddNewDataPanel() {
 
         // Creates and paints the new data panel.
 
@@ -279,11 +321,19 @@ public class AppFrame extends JFrame implements ActionListener{
 
     }
 
-    public void assignDeleteButtons() {
+    public void assignDeleteButtons(JPanel createdPanel) {
 
-        // Assigns listeners to the delete buttons in the expenses panel. This is a separate method so that changing the year can trigger it.
+        // Assigns listeners to the delete buttons in the created panel. This is a separate method so that JComboBox can also trigger it.
 
-        HashMap<String, Component> deleteButtonsMap = viewDataPanel.dataPanel.deleteButtonsMap;
+        HashMap<String, Component> deleteButtonsMap = new HashMap<>();  // temporary initialise to remove errors.
+
+        if (createdPanel instanceof GeneratorsPanel) {
+            deleteButtonsMap = ((GeneratorsPanel) createdPanel).dataPanel.deleteButtonsMap;
+        }
+        else if (createdPanel instanceof ViewDataPanel) {
+            deleteButtonsMap = ((ViewDataPanel) createdPanel).dataPanel.deleteButtonsMap;
+        }
+        
         Object[] mapKeys = deleteButtonsMap.keySet().toArray();  // makes an array of the keySet.
         for (Object key : mapKeys) {
             JButton deleteButton = (JButton) deleteButtonsMap.get(key);
@@ -292,7 +342,7 @@ public class AppFrame extends JFrame implements ActionListener{
 
     }
 
-    public void deleteDataEntry(String id) {
+    public void deleteDataEntry(String id, JPanel sourcePanel, String comboBoxSelection) {
 
         // Deletes the DataEntry corresponding to id.
 
@@ -305,7 +355,14 @@ public class AppFrame extends JFrame implements ActionListener{
 
         listsHashMap = CSVHandler.createMonthLists(dataList);  // remakes the listsHashMap
         this.remove(currentPanel);  // removes the old expenses panel.
-        createViewDataPanel();  // recreates the expenses panel.
+
+        if (sourcePanel instanceof GeneratorsPanel) {
+            createGeneratorsPanel(comboBoxSelection);  // recreates GeneratorsPanel.
+        }
+        else if (sourcePanel instanceof ViewDataPanel) {
+            createViewDataPanel(Integer.parseInt(comboBoxSelection));  // recreates ViewDataPanel.
+        }
+        
 
     }
 
