@@ -35,7 +35,8 @@ public class ViewDataSubPanel2 extends JPanel {
     final int DATA_ROW_HEIGHT = 30;
     final Font DATA_ROW_FONT = new Font("Arial Rounded MT Bold", Font.PLAIN, 14);
     final int DELETE_BUTTON_WIDTH = 50;
-    final int ADJUSTED_DISPLAY_WIDTH = config.DISPLAY_WIDTH - 10;
+    final int SCROLL_BAR_WIDTH = 10;
+    final int ADJUSTED_DISPLAY_WIDTH = config.DISPLAY_WIDTH - SCROLL_BAR_WIDTH;
 
     HashMap<String, Component> deleteButtonsMap = new HashMap<>();
 

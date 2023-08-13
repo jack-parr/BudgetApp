@@ -29,7 +29,8 @@ public class ViewDataPanel extends JPanel {
 
         dataPanel = new ViewDataSubPanel2((Integer) headerPanel.yearComboBox.getSelectedItem());
         dataPanelScrollPane = new JScrollPane(dataPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        dataPanelScrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(10, 0));
+        dataPanelScrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(dataPanel.SCROLL_BAR_WIDTH, 0));
+        dataPanelScrollPane.getVerticalScrollBar().setUnitIncrement(10);
         dataPanelScrollPane.setBorder(null);
         dataPanelScrollPane.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT - PANEL_HEADER_HEIGHT));
         this.add(dataPanelScrollPane, BorderLayout.SOUTH);

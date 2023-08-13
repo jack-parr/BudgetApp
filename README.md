@@ -11,7 +11,6 @@ Make sure all action command checks happen AFTER source checks, and happen in de
 - Visualise data by month.
 
 # TO DO:
-- JScrollPane for ViewDataPanel.
 - Format ViewDataPanel.
 - Format AddNewDataPanel.
 - Code RecurringPanel.

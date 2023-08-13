@@ -132,13 +132,13 @@ public class AppFrame extends JFrame implements ActionListener{
                 viewDataPanel.remove(viewDataPanel.dataPanelScrollPane);  // remove old dataPanel.
                 viewDataPanel.dataPanel = new ViewDataSubPanel2((Integer) viewDataPanel.headerPanel.yearComboBox.getSelectedItem());
                 viewDataPanel.dataPanelScrollPane = new JScrollPane(viewDataPanel.dataPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-                viewDataPanel.dataPanelScrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(10, 0));
+                viewDataPanel.dataPanelScrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(viewDataPanel.dataPanel.SCROLL_BAR_WIDTH, 0));
+                viewDataPanel.dataPanelScrollPane.getVerticalScrollBar().setUnitIncrement(10);
                 viewDataPanel.dataPanelScrollPane.setBorder(null);
                 assignDeleteButtons();  // assign listeners to delete row buttons.
                 viewDataPanel.dataPanelScrollPane.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT - ViewDataPanel.PANEL_HEADER_HEIGHT));
                 viewDataPanel.add(viewDataPanel.dataPanelScrollPane, BorderLayout.SOUTH);
                 viewDataPanel.revalidate();
-                viewDataPanel.repaint();
             }
 
             // HANDLING NEW DATA BUTTON
