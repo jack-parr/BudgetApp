@@ -1,5 +1,7 @@
 /*
  * This is the subpanel that displays the monthly data in the expenses panel.
+ * The panel uses a GridBagLayout, adding every new component vertically down.
+ * The added components are JPanel with FlowLayout for each row.
  */
 
 import java.awt.Color;
@@ -7,6 +9,9 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.text.DateFormatSymbols;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -18,7 +23,6 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
 public class ViewDataSubPanel2 extends JPanel {
@@ -31,19 +35,22 @@ public class ViewDataSubPanel2 extends JPanel {
     final int DATA_ROW_HEIGHT = 30;
     final Font DATA_ROW_FONT = new Font("Arial Rounded MT Bold", Font.PLAIN, 14);
     final int DELETE_BUTTON_WIDTH = 50;
+    final int ADJUSTED_DISPLAY_WIDTH = config.DISPLAY_WIDTH - 10;
 
     HashMap<String, Component> deleteButtonsMap = new HashMap<>();
 
     ViewDataSubPanel2(Integer year) {
 
-        this.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        this.setLayout(new GridBagLayout());
+        GridBagConstraints layoutConstraints = new GridBagConstraints();
+        layoutConstraints.gridx = 0;  // makes it so every added panel is added vertically.
         this.setBackground(config.EXPENSES_COLOR);
 
         if (year == null) {
             JLabel nullLabel = new JLabel("No Data", SwingConstants.CENTER);
             nullLabel.setFont(config.PRIMARY_FONT);
             nullLabel.setForeground(config.SECONDARY_TEXT_COLOR);       
-            nullLabel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT - ViewDataPanel.PANEL_HEADER_HEIGHT));
+            nullLabel.setPreferredSize(new Dimension(ADJUSTED_DISPLAY_WIDTH, config.PANEL_HEIGHT - ViewDataPanel.PANEL_HEADER_HEIGHT));
             this.add(nullLabel);
         }
         else {
@@ -58,6 +65,10 @@ public class ViewDataSubPanel2 extends JPanel {
 
                 ArrayList<DataEntry> monthList = AppFrame.listsHashMap.get(monthListKey);  // get list.
 
+
+                // MONTH HEADER ROW
+                RowPanel rowPanelMonth = new RowPanel();
+
                 // MONTH TITLE
                 int monthInt = Integer.parseInt(Integer.toString(monthListKey).substring(4));  // extract monthInt from monthListID.
                 String monthString = new DateFormatSymbols().getMonths()[monthInt-1];  // convert monthInt to String.
@@ -65,7 +76,7 @@ public class ViewDataSubPanel2 extends JPanel {
                 monthHeader.setFont(MONTH_HEADER_FONT);
                 monthHeader.setForeground(config.PRIMARY_TEXT_COLOR);
                 monthHeader.setPreferredSize(new Dimension(250, MONTH_HEADER_HEIGHT));
-                this.add(monthHeader);
+                rowPanelMonth.add(monthHeader);
 
                 // MONTH TOTAL
                 float monthTotal = 0;
@@ -86,23 +97,31 @@ public class ViewDataSubPanel2 extends JPanel {
                     totalLabel.setForeground(Color.GREEN);
                 }
                 totalLabel.setFont(DATA_ROW_FONT);
-                totalLabel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH - monthHeader.getPreferredSize().width, MONTH_HEADER_HEIGHT));
-                this.add(totalLabel);
+                totalLabel.setPreferredSize(new Dimension(ADJUSTED_DISPLAY_WIDTH - monthHeader.getPreferredSize().width, MONTH_HEADER_HEIGHT));
+                rowPanelMonth.add(totalLabel);
 
-                // HEADER ROW
+                this.add(rowPanelMonth, layoutConstraints);
+
+
+                // COLUMNS ROW
+                RowPanel rowPanelColumns = new RowPanel();
+
                 ArrayList<Component> headerRowComponents = makeHeaderRow();  // makes a list containing all the components.
 
                 Component headerDateLabel = headerRowComponents.get(0);
-                headerDateLabel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH / 3, DATA_ROW_HEIGHT));
-                this.add(headerDateLabel);
+                headerDateLabel.setPreferredSize(new Dimension(ADJUSTED_DISPLAY_WIDTH / 3, DATA_ROW_HEIGHT));
+                rowPanelColumns.add(headerDateLabel);
 
                 Component headerCategoryLabel = headerRowComponents.get(1);
-                headerCategoryLabel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH / 3, DATA_ROW_HEIGHT));
-                this.add(headerCategoryLabel);
+                headerCategoryLabel.setPreferredSize(new Dimension(ADJUSTED_DISPLAY_WIDTH / 3, DATA_ROW_HEIGHT));
+                rowPanelColumns.add(headerCategoryLabel);
 
                 Component headerValueLabel = headerRowComponents.get(2);
-                headerValueLabel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH / 3, DATA_ROW_HEIGHT));
-                this.add(headerValueLabel);
+                headerValueLabel.setPreferredSize(new Dimension(ADJUSTED_DISPLAY_WIDTH / 3, DATA_ROW_HEIGHT));
+                rowPanelColumns.add(headerValueLabel);
+
+                this.add(rowPanelColumns, layoutConstraints);
+
 
                 // DISPLAY DATA FROM LIST
                 String prevDate = "";
@@ -112,35 +131,37 @@ public class ViewDataSubPanel2 extends JPanel {
 
                 for (DataEntry dataEntry : monthList) {
 
+                    RowPanel rowPanelDataEntry = new RowPanel();
+
                     JLabel spacerLabel = makeSpacerLabel();
-                    spacerLabel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, 1));
+                    spacerLabel.setPreferredSize(new Dimension(ADJUSTED_DISPLAY_WIDTH, 1));
 
                     ArrayList<Component> dataRowComponents = makeDataRow(dataEntry);
 
                     Component dataDateLabel = dataRowComponents.get(0);
-                    dataDateLabel.setPreferredSize(new Dimension((config.DISPLAY_WIDTH - DELETE_BUTTON_WIDTH) / 3, DATA_ROW_HEIGHT));
+                    dataDateLabel.setPreferredSize(new Dimension((ADJUSTED_DISPLAY_WIDTH - DELETE_BUTTON_WIDTH) / 3, DATA_ROW_HEIGHT));
 
                     Component dataCategoryLabel = dataRowComponents.get(1);
-                    dataCategoryLabel.setPreferredSize(new Dimension((config.DISPLAY_WIDTH - DELETE_BUTTON_WIDTH) / 3, DATA_ROW_HEIGHT));
+                    dataCategoryLabel.setPreferredSize(new Dimension((ADJUSTED_DISPLAY_WIDTH - DELETE_BUTTON_WIDTH) / 3, DATA_ROW_HEIGHT));
 
                     Component dataValueLabel = dataRowComponents.get(2);
-                    dataValueLabel.setPreferredSize(new Dimension((config.DISPLAY_WIDTH - DELETE_BUTTON_WIDTH) / 3, DATA_ROW_HEIGHT));
+                    dataValueLabel.setPreferredSize(new Dimension((ADJUSTED_DISPLAY_WIDTH - DELETE_BUTTON_WIDTH) / 3, DATA_ROW_HEIGHT));
 
                     thisDate = dateToLabelString(dataEntry.getStartDate());
                     if (thisDate.equals(prevDate)) {
                         // no spacer, empty date label.
                         JLabel emptyDateLabel = new JLabel();
-                        emptyDateLabel.setPreferredSize(new Dimension((config.DISPLAY_WIDTH - DELETE_BUTTON_WIDTH) / 3, DATA_ROW_HEIGHT));
-                        this.add(emptyDateLabel);
+                        emptyDateLabel.setPreferredSize(new Dimension((ADJUSTED_DISPLAY_WIDTH - DELETE_BUTTON_WIDTH) / 3, DATA_ROW_HEIGHT));
+                        rowPanelDataEntry.add(emptyDateLabel);
                     }
                     else {
                         // gray spacer, populated date label.
-                        this.add(spacerLabel);
-                        this.add(dataDateLabel);
+                        this.add(spacerLabel, layoutConstraints);
+                        rowPanelDataEntry.add(dataDateLabel);
                     }
 
-                    this.add(dataCategoryLabel);
-                    this.add(dataValueLabel);
+                    rowPanelDataEntry.add(dataCategoryLabel);
+                    rowPanelDataEntry.add(dataValueLabel);
                     prevDate = thisDate;
 
                     // CREATE AND PAINT DELETE BUTTON
@@ -151,13 +172,25 @@ public class ViewDataSubPanel2 extends JPanel {
                     deleteRowButton.setName("deleteButton" + dataEntry.getId());
                     deleteRowButton.setActionCommand("delete" + dataEntry.getId());
                     deleteRowButton.setPreferredSize(new Dimension(DELETE_BUTTON_WIDTH, DATA_ROW_HEIGHT));
-                    this.add(deleteRowButton);
+                    rowPanelDataEntry.add(deleteRowButton);
 
                     // ADD DELETE BUTTON TO HASHMAP
                     deleteButtonsMap.put(deleteRowButton.getName(), deleteRowButton);
 
+                    // ADD ROWPANEL TO SUBPANEL
+                    this.add(rowPanelDataEntry, layoutConstraints);
+
                 }
                 
+            }
+
+            // ADD PANEL FILLER TO ALIGN TO TOP OF JSCROLLPANE WHEN NOT OVERFLOWING
+            int remainingVerticalSpace = (config.PANEL_HEIGHT - ViewDataPanel.PANEL_HEADER_HEIGHT) - (this.getPreferredSize().height);
+            if (remainingVerticalSpace > 0) {
+                JPanel panelFillerLabel = new JPanel();
+                panelFillerLabel.setBackground(config.EXPENSES_COLOR);
+                panelFillerLabel.setPreferredSize(new Dimension(ADJUSTED_DISPLAY_WIDTH, remainingVerticalSpace));
+                this.add(panelFillerLabel, layoutConstraints);
             }
 
         }
@@ -242,4 +275,19 @@ public class ViewDataSubPanel2 extends JPanel {
 
     }
     
+}
+
+class RowPanel extends JPanel {
+
+    // This uses FlowLayout to construct every row added to the subpanel.
+
+    Config config = new Config();
+
+    RowPanel() {
+
+        this.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        this.setBackground(config.EXPENSES_COLOR);
+
+    }
+
 }

@@ -38,7 +38,7 @@ public class AddNewDataPanel extends JPanel {
     JComboBox<Integer> endDateYearInput = new JComboBox<>();
     JTextField categoryInput;
     JTextField valueInput;
-    JButton cancelButton;
+    JButton closeButton;
     JButton confirmButton;
 
     ArrayList<String> categoryShortcuts = new ArrayList<>();
@@ -262,9 +262,9 @@ public class AddNewDataPanel extends JPanel {
 
         // Paints the cancel and confirm buttons.
 
-        cancelButton = new JButton("Cancel");
-        cancelButton.setFont(config.PRIMARY_FONT);
-        this.add(cancelButton);
+        closeButton = new JButton("Close");
+        closeButton.setFont(config.PRIMARY_FONT);
+        this.add(closeButton);
 
         confirmButton = new JButton("Confirm");
         confirmButton.setFont(config.PRIMARY_FONT);

@@ -3,7 +3,6 @@
  */
 
 import javax.swing.*;
-import javax.xml.crypto.Data;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -16,6 +15,7 @@ public class ViewDataPanel extends JPanel {
     
     ViewDataSubPanel1 headerPanel;
     ViewDataSubPanel2 dataPanel;
+    JScrollPane dataPanelScrollPane;
 
     ViewDataPanel() {
 
@@ -28,8 +28,11 @@ public class ViewDataPanel extends JPanel {
         this.add(headerPanel, BorderLayout.NORTH);
 
         dataPanel = new ViewDataSubPanel2((Integer) headerPanel.yearComboBox.getSelectedItem());
-        dataPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT - PANEL_HEADER_HEIGHT));
-        this.add(dataPanel, BorderLayout.SOUTH);
+        dataPanelScrollPane = new JScrollPane(dataPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        dataPanelScrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(10, 0));
+        dataPanelScrollPane.setBorder(null);
+        dataPanelScrollPane.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT - PANEL_HEADER_HEIGHT));
+        this.add(dataPanelScrollPane, BorderLayout.SOUTH);
         
         this.setVisible(true);
 
