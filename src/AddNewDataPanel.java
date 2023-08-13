@@ -36,38 +36,50 @@ public class AddNewDataPanel extends JPanel {
     JComboBox<Integer> endDateDayInput = new JComboBox<>();
     JComboBox<Integer> endDateMonthInput = new JComboBox<>();
     JComboBox<Integer> endDateYearInput = new JComboBox<>();
+    JPanel categoryInputPanel;
     JTextField categoryInput;
     JTextField valueInput;
     JButton closeButton;
     JButton confirmButton;
 
-    ArrayList<String> categoryShortcuts = new ArrayList<>();
+    ArrayList<String> categoryShortcutsOneOff = new ArrayList<>();
+    ArrayList<String> categoryShortcutsRecurring = new ArrayList<>();
     HashMap<String, JButton> categoryShortcutButtonsMap = new HashMap<>();
     ArrayList<String> frequencyList = new ArrayList<>();
 
     AddNewDataPanel() {
 
         // POPULATING categoryShortcuts
-        categoryShortcuts.add("Groceries");
-        categoryShortcuts.add("Social");
-        categoryShortcuts.add("Eating Out");
-        categoryShortcuts.add("Hobby");
-        categoryShortcuts.add("Clothing");
-        categoryShortcuts.add("House");
-        categoryShortcuts.add("Gift");
-        categoryShortcuts.add("Transport");
-        categoryShortcuts.add("Medical");
-        categoryShortcuts.add("Fitness");
-        categoryShortcuts.add("Holiday");
-        categoryShortcuts.add("Education");
+        categoryShortcutsOneOff.add("Shops");
+        categoryShortcutsOneOff.add("Social");
+        categoryShortcutsOneOff.add("Dining");
+        categoryShortcutsOneOff.add("Hobby");
+        categoryShortcutsOneOff.add("Clothes");
+        categoryShortcutsOneOff.add("Home");
+        categoryShortcutsOneOff.add("Gift");
+        categoryShortcutsOneOff.add("Transport");
+        categoryShortcutsOneOff.add("Medical");
+        categoryShortcutsOneOff.add("Fitness");
+        categoryShortcutsOneOff.add("Holiday");
+        categoryShortcutsOneOff.add("Education");
+        categoryShortcutsOneOff.add("Misc");
+
+        categoryShortcutsRecurring.add("Rent");
+        categoryShortcutsRecurring.add("Bill");
+        categoryShortcutsRecurring.add("Insurance");
+        categoryShortcutsRecurring.add("Payslip");
+        categoryShortcutsRecurring.add("Gym");
+        categoryShortcutsRecurring.add("Entertainment");
+        categoryShortcutsRecurring.add("Charity");
 
         // POPULATING frequencyList
         frequencyList.add("Daily");
+        frequencyList.add("Fortnightly");
         frequencyList.add("Monthly");
         frequencyList.add("Annually");
 
         this.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 8));
-        this.setBackground(config.VIEW_DATA_PANEL_COLOR);
+        this.setBackground(config.ADD_NEW_DATA_PANEL_COLOR);
 
         JLabel panelHeading = new JLabel("Add Data");
         panelHeading.setFont(config.HEADINGS_FONT);
@@ -97,7 +109,7 @@ public class AddNewDataPanel extends JPanel {
 
         // CATEGORY INPUT
         paintRowSeparator();
-        paintCategoryInput();
+        paintCategoryInput(false);  // generates in the one-off state.
 
         // VALUE INPUT
         paintRowSeparator();
@@ -215,29 +227,43 @@ public class AddNewDataPanel extends JPanel {
 
     }
 
-    public void paintCategoryInput() {
+    public void paintCategoryInput(boolean isRecurring) {
 
         // Paints the category input row and shortcut buttons.
+        // This is done as a separate panel so that it can be modified by the Recurring button.
+
+        categoryInputPanel = new JPanel();
+        categoryInputPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 8));
+        categoryInputPanel.setBackground(config.ADD_NEW_DATA_PANEL_COLOR);
 
         JLabel categoryHeading = new JLabel("Category:");
         categoryHeading.setFont(config.PRIMARY_FONT);
         categoryHeading.setForeground(config.PRIMARY_TEXT_COLOR);
         categoryHeading.setPreferredSize(new Dimension(100, INPUT_ROW_HEIGHT));
-        this.add(categoryHeading);
+        categoryInputPanel.add(categoryHeading);
 
         categoryInput = new JTextField();
         categoryInput.setFont(config.PRIMARY_FONT);
         categoryInput.setPreferredSize(new Dimension(200, INPUT_ROW_HEIGHT));
-        this.add(categoryInput);
+        categoryInputPanel.add(categoryInput);
 
         // FILLING GAP IN REST OF ROW BEFORE SHORTCUT BUTTONS ARE ADDED
         JLabel categoryGapFiller = new JLabel();
         categoryGapFiller.setPreferredSize(new Dimension(config.DISPLAY_WIDTH - (categoryHeading.getPreferredSize().width + categoryInput.getPreferredSize().width), INPUT_ROW_HEIGHT));
         categoryGapFiller.setBackground(config.VIEW_DATA_PANEL_COLOR);
         categoryGapFiller.setOpaque(true);
-        this.add(categoryGapFiller);
+        categoryInputPanel.add(categoryGapFiller);
 
-        categoryShortcuts.forEach(s -> paintCategoryShortcutButton(s));  // painting the shortcut buttons
+        // ADDING SHORTCUT BUTTONS
+        if (isRecurring) {
+            categoryShortcutsRecurring.forEach(b -> paintCategoryShortcutButton(b));  // painting the shortcut buttons.
+        }
+        else {
+            categoryShortcutsOneOff.forEach(b -> paintCategoryShortcutButton(b));  // painting the shortcut buttons.
+        }
+
+        categoryInputPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, (3*INPUT_ROW_HEIGHT) + (24)));
+        this.add(categoryInputPanel, 25);
 
     }
 
@@ -299,12 +325,12 @@ public class AddNewDataPanel extends JPanel {
     public void paintCategoryShortcutButton(String category) {
 
         // Paints a single category shortcut button containing the string argument. Also adds it the HashMap.
-
+        
         // CREATE AND PAINT BUTTON
         JButton categoryButton = new JButton(category);
         categoryButton.setFont(config.PRIMARY_FONT);
         categoryButton.setActionCommand("category" + category);
-        this.add(categoryButton);
+        categoryInputPanel.add(categoryButton);
 
         // ADD BUTTON TO HASHMAP
         categoryShortcutButtonsMap.put(category, categoryButton);

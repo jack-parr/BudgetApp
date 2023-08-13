@@ -205,6 +205,16 @@ public class AppFrame extends JFrame implements ActionListener{
                 addNewDataPanel.endDateMonthInput.setEnabled(false);
                 addNewDataPanel.endDateYearInput.setSelectedItem(addNewDataPanel.startDateYearInput.getSelectedItem());
                 addNewDataPanel.endDateYearInput.setEnabled(false);
+                
+                // CATEGORY INPUT
+                addNewDataPanel.remove(addNewDataPanel.categoryInputPanel);
+                addNewDataPanel.paintCategoryInput(false);
+                HashMap<String, JButton> shortcutButtonsMap = addNewDataPanel.categoryShortcutButtonsMap;
+                Object[] mapKeys = shortcutButtonsMap.keySet().toArray();  // makes an array of the keySet.
+                for (Object key : mapKeys) {
+                    JButton categoryShortcutButton = (JButton) shortcutButtonsMap.get(key);
+                    categoryShortcutButton.addActionListener(this);
+                }
             }
 
             else if (e.getSource() == addNewDataPanel.recurringButton) {
@@ -217,6 +227,16 @@ public class AppFrame extends JFrame implements ActionListener{
                 addNewDataPanel.endDateDayInput.setEnabled(true);
                 addNewDataPanel.endDateMonthInput.setEnabled(true);
                 addNewDataPanel.endDateYearInput.setEnabled(true);
+
+                // CATEGORY INPUT
+                addNewDataPanel.remove(addNewDataPanel.categoryInputPanel);
+                addNewDataPanel.paintCategoryInput(true);
+                HashMap<String, JButton> shortcutButtonsMap = addNewDataPanel.categoryShortcutButtonsMap;
+                Object[] mapKeys = shortcutButtonsMap.keySet().toArray();  // makes an array of the keySet.
+                for (Object key : mapKeys) {
+                    JButton categoryShortcutButton = (JButton) shortcutButtonsMap.get(key);
+                    categoryShortcutButton.addActionListener(this);
+                }
             }
 
             else if (e.getSource() == addNewDataPanel.closeButton) {

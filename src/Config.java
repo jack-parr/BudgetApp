@@ -25,8 +25,7 @@ public class Config {
     public final Color SUMMARY_PANEL_COLOR = Color.gray;
     public final Color GENERATORS_PANEL_COLOR = Color.blue;
     public final Color VIEW_DATA_PANEL_COLOR = new Color(60, 60, 60);
-    public final Color SAVINGS_COLOR = Color.red;
-    public final Color CHART_COLOR = Color.orange;
+    public final Color ADD_NEW_DATA_PANEL_COLOR = new Color(60, 60, 60);
 
     // TEXT FONT AND COLORS
     public final Color PRIMARY_TEXT_COLOR = new Color(235, 235, 235);
