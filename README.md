@@ -15,4 +15,4 @@ Make sure all action command checks happen AFTER source checks, and happen in de
 - Format AddNewDataPanel.
 - Format GeneratorsPanel.
 
-- Code SummaryPanel. Choose between yearly, monthly, weekly view. Include graph at bottom?
+- Code SummaryPanel. Choose between last 6 months, last 12 months, last 2 years, last 3 years, all-time, savings goal.
