@@ -19,7 +19,6 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.text.View;
 
 public class AppFrame extends JFrame implements ActionListener{
 
@@ -40,24 +39,11 @@ public class AppFrame extends JFrame implements ActionListener{
 
     AppFrame() {
 
-        // TEMP TESTING - DELETE WHEN NOT NEEDED ANYMORE
-        // ArrayList<Integer> testList = new ArrayList<>();
-        // testList.add(1);
-        // while (!testList.isEmpty()) {
-        //     testList.removeAll(testList);
-        //     System.out.println("Still running");
-        //     System.out.println("Here too");
-        // }
-
         // LOADING DATA
         dataList = CSVHandler.readDataFromCSV("tempDataIn.csv");
-        // for (DataEntry dataEntry : dataList) {
-        //     System.out.println(dataEntry);
-        // }
         CSVHandler.assignIds(dataList);  // assigning IDs.
         listsHashMap = CSVHandler.createMonthLists(dataList);  // creating the listsHashMap.
         checkRecurringEntryGenerators(dataList);  // checking the generators.
-        //System.out.println(dataList.get(0).getStartDate().plusDays(1));
 
         // SAVE DATA ON CLOSE
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);

@@ -15,6 +15,7 @@ import java.awt.*;
 public class SummaryPanel extends JPanel {
 
     Config config = new Config();
+    JComboBox<String> periodComboBox;
 
     final int PANEL_HEADER_HEIGHT = 40;
 
@@ -30,7 +31,7 @@ public class SummaryPanel extends JPanel {
         periodSelectLabel.setPreferredSize(new Dimension(100, PANEL_HEADER_HEIGHT));
         this.add(periodSelectLabel);
 
-        JComboBox<String> periodComboBox = new JComboBox<>();
+        periodComboBox = new JComboBox<>();
         periodComboBox.addItem("Savings Goal");
         periodComboBox.addItem("Last 6 Months");
         periodComboBox.addItem("Last 12 Months");
