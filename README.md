@@ -11,8 +11,5 @@ Make sure all action command checks happen AFTER source checks, and happen in de
 - Visualise data by month.
 
 # TO DO:
-- Format ViewDataPanel.
-- Format AddNewDataPanel.
-- Format GeneratorsPanel.
-
-- Code SummaryPanel. Choose between last 6 months, last 12 months, last 2 years, last 3 years, all-time, savings goal.
+- Add ability to set a savings goal.
+- Format everything.

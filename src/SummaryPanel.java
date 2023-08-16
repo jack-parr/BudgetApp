@@ -16,6 +16,7 @@ public class SummaryPanel extends JPanel {
 
     Config config = new Config();
     JComboBox<String> periodComboBox;
+    GraphPanel graphPanel;
 
     final int PANEL_HEADER_HEIGHT = 40;
 
@@ -32,10 +33,13 @@ public class SummaryPanel extends JPanel {
         this.add(periodSelectLabel);
 
         periodComboBox = new JComboBox<>();
-        periodComboBox.addItem("Savings Goal");
+        periodComboBox.addItem("This Month");
+        periodComboBox.addItem("Last Month");
+        periodComboBox.addItem("Last 3 Months");
         periodComboBox.addItem("Last 6 Months");
         periodComboBox.addItem("Last 12 Months");
         periodComboBox.addItem("All-Time");
+        periodComboBox.addItem("Savings Goal");
         periodComboBox.setPreferredSize(new Dimension(150, PANEL_HEADER_HEIGHT));
         this.add(periodComboBox);
 
@@ -45,7 +49,7 @@ public class SummaryPanel extends JPanel {
         summmaryPanelHeaderGapFiller.setPreferredSize(new Dimension(config.DISPLAY_WIDTH - (periodSelectLabel.getPreferredSize().width + periodComboBox.getPreferredSize().width), PANEL_HEADER_HEIGHT));
         this.add(summmaryPanelHeaderGapFiller);
 
-        GraphPanel graphPanel = new GraphPanel();
+        graphPanel = new GraphPanel((String) periodComboBox.getSelectedItem());
         graphPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT - PANEL_HEADER_HEIGHT));
         this.add(graphPanel);
 

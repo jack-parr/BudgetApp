@@ -24,19 +24,20 @@ import java.util.stream.Collectors;
 public class GraphPanel extends JPanel {
 
     final float MARGIN = 60;
+    final float Y_TICK_MULTIPLE = 100;
 
+    String period;
     float graphWidth;
     float graphHeight;
+    float graphStartValue = 0;
     HashMap<LocalDate, Float> savingsMap;
 
-    GraphPanel() {
+    LocalDate startDate;
 
+    GraphPanel(String period) {
+
+        this.period = period;
         savingsMap = calculateCummulative();
-        // for (Object date : savingsMap.keySet().toArray()) {
-        //     System.out.println();
-        //     System.out.println(date);
-        //     System.out.println(savingsMap.get(date));
-        // }
 
     }
 
@@ -50,30 +51,82 @@ public class GraphPanel extends JPanel {
         graphHeight = getHeight() - 2*MARGIN;
 
         // CALCULATE GRAPH PARAMETERS
-        LocalDate startDate = LocalDate.now().minusMonths(6);
-        LocalDate endDate = LocalDate.now().plusDays(1);
-        LinkedHashSet<LocalDate> graphDates = startDate.datesUntil(endDate).collect(Collectors.toCollection(LinkedHashSet::new));  // creates set of relevant dates for selectedPeriod.
+        LocalDate endDate = LocalDate.now();  // setting this first since only one case overrides it.
+        switch (period) {
+        case "This Month":
+            startDate = LocalDate.now().minusDays(LocalDate.now().getDayOfMonth() - 1);
+            endDate = LocalDate.now().plusDays(LocalDate.now().lengthOfMonth() - LocalDate.now().getDayOfMonth());
+            break;
+        case "Last Month":
+            startDate = LocalDate.now().minusMonths(1);
+            break;
+        case "Last 3 Months":
+            startDate = LocalDate.now().minusMonths(3);
+            break;
+        case "Last 6 Months":
+            startDate = LocalDate.now().minusMonths(6);
+            break;
+        case "Last 12 Months":
+            startDate = LocalDate.now().minusYears(1);
+            break;
+        case "All-Time":
+            startDate = Collections.min(savingsMap.keySet().stream().toList());
+            break;
+        case "Savings Goal":
+            startDate = LocalDate.now().minusMonths(1);  // TEMP
+            break;
+        }
+        
+        for (LocalDate date : savingsMap.keySet()) {
+            if (date.isBefore(startDate)) {
+                graphStartValue = savingsMap.get(date);
+            }
+            else {break;}  // breaks at first one that is not before startDate, since dates are in chronological order.
+        }
+        LinkedHashSet<LocalDate> graphDates = startDate.datesUntil(endDate.plusDays(1)).collect(Collectors.toCollection(LinkedHashSet::new));  // creates set of relevant dates for selectedPeriod.
         Set<LocalDate> datasetDates = savingsMap.keySet();  // creates a set of dates from the dataset.
         datasetDates.retainAll(graphDates);  // intersection.
-        ArrayList<Float> valuesList = new ArrayList<>();
-        datasetDates.forEach(date -> valuesList.add(savingsMap.get(date)));  // extracting all relevant values from savingsMap.
+        ArrayList<Float> adjustedValuesList = new ArrayList<>();
+        datasetDates.forEach(date -> adjustedValuesList.add(savingsMap.get(date) - graphStartValue));  // extracting all relevant values from savingsMap.
 
-        float graphMaxValue = Math.max(Collections.max(valuesList), 0);  // maximum value on the graph.
-        float graphMinValue = Math.min(Collections.min(valuesList), -100);  // minimum value on the graph.
+        float graphMaxValue = Math.max(Collections.max(adjustedValuesList), 0) + 10;  // maximum value on the graph.
+        float graphMinValue = Math.min(Collections.min(adjustedValuesList), 0) - 20;  // minimum value on the graph.
         float graphRange = graphMaxValue - graphMinValue;  // absolute range of values on the graph.
         float graphZeroCoord = (Math.abs(graphMinValue) / graphRange) * graphHeight;  // yCoord of zero line.
         float graphPoundStep = graphHeight / graphRange;  // £1 in graph coord units.
-        float graphDateStep = graphWidth / graphDates.size();  // 1 day in graph coord units.
+        float graphDateStep = graphWidth / (graphDates.size() - 1);  // 1 day in graph coord units. The minus 1 is because it plots the first point at xCoord = 0.
 
         // DRAW GRAPH SKELETON
         g2d.setStroke(new BasicStroke(5));
-        g2d.draw(new Line2D.Float(transformXCoord(0), transformYCoord(0), transformXCoord(0), transformYCoord(graphHeight)));
-        g2d.draw(new Line2D.Float(transformXCoord(0), transformYCoord(0), transformXCoord(graphWidth), transformYCoord(0)));
-        g2d.setStroke(new BasicStroke(3));
-        g2d.setColor(Color.blue);
-        g2d.draw(new Line2D.Float(transformXCoord(0), transformYCoord(graphZeroCoord), transformXCoord(graphWidth), transformYCoord(graphZeroCoord)));
+        g2d.draw(new Line2D.Float(transformXCoord(0), transformYCoord(0), transformXCoord(0), transformYCoord(graphHeight)));  // y-axis.
+        g2d.draw(new Line2D.Float(transformXCoord(0), transformYCoord(0), transformXCoord(graphWidth), transformYCoord(0)));  // x-axis.
+        drawRotate(g2d, transformXCoord(-40), transformYCoord(graphHeight/3), -90, "Cummulative Savings (£)");
+        
+        // DRAW ZERO LINE
+        g2d.setStroke(new BasicStroke(2));
+        g2d.setColor(Color.gray);
+        g2d.draw(new Line2D.Float(transformXCoord(-28), transformYCoord(graphZeroCoord), transformXCoord(graphWidth), transformYCoord(graphZeroCoord)));
+        g2d.drawString("0", transformXCoord((float) -15), transformYCoord(graphZeroCoord + 2));
 
-        // DRAWING
+        // DRAW VALUE GRID LINES
+        g2d.setStroke(new BasicStroke(1));
+        float yTickStep = (float) ((Math.ceil((graphRange / 10) / Y_TICK_MULTIPLE)) * Y_TICK_MULTIPLE) * graphPoundStep;  // coord step for each y-tick.
+        float yTickCoord = (float) (graphZeroCoord - (Math.floor(graphZeroCoord / yTickStep) * yTickStep));  // starting at lowest y-tick on graph.
+        while (yTickCoord < graphHeight) {  // stops when highest y-tick is processed.
+
+            if (yTickCoord != graphZeroCoord) {
+
+                g2d.draw(new Line2D.Float(transformXCoord(-28), transformYCoord(yTickCoord), transformXCoord(graphWidth), transformYCoord(yTickCoord)));
+                int yTickValue = Math.round((yTickCoord - graphZeroCoord) / graphPoundStep);
+                g2d.drawString(Integer.toString(yTickValue), transformXCoord((float) (-15 + (-6.5 * Math.floor(Math.log10(Math.abs(yTickValue)))))), transformYCoord(yTickCoord + 2));  // moves x-coord based on number of digits so the labels right-align with the axis.
+            
+            }
+
+            yTickCoord += yTickStep;
+
+        }
+
+        // DRAWING DATA
         float prevXCoord = 0;
         float prevYCoord = graphZeroCoord;  // starts at £0.
         float currXCoord = 0;
@@ -81,26 +134,30 @@ public class GraphPanel extends JPanel {
         float currYCoord;
         for (LocalDate date : graphDates) {
 
+            if (date.isAfter(LocalDate.now())) {break;}  // stops drawing if it passes current date.
+
             Object extractedPoint = savingsMap.get(date);
 
             if (extractedPoint != null) {
-                currYValue = (float) extractedPoint;  // updates yValue from savingsMap..
+                currYValue = (float) extractedPoint - graphStartValue;  // updates yValue from savingsMap, with the start value considered.
             }
             
             currYCoord = graphZeroCoord + (currYValue * graphPoundStep);  // convert value into cartesian Coord.
 
             // DRAWING NEW MONTH LINES
-            g2d.setStroke(new BasicStroke(2));
-            g2d.setColor(Color.gray);
+            g2d.setStroke(new BasicStroke(3));
+            g2d.setColor(Color.lightGray);
             if (date.getDayOfMonth() == 1) {
                 g2d.draw(new Line2D.Float(transformXCoord(currXCoord), transformYCoord((float) -0.9* MARGIN), transformXCoord(currXCoord), transformYCoord(graphHeight)));
+                g2d.setColor(Color.gray);
                 drawRotate(g2d, transformXCoord(currXCoord + 2), transformYCoord(-10), 90, date.getMonth().toString().substring(0, 3) + " " + Integer.toString(date.getYear()).substring(2));
             }
 
             // DRAWING WEEK TICKS
             g2d.setStroke(new BasicStroke(1));
+            g2d.setColor(Color.lightGray);
             if (date.getDayOfWeek().toString() == "MONDAY") {
-                g2d.draw(new Line2D.Float(transformXCoord(currXCoord), transformYCoord(4), transformXCoord(currXCoord), transformYCoord(-4)));
+                g2d.draw(new Line2D.Float(transformXCoord(currXCoord), transformYCoord(graphHeight), transformXCoord(currXCoord), transformYCoord(-4)));
             }
 
             // DRAWING DATA LINE
@@ -115,6 +172,8 @@ public class GraphPanel extends JPanel {
         }
 
         // PLOT SAVINGS GOAL IF NEEDED
+
+        g2d.dispose();
 
     }
 

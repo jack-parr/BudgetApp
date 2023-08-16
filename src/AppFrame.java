@@ -73,10 +73,7 @@ public class AppFrame extends JFrame implements ActionListener{
         this.add(menuPanel, BorderLayout.NORTH);
 
         // CREATING CURRENT PANEL
-        SummaryPanel summaryPanel = new SummaryPanel();  // defaults to summary panel.
-        currentPanel = summaryPanel;
-        currentPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT));
-        this.add(currentPanel, BorderLayout.SOUTH);
+        createSummaryPanel();  // default is SummaryPanel.
 
         this.pack();
         this.setLocationRelativeTo(null);
@@ -110,6 +107,19 @@ public class AppFrame extends JFrame implements ActionListener{
         default: 
             break;
 
+        }
+
+        // SUMMARY PANEL ACTIONS
+        if (currentPanel instanceof SummaryPanel) {
+
+            // HANDLING PERIOD CHANGE
+            if (e.getSource() == summaryPanel.periodComboBox) {
+                summaryPanel.remove(summaryPanel.graphPanel);  // remove old graphPanel.
+                summaryPanel.graphPanel = new GraphPanel((String) summaryPanel.periodComboBox.getSelectedItem());
+                summaryPanel.graphPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT - summaryPanel.PANEL_HEADER_HEIGHT));
+                summaryPanel.add(summaryPanel.graphPanel);
+                summaryPanel.revalidate();
+            }
         }
 
         // GENERATORS PANEL ACTIONS
@@ -250,6 +260,10 @@ public class AppFrame extends JFrame implements ActionListener{
         // Creates and paints the summary panel.
 
         summaryPanel = new SummaryPanel();
+
+        // SETTING ACTION LISTENERS
+        summaryPanel.periodComboBox.addActionListener(this);
+
         currentPanel = summaryPanel;
         currentPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT));
         this.add(currentPanel, BorderLayout.SOUTH);
