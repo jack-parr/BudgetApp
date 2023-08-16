@@ -60,7 +60,7 @@ public class CSVHandler {
         DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
         LocalDate startDate = LocalDate.parse(metadata[4], formatter);
         LocalDate endDate = LocalDate.parse(metadata[5], formatter);
-        LocalDate nextDueDate = startDate;  // this is so recurring entry generators start at startDate.
+        LocalDate nextDueDate = LocalDate.parse(metadata[6], formatter);
         String category = metadata[7];
         float value = Float.parseFloat(metadata[8]);
 

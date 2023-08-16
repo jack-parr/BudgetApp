@@ -78,6 +78,9 @@ public class GeneratorsSubPanel2 extends JPanel {
 
                 noDataFound = false;
 
+                JLabel spacerLabel = config.makeDataSpacerLabel();
+                spacerLabel.setPreferredSize(new Dimension(config.SCROLLABLE_DISPLAY_WIDTH, 1));
+
                 RowPanel rowPanelDataEntry = new RowPanel();
                 rowPanelDataEntry.setBackground(config.GENERATORS_PANEL_COLOR);
                 ArrayList<Component> dataRowComponents = config.makeDataDisplayRowComponents(dataEntry);
@@ -113,6 +116,7 @@ public class GeneratorsSubPanel2 extends JPanel {
                 deleteButtonsMap.put(deleteDataEntryButton.getName(), deleteDataEntryButton);
 
                 // ADD ROWPANEL TO SUBPANEL
+                this.add(spacerLabel, layoutConstraints);
                 this.add(rowPanelDataEntry, layoutConstraints);
 
             }

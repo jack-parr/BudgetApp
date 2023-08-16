@@ -37,7 +37,7 @@ public class Config {
     public final Font DATA_ROW_FONT = new Font("Arial Rounded MT Bold", Font.PLAIN, 14);
     
     // DATA SOURCE
-    public final String DATA_FILEPATH = "tempDataOut.csv";
+    public final String DATA_FILEPATH = "data.csv";
 
     public ArrayList<Component> makeDataHeaderRowComponents() {
 
@@ -152,6 +152,9 @@ public class Config {
         // Returns a string of day/month based on the LocalDate 'date'.
 
         String dateString = date.getDayOfMonth() + "/" + date.getMonthValue();
+        if (includeYear) {
+            dateString = dateString + "/" + date.getYear();
+        }
         return dateString;
 
     }

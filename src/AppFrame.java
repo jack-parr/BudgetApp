@@ -32,6 +32,7 @@ public class AppFrame extends JFrame implements ActionListener{
     GeneratorsPanel generatorsPanel;
     ViewDataPanel viewDataPanel;
     AddNewDataPanel addNewDataPanel;
+    JPanel tempPanel = new JPanel();  // this is only to fulfil deleteDataEntry arguments.
     
     final static String SUMMARY_ACTION_COMMAND = "summaryButton";
     final static String GENERATORS_ACTION_COMMAND = "generatorsButton";
@@ -40,7 +41,7 @@ public class AppFrame extends JFrame implements ActionListener{
     AppFrame() {
 
         // LOADING DATA
-        dataList = CSVHandler.readDataFromCSV("tempDataIn.csv");
+        dataList = CSVHandler.readDataFromCSV(config.DATA_FILEPATH);
         CSVHandler.assignIds(dataList);  // assigning IDs.
         listsHashMap = CSVHandler.createMonthLists(dataList);  // creating the listsHashMap.
         checkRecurringEntryGenerators(dataList);  // checking the generators.
@@ -385,7 +386,7 @@ public class AppFrame extends JFrame implements ActionListener{
         metadata[3] = (String) addNewDataPanel.frequencyInput.getSelectedItem();
         metadata[4] = addNewDataPanel.startDateYearInput.getSelectedItem() + "-" + String.format("%02d", addNewDataPanel.startDateMonthInput.getSelectedItem()) + "-" + String.format("%02d", addNewDataPanel.startDateDayInput.getSelectedItem());  // date in correct format.
         metadata[5] = addNewDataPanel.endDateYearInput.getSelectedItem() + "-" + String.format("%02d", addNewDataPanel.endDateMonthInput.getSelectedItem()) + "-" + String.format("%02d", addNewDataPanel.endDateDayInput.getSelectedItem());  // date in correct format.
-        metadata[6] = metadata[4];  // this is irrelevant, just needs to be a readable date.
+        metadata[6] = metadata[4];  // this is so that recurring entry generators start with the first startDate.
         metadata[7] = addNewDataPanel.categoryInput.getText();  // category.
         metadata[8] = addNewDataPanel.valueInput.getText();  // value.
 
@@ -398,7 +399,6 @@ public class AppFrame extends JFrame implements ActionListener{
         listsHashMap = CSVHandler.createMonthLists(dataList);   // create monthLists.
 
         // change this for something in the app.
-        System.out.println("New Data Successfully Added.");
         addNewDataPanel.categoryInput.setText("");
         addNewDataPanel.valueInput.setText("");
 
@@ -409,7 +409,7 @@ public class AppFrame extends JFrame implements ActionListener{
         // This checks all the recurring entry generators for if they're due a new DataEntry, and handles it.
 
         ArrayList<DataEntry> tempAddList = new ArrayList<>();
-        tempAddList.add(dataList.get(0));  // add one to begin the while loop.
+        tempAddList.add(new DataEntry("TEMP", false, false, "", LocalDate.now(), LocalDate.now(), LocalDate.now(), "TEMP", 0));  // add one to begin the while loop.
         ArrayList<DataEntry> tempDeleteList = new ArrayList<>();
 
         while (!tempAddList.isEmpty()) {  // will end once a pass has been made with no additions.
@@ -473,7 +473,6 @@ public class AppFrame extends JFrame implements ActionListener{
             }
 
             if (!tempDeleteList.isEmpty()) {
-                JPanel tempPanel = new JPanel();  // this is only to fulfil the arguments below.
                 tempDeleteList.forEach(de -> deleteDataEntry(de.getId(), tempPanel, ""));
             }
 

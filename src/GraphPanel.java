@@ -60,11 +60,12 @@ public class GraphPanel extends JPanel {
         LocalDate endDate = LocalDate.now();
         Set<LocalDate> setOfDates = startDate.datesUntil(endDate).collect(Collectors.toSet());  // creates set of relevant dates for selectedPeriod.
 
-        Set<LocalDate> test = savingsMap.keySet();  // creates a set of dates with data.
-        test.retainAll(setOfDates);  // interseection.
-        for (LocalDate date : test) {
-            // store max and min value. Use to calculate graph span for proportioning.
-        }
+        Set<LocalDate> test = savingsMap.keySet();  // creates a set of dates that have data.
+        test.retainAll(setOfDates);  // intersection.
+        ArrayList<Float> valuesList = new ArrayList<>();
+        test.forEach(date -> valuesList.add(savingsMap.get(date)));  // extracting all relevant values from savingsMap.
+        //System.out.println(Collections.max(valuesList));
+        //System.out.println(Collections.min(valuesList));
 
         // cycle over set of dates.
         // for each date, try to extract a new plot value. If this fails, plot the previous value again.
