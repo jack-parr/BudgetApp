@@ -9,7 +9,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -23,20 +22,24 @@ import java.util.stream.Collectors;
 
 public class GraphPanel extends JPanel {
 
+    Config config = new Config();
+
     final float MARGIN = 60;
     final float Y_TICK_MULTIPLE = 100;
 
-    String period;
     float graphWidth;
     float graphHeight;
     float graphStartValue = 0;
     HashMap<LocalDate, Float> savingsMap;
 
     LocalDate startDate;
+    LocalDate endDate;
 
-    GraphPanel(String period) {
+    GraphPanel(String startDate, String endDate) {
 
-        this.period = period;
+        this.startDate = LocalDate.parse(startDate, config.DATE_TIME_FORMATTER);
+        this.endDate = LocalDate.parse(endDate, config.DATE_TIME_FORMATTER);
+
         savingsMap = calculateCummulative();
 
     }
@@ -51,32 +54,6 @@ public class GraphPanel extends JPanel {
         graphHeight = getHeight() - 2*MARGIN;
 
         // CALCULATE GRAPH PARAMETERS
-        LocalDate endDate = LocalDate.now();  // setting this first since only one case overrides it.
-        switch (period) {
-        case "This Month":
-            startDate = LocalDate.now().minusDays(LocalDate.now().getDayOfMonth() - 1);
-            endDate = LocalDate.now().plusDays(LocalDate.now().lengthOfMonth() - LocalDate.now().getDayOfMonth());
-            break;
-        case "Last Month":
-            startDate = LocalDate.now().minusMonths(1);
-            break;
-        case "Last 3 Months":
-            startDate = LocalDate.now().minusMonths(3);
-            break;
-        case "Last 6 Months":
-            startDate = LocalDate.now().minusMonths(6);
-            break;
-        case "Last 12 Months":
-            startDate = LocalDate.now().minusYears(1);
-            break;
-        case "All-Time":
-            startDate = Collections.min(savingsMap.keySet().stream().toList());
-            break;
-        case "Savings Goal":
-            startDate = LocalDate.now().minusMonths(1);  // TEMP
-            break;
-        }
-        
         for (LocalDate date : savingsMap.keySet()) {
             if (date.isBefore(startDate)) {
                 graphStartValue = savingsMap.get(date);

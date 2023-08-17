@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -29,13 +30,13 @@ public class AppFrame extends JFrame implements ActionListener{
     static JPanel currentPanel;
     MenuPanel menuPanel;
     SummaryPanel summaryPanel;
-    GeneratorsPanel generatorsPanel;
+    ViewGeneratorsPanel viewGeneratorsPanel;
     ViewDataPanel viewDataPanel;
     AddNewDataPanel addNewDataPanel;
     JPanel tempPanel = new JPanel();  // this is only to fulfil deleteDataEntry arguments.
     
     final static String SUMMARY_ACTION_COMMAND = "summaryButton";
-    final static String GENERATORS_ACTION_COMMAND = "generatorsButton";
+    final static String VIEW_GENERATORS_ACTION_COMMAND = "viewGeneratorsButton";
     final static String VIEW_DATA_ACTION_COMMAND = "viewDataButton";
 
     AppFrame() {
@@ -55,7 +56,7 @@ public class AppFrame extends JFrame implements ActionListener{
             }
         });
         
-        this.setTitle("Expenses Tracker");
+        this.setTitle("Finances Tracker");
         this.setResizable(false);
         this.setLayout(new BorderLayout());
 
@@ -64,10 +65,10 @@ public class AppFrame extends JFrame implements ActionListener{
 
         menuPanel.summaryButton.addActionListener(this);
         menuPanel.summaryButton.setActionCommand(SUMMARY_ACTION_COMMAND);
-        menuPanel.incomeButton.addActionListener(this);
-        menuPanel.incomeButton.setActionCommand(GENERATORS_ACTION_COMMAND);
-        menuPanel.expensesButton.addActionListener(this);
-        menuPanel.expensesButton.setActionCommand(VIEW_DATA_ACTION_COMMAND);
+        menuPanel.viewGeneratorsButton.addActionListener(this);
+        menuPanel.viewGeneratorsButton.setActionCommand(VIEW_GENERATORS_ACTION_COMMAND);
+        menuPanel.viewDataButton.addActionListener(this);
+        menuPanel.viewDataButton.setActionCommand(VIEW_DATA_ACTION_COMMAND);
 
         menuPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.MENU_HEIGHT));
         this.add(menuPanel, BorderLayout.NORTH);
@@ -94,9 +95,9 @@ public class AppFrame extends JFrame implements ActionListener{
             createSummaryPanel();
             break;
 
-        case GENERATORS_ACTION_COMMAND:
+        case VIEW_GENERATORS_ACTION_COMMAND:
             this.remove(currentPanel);
-            createGeneratorsPanel("Expense");
+            createViewGeneratorsPanel("Expense");
             break;
             
         case VIEW_DATA_ACTION_COMMAND:
@@ -114,33 +115,79 @@ public class AppFrame extends JFrame implements ActionListener{
 
             // HANDLING PERIOD CHANGE
             if (e.getSource() == summaryPanel.periodComboBox) {
+                String todayDateString = LocalDate.now().format(config.DATE_TIME_FORMATTER);
+                switch ((String) summaryPanel.periodComboBox.getSelectedItem()) {
+                case "This Month":
+                    setCustomPeriodComponents(false);
+                    summaryPanel.startDateInput.setText(LocalDate.now().minusDays(LocalDate.now().getDayOfMonth() - 1).format(config.DATE_TIME_FORMATTER));
+                    summaryPanel.endDateInput.setText(LocalDate.now().plusDays(LocalDate.now().lengthOfMonth() - LocalDate.now().getDayOfMonth()).format(config.DATE_TIME_FORMATTER));
+                    break;
+                case "Last Month":
+                    setCustomPeriodComponents(false);
+                    summaryPanel.startDateInput.setText(LocalDate.now().minusMonths(1).format(config.DATE_TIME_FORMATTER));
+                    summaryPanel.endDateInput.setText(todayDateString);
+                    break;
+                case "Last 3 Months":
+                    setCustomPeriodComponents(false);
+                    summaryPanel.startDateInput.setText(LocalDate.now().minusMonths(3).format(config.DATE_TIME_FORMATTER));
+                    summaryPanel.endDateInput.setText(todayDateString);
+                    break;
+                case "Last 6 Months":
+                    setCustomPeriodComponents(false);
+                    summaryPanel.startDateInput.setText(LocalDate.now().minusMonths(6).format(config.DATE_TIME_FORMATTER));
+                    summaryPanel.endDateInput.setText(todayDateString);
+                    break;
+                case "Last 12 Months":
+                    setCustomPeriodComponents(false);
+                    summaryPanel.startDateInput.setText(LocalDate.now().minusYears(1).format(config.DATE_TIME_FORMATTER));
+                    summaryPanel.endDateInput.setText(todayDateString);
+                    break;
+                case "All-Time":
+                    setCustomPeriodComponents(false);
+                    summaryPanel.startDateInput.setText(Collections.min(dataList.stream().map(de -> de.getStartDate()).collect(Collectors.toList())).format(config.DATE_TIME_FORMATTER));
+                    summaryPanel.endDateInput.setText(todayDateString);
+                    break;
+                case "Custom":
+                    setCustomPeriodComponents(true);
+                    break;
+                }
                 summaryPanel.remove(summaryPanel.graphPanel);  // remove old graphPanel.
-                summaryPanel.graphPanel = new GraphPanel((String) summaryPanel.periodComboBox.getSelectedItem());
+                summaryPanel.graphPanel = new GraphPanel(summaryPanel.startDateInput.getText(), summaryPanel.endDateInput.getText());
                 summaryPanel.graphPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT - summaryPanel.PANEL_HEADER_HEIGHT));
                 summaryPanel.add(summaryPanel.graphPanel);
                 summaryPanel.revalidate();
             }
+
+            // HANDLING APPLY CUSTOM DATES BUTTON
+            if (e.getSource() == summaryPanel.applyCustomPeriodButton) {
+                summaryPanel.remove(summaryPanel.graphPanel);  // remove old graphPanel.
+                summaryPanel.graphPanel = new GraphPanel(summaryPanel.startDateInput.getText(), summaryPanel.endDateInput.getText());
+                summaryPanel.graphPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT - summaryPanel.PANEL_HEADER_HEIGHT));
+                summaryPanel.add(summaryPanel.graphPanel);
+                summaryPanel.revalidate();
+            }
+
         }
 
         // GENERATORS PANEL ACTIONS
-        if (currentPanel instanceof GeneratorsPanel) {
+        if (currentPanel instanceof ViewGeneratorsPanel) {
 
             // HANDLING YEAR CHANGE
-            if (e.getSource() == generatorsPanel.headerPanel.typeComboBox) {
-                generatorsPanel.remove(generatorsPanel.dataPanelScrollPane);  // remove old dataPanel.
-                generatorsPanel.dataPanel = new GeneratorsSubPanel2(generatorsPanel.headerPanel.typeComboBox.getSelectedItem().equals("Expense"));
-                generatorsPanel.dataPanelScrollPane = new JScrollPane(generatorsPanel.dataPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-                generatorsPanel.dataPanelScrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(config.SCROLLBAR_WIDTH, 0));
-                generatorsPanel.dataPanelScrollPane.getVerticalScrollBar().setUnitIncrement(config.SCROLLBAR_INCREMENT);
-                generatorsPanel.dataPanelScrollPane.setBorder(null);
-                assignDeleteButtons(generatorsPanel);  // assign listeners to delete row buttons.
-                generatorsPanel.dataPanelScrollPane.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT - ViewDataPanel.PANEL_HEADER_HEIGHT));
-                generatorsPanel.add(generatorsPanel.dataPanelScrollPane, BorderLayout.SOUTH);
-                generatorsPanel.revalidate();
+            if (e.getSource() == viewGeneratorsPanel.typeComboBox) {
+                viewGeneratorsPanel.remove(viewGeneratorsPanel.generatorsPanelScrollPane);  // remove old dataPanel.
+                viewGeneratorsPanel.generatorsPanel = new GeneratorsPanel(viewGeneratorsPanel.typeComboBox.getSelectedItem().equals("Expense"));
+                viewGeneratorsPanel.generatorsPanelScrollPane = new JScrollPane(viewGeneratorsPanel.generatorsPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+                viewGeneratorsPanel.generatorsPanelScrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(config.SCROLLBAR_WIDTH, 0));
+                viewGeneratorsPanel.generatorsPanelScrollPane.getVerticalScrollBar().setUnitIncrement(config.SCROLLBAR_INCREMENT);
+                viewGeneratorsPanel.generatorsPanelScrollPane.setBorder(null);
+                assignDeleteButtons(viewGeneratorsPanel);  // assign listeners to delete row buttons.
+                viewGeneratorsPanel.generatorsPanelScrollPane.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT - ViewDataPanel.PANEL_HEADER_HEIGHT));
+                viewGeneratorsPanel.add(viewGeneratorsPanel.generatorsPanelScrollPane, BorderLayout.SOUTH);
+                viewGeneratorsPanel.revalidate();
             }
 
             // HANDLING NEW DATA BUTTON
-            else if (e.getSource() == generatorsPanel.headerPanel.newDataButton) {
+            else if (e.getSource() == viewGeneratorsPanel.newDataButton) {
                 this.remove(currentPanel);
                 createAddNewDataPanel();
                 this.revalidate();
@@ -149,7 +196,7 @@ public class AppFrame extends JFrame implements ActionListener{
 
             // HANDLING DELETE ROW BUTTONS
             else if (actionCommand.startsWith("delete")) {
-                deleteDataEntry(actionCommand.substring(6), generatorsPanel, (String) generatorsPanel.headerPanel.typeComboBox.getSelectedItem());  // calls the method for deleting DataEntry according to int id.
+                deleteDataEntry(actionCommand.substring(6), viewGeneratorsPanel, (String) viewGeneratorsPanel.typeComboBox.getSelectedItem());  // calls the method for deleting DataEntry according to int id.
             }
 
         }
@@ -158,12 +205,12 @@ public class AppFrame extends JFrame implements ActionListener{
         if (currentPanel instanceof ViewDataPanel) {
             
             // HANDLING YEAR CHANGE
-            if (e.getSource() == viewDataPanel.headerPanel.yearComboBox) {
-                remakeViewDataSubPanel2();
+            if (e.getSource() == viewDataPanel.yearComboBox) {
+                remakeDataPanel();
             }
 
             // HANDLING NEW DATA BUTTON
-            else if (e.getSource() == viewDataPanel.headerPanel.newDataButton) {
+            else if (e.getSource() == viewDataPanel.newDataButton) {
                 this.remove(currentPanel);
                 createAddNewDataPanel();
                 this.revalidate();
@@ -171,19 +218,20 @@ public class AppFrame extends JFrame implements ActionListener{
             }
 
             // HANDLING APPLY FILTER BUTTON
-            else if (e.getSource() == viewDataPanel.headerPanel.applyFilterButton) {
+            else if (e.getSource() == viewDataPanel.applyFilterButton) {
                 viewDataPanel.remove(viewDataPanel.dataPanelScrollPane);  // remove old dataPanel.
-                remakeViewDataSubPanel2();
+                remakeDataPanel();
             }
 
-            else if (e.getSource() == viewDataPanel.headerPanel.resetFilterButton) {
-                viewDataPanel.headerPanel.filterInput.setText("");
-                remakeViewDataSubPanel2();
+            // HANDLING RESET FILTER BUTTON
+            else if (e.getSource() == viewDataPanel.resetFilterButton) {
+                viewDataPanel.filterInput.setText("");
+                remakeDataPanel();
             }
 
             // HANDLING DELETE ROW BUTTONS
             else if (actionCommand.startsWith("delete")) {
-                deleteDataEntry(actionCommand.substring(6), viewDataPanel, Integer.toString((Integer) viewDataPanel.headerPanel.yearComboBox.getSelectedItem()));  // calls the method for deleting DataEntry according to int id.
+                deleteDataEntry(actionCommand.substring(6), viewDataPanel, Integer.toString((Integer) viewDataPanel.yearComboBox.getSelectedItem()));  // calls the method for deleting DataEntry according to int id.
             }
 
         }
@@ -265,6 +313,7 @@ public class AppFrame extends JFrame implements ActionListener{
 
         // SETTING ACTION LISTENERS
         summaryPanel.periodComboBox.addActionListener(this);
+        summaryPanel.applyCustomPeriodButton.addActionListener(this);
 
         currentPanel = summaryPanel;
         currentPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT));
@@ -274,18 +323,24 @@ public class AppFrame extends JFrame implements ActionListener{
 
     }
 
-    public void createGeneratorsPanel(String selectedType) {
+    public void setCustomPeriodComponents(boolean bool) {
+        summaryPanel.startDateInput.setEnabled(bool);
+        summaryPanel.endDateInput.setEnabled(bool);
+        summaryPanel.applyCustomPeriodButton.setEnabled(bool);
+    }
+
+    public void createViewGeneratorsPanel(String selectedType) {
 
         // Creates and paints the income panel.
 
-        generatorsPanel = new GeneratorsPanel(selectedType);
+        viewGeneratorsPanel = new ViewGeneratorsPanel(selectedType);
 
         // SETTING ACTION LISTENERS
-        generatorsPanel.headerPanel.typeComboBox.addActionListener(this);
-        generatorsPanel.headerPanel.newDataButton.addActionListener(this);
-        assignDeleteButtons(generatorsPanel);
+        viewGeneratorsPanel.typeComboBox.addActionListener(this);
+        viewGeneratorsPanel.newDataButton.addActionListener(this);
+        assignDeleteButtons(viewGeneratorsPanel);
 
-        currentPanel = generatorsPanel;
+        currentPanel = viewGeneratorsPanel;
         currentPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT));
         this.add(currentPanel, BorderLayout.SOUTH);
         this.pack();
@@ -300,10 +355,10 @@ public class AppFrame extends JFrame implements ActionListener{
         viewDataPanel = new ViewDataPanel(selectedYear);
 
         // SETTING ACTION LISTENERS
-        viewDataPanel.headerPanel.yearComboBox.addActionListener(this);
-        viewDataPanel.headerPanel.newDataButton.addActionListener(this);
-        viewDataPanel.headerPanel.applyFilterButton.addActionListener(this);
-        viewDataPanel.headerPanel.resetFilterButton.addActionListener(this);
+        viewDataPanel.yearComboBox.addActionListener(this);
+        viewDataPanel.newDataButton.addActionListener(this);
+        viewDataPanel.applyFilterButton.addActionListener(this);
+        viewDataPanel.resetFilterButton.addActionListener(this);
         assignDeleteButtons(viewDataPanel);
 
         // PAINTING PANEL
@@ -315,12 +370,12 @@ public class AppFrame extends JFrame implements ActionListener{
         
     }
 
-    public void remakeViewDataSubPanel2() {
+    public void remakeDataPanel() {
 
         // Removes the old dataPanel and replaces it with newly specified conditions.
 
         viewDataPanel.remove(viewDataPanel.dataPanelScrollPane);  // remove old dataPanel.
-        viewDataPanel.dataPanel = new ViewDataSubPanel2((Integer) viewDataPanel.headerPanel.yearComboBox.getSelectedItem(), viewDataPanel.headerPanel.filterInput.getText());
+        viewDataPanel.dataPanel = new DataPanel((Integer) viewDataPanel.yearComboBox.getSelectedItem(), viewDataPanel.filterInput.getText());
         viewDataPanel.dataPanelScrollPane = new JScrollPane(viewDataPanel.dataPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         viewDataPanel.dataPanelScrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(config.SCROLLBAR_WIDTH, 0));
         viewDataPanel.dataPanelScrollPane.getVerticalScrollBar().setUnitIncrement(config.SCROLLBAR_INCREMENT);
@@ -367,8 +422,8 @@ public class AppFrame extends JFrame implements ActionListener{
 
         HashMap<String, Component> deleteButtonsMap = new HashMap<>();  // temporary initialise to remove errors.
 
-        if (createdPanel instanceof GeneratorsPanel) {
-            deleteButtonsMap = ((GeneratorsPanel) createdPanel).dataPanel.deleteButtonsMap;
+        if (createdPanel instanceof ViewGeneratorsPanel) {
+            deleteButtonsMap = ((ViewGeneratorsPanel) createdPanel).generatorsPanel.deleteButtonsMap;
         }
         else if (createdPanel instanceof ViewDataPanel) {
             deleteButtonsMap = ((ViewDataPanel) createdPanel).dataPanel.deleteButtonsMap;
@@ -394,10 +449,10 @@ public class AppFrame extends JFrame implements ActionListener{
         }
 
         listsHashMap = CSVHandler.createMonthLists(dataList);  // remakes the listsHashMap
-        this.remove(currentPanel);  // removes the old expenses panel.
+        this.remove(currentPanel);  // removes the old panel.
 
-        if (sourcePanel instanceof GeneratorsPanel) {
-            createGeneratorsPanel(comboBoxSelection);  // recreates GeneratorsPanel.
+        if (sourcePanel instanceof ViewGeneratorsPanel) {
+            createViewGeneratorsPanel(comboBoxSelection);  // recreates ViewGeneratorsPanel.
         }
         else if (sourcePanel instanceof ViewDataPanel) {
             createViewDataPanel(Integer.parseInt(comboBoxSelection));  // recreates ViewDataPanel.

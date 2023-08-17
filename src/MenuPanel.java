@@ -9,10 +9,8 @@ public class MenuPanel extends JPanel {
     Config config = new Config();
 
     JButton summaryButton;
-    JButton incomeButton;
-    JButton expensesButton;
-    JButton savingsButton;
-    JButton chartButton;
+    JButton viewGeneratorsButton;
+    JButton viewDataButton;
 
     MenuPanel() {
 
@@ -27,25 +25,25 @@ public class MenuPanel extends JPanel {
         summaryButton.setForeground(config.PRIMARY_TEXT_COLOR);
         summaryButton.setBorderPainted(false);
 
-        incomeButton = new JButton("Generators");
-        incomeButton.setPreferredSize(new Dimension(config.DISPLAY_WIDTH / 3, config.MENU_HEIGHT));
-        incomeButton.setFocusable(false);
-        incomeButton.setBackground(config.GENERATORS_PANEL_COLOR);
-        incomeButton.setFont(config.MENU_FONT);
-        incomeButton.setForeground(config.PRIMARY_TEXT_COLOR);
-        incomeButton.setBorderPainted(false);
+        viewGeneratorsButton = new JButton("Generators");
+        viewGeneratorsButton.setPreferredSize(new Dimension(config.DISPLAY_WIDTH / 3, config.MENU_HEIGHT));
+        viewGeneratorsButton.setFocusable(false);
+        viewGeneratorsButton.setBackground(config.GENERATORS_PANEL_COLOR);
+        viewGeneratorsButton.setFont(config.MENU_FONT);
+        viewGeneratorsButton.setForeground(config.PRIMARY_TEXT_COLOR);
+        viewGeneratorsButton.setBorderPainted(false);
         
-        expensesButton = new JButton("Data");
-        expensesButton.setPreferredSize(new Dimension(config.DISPLAY_WIDTH / 3, config.MENU_HEIGHT));
-        expensesButton.setFocusable(false);
-        expensesButton.setBackground(config.VIEW_DATA_PANEL_COLOR);
-        expensesButton.setFont(config.MENU_FONT);
-        expensesButton.setForeground(config.PRIMARY_TEXT_COLOR);
-        expensesButton.setBorderPainted(false);
+        viewDataButton = new JButton("Data");
+        viewDataButton.setPreferredSize(new Dimension(config.DISPLAY_WIDTH / 3, config.MENU_HEIGHT));
+        viewDataButton.setFocusable(false);
+        viewDataButton.setBackground(config.VIEW_DATA_PANEL_COLOR);
+        viewDataButton.setFont(config.MENU_FONT);
+        viewDataButton.setForeground(config.PRIMARY_TEXT_COLOR);
+        viewDataButton.setBorderPainted(false);
 
         this.add(summaryButton);
-        this.add(incomeButton);
-        this.add(expensesButton);
+        this.add(viewGeneratorsButton);
+        this.add(viewDataButton);
         
     }
     

@@ -4,6 +4,7 @@
 
 import java.awt.*;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 import javax.swing.JLabel;
@@ -38,6 +39,7 @@ public class Config {
     
     // DATA SOURCE
     public final String DATA_FILEPATH = "data.csv";
+    final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     public ArrayList<Component> makeDataHeaderRowComponents() {
 

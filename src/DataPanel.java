@@ -22,7 +22,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-public class ViewDataSubPanel2 extends JPanel {
+public class DataPanel extends JPanel {
 
     Config config = new Config();
 
@@ -33,7 +33,7 @@ public class ViewDataSubPanel2 extends JPanel {
     boolean containsFilter;
     boolean noDataCheck;
 
-    ViewDataSubPanel2(Integer year, String filter) {
+    DataPanel(Integer year, String filter) {
 
         this.setLayout(new GridBagLayout());
         GridBagConstraints layoutConstraints = new GridBagConstraints();

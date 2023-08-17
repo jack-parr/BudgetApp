@@ -1,21 +1,18 @@
 /*
  * This is the summary tab panel.
- * 
- * NOTES:
- * - Need a method for creating a List<Float> of monthly plot points from dataList.
- * - Need a method for creating a graph panel.
- * - Need a JPanel class that will be the one the graph is drawn onto, based on inputs: datapoints, timeframe, and savings goal.
- * - Tutorial for graph drawing: https://stackoverflow.com/questions/8693342/drawing-a-simple-line-graph-in-java
- * - Another tutorial: https://www.codespeedy.com/plot-graph-in-java/
  */
 
 import javax.swing.*;
 import java.awt.*;
+import java.time.LocalDate;
 
 public class SummaryPanel extends JPanel {
 
     Config config = new Config();
     JComboBox<String> periodComboBox;
+    JTextField startDateInput;
+    JTextField endDateInput;
+    JButton applyCustomPeriodButton;
     GraphPanel graphPanel;
 
     final int PANEL_HEADER_HEIGHT = 40;
@@ -29,7 +26,7 @@ public class SummaryPanel extends JPanel {
         JLabel periodSelectLabel = new JLabel("Period: ");
         periodSelectLabel.setFont(config.PRIMARY_FONT);
         periodSelectLabel.setForeground(config.PRIMARY_TEXT_COLOR);
-        periodSelectLabel.setPreferredSize(new Dimension(100, PANEL_HEADER_HEIGHT));
+        periodSelectLabel.setPreferredSize(new Dimension(70, PANEL_HEADER_HEIGHT));
         this.add(periodSelectLabel);
 
         periodComboBox = new JComboBox<>();
@@ -39,17 +36,36 @@ public class SummaryPanel extends JPanel {
         periodComboBox.addItem("Last 6 Months");
         periodComboBox.addItem("Last 12 Months");
         periodComboBox.addItem("All-Time");
-        periodComboBox.addItem("Savings Goal");
-        periodComboBox.setPreferredSize(new Dimension(150, PANEL_HEADER_HEIGHT));
+        periodComboBox.addItem("Custom");
+        periodComboBox.setPreferredSize(new Dimension(120, PANEL_HEADER_HEIGHT));
         this.add(periodComboBox);
 
-        JLabel summmaryPanelHeaderGapFiller = new JLabel();
-        summmaryPanelHeaderGapFiller.setBackground(config.SUMMARY_PANEL_COLOR);
-        summmaryPanelHeaderGapFiller.setOpaque(true);
-        summmaryPanelHeaderGapFiller.setPreferredSize(new Dimension(config.DISPLAY_WIDTH - (periodSelectLabel.getPreferredSize().width + periodComboBox.getPreferredSize().width), PANEL_HEADER_HEIGHT));
-        this.add(summmaryPanelHeaderGapFiller);
+        startDateInput = new JTextField();
+        startDateInput.setText(LocalDate.now().minusDays(LocalDate.now().getDayOfMonth() - 1).format(config.DATE_TIME_FORMATTER));
+        startDateInput.setEnabled(false);
+        startDateInput.setPreferredSize(new Dimension(100, PANEL_HEADER_HEIGHT));
+        this.add(startDateInput);
 
-        graphPanel = new GraphPanel((String) periodComboBox.getSelectedItem());
+        endDateInput = new JTextField();
+        endDateInput.setText(LocalDate.now().plusDays(LocalDate.now().lengthOfMonth() - LocalDate.now().getDayOfMonth()).format(config.DATE_TIME_FORMATTER));
+        endDateInput.setEnabled(false);
+        endDateInput.setPreferredSize(new Dimension(100, PANEL_HEADER_HEIGHT));
+        this.add(endDateInput);
+
+        applyCustomPeriodButton = new JButton("Apply");
+        applyCustomPeriodButton.setEnabled(false);
+        applyCustomPeriodButton.setPreferredSize(new Dimension(100, PANEL_HEADER_HEIGHT));
+        this.add(applyCustomPeriodButton);
+
+        // JLabel summmaryPanelHeaderGapFiller = new JLabel();
+        // summmaryPanelHeaderGapFiller.setBackground(config.SUMMARY_PANEL_COLOR);
+        // summmaryPanelHeaderGapFiller.setOpaque(true);
+        // summmaryPanelHeaderGapFiller.setPreferredSize(new Dimension(config.DISPLAY_WIDTH - (periodSelectLabel.getPreferredSize().width + periodComboBox.getPreferredSize().width), PANEL_HEADER_HEIGHT));
+        // this.add(summmaryPanelHeaderGapFiller);
+
+        // change graphPanel arguments to be contents of the startDateInput and endDateInput.
+        // the action listener for the periodComboBox will change these values and generate a new graphPanel.
+        graphPanel = new GraphPanel(startDateInput.getText(), endDateInput.getText());
         graphPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT - PANEL_HEADER_HEIGHT));
         this.add(graphPanel);
 
