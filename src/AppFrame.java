@@ -189,7 +189,7 @@ public class AppFrame extends JFrame implements ActionListener{
             // HANDLING NEW DATA BUTTON
             else if (e.getSource() == viewGeneratorsPanel.newDataButton) {
                 this.remove(currentPanel);
-                createAddNewDataPanel();
+                createAddNewDataPanel(currentPanel);
                 this.revalidate();
                 this.repaint();
             }
@@ -212,7 +212,7 @@ public class AppFrame extends JFrame implements ActionListener{
             // HANDLING NEW DATA BUTTON
             else if (e.getSource() == viewDataPanel.newDataButton) {
                 this.remove(currentPanel);
-                createAddNewDataPanel();
+                createAddNewDataPanel(currentPanel);
                 this.revalidate();
                 this.repaint();
             }
@@ -286,17 +286,24 @@ public class AppFrame extends JFrame implements ActionListener{
                 }
             }
 
+            // HANDLING CLOSE BUTTON
             else if (e.getSource() == addNewDataPanel.closeButton) {
                 this.remove(currentPanel);
-                createViewDataPanel(0);
+                if (addNewDataPanel.sourcePanel instanceof ViewDataPanel) {
+                    createViewDataPanel(0);
+                }
+                else if (addNewDataPanel.sourcePanel instanceof ViewGeneratorsPanel) {
+                    createViewGeneratorsPanel("Expense");
+                }
+                
             }
 
+            // HANDLING CONFIRM BUTTON
             else if (e.getSource() == addNewDataPanel.confirmButton) {
                 addNewDataEntryFromUser();
             }
 
-            // will need input checks to make sure all inputs are present and valid
-
+            // HANDLING CATEGORY SHORTCUT BUTTONS
             else if (actionCommand.substring(0, 8).equals("category")) {
                 ((AddNewDataPanel) currentPanel).categoryInput.setText(actionCommand.substring(8));
             }
@@ -331,7 +338,7 @@ public class AppFrame extends JFrame implements ActionListener{
 
     public void createViewGeneratorsPanel(String selectedType) {
 
-        // Creates and paints the income panel.
+        // Creates and paints the viewGeneratorsPanel.
 
         viewGeneratorsPanel = new ViewGeneratorsPanel(selectedType);
 
@@ -350,7 +357,7 @@ public class AppFrame extends JFrame implements ActionListener{
 
     public void createViewDataPanel(int selectedYear) {
 
-        // Creates and paints the expenses panel.
+        // Creates and paints the viewDataPanel.
 
         viewDataPanel = new ViewDataPanel(selectedYear);
 
@@ -387,11 +394,11 @@ public class AppFrame extends JFrame implements ActionListener{
 
     }
 
-    public void createAddNewDataPanel() {
+    public void createAddNewDataPanel(JPanel sourcePanel) {
 
         // Creates and paints the new data panel.
 
-        addNewDataPanel = new AddNewDataPanel();
+        addNewDataPanel = new AddNewDataPanel(sourcePanel);
 
         // SETTING ACTION LISTENERS
         addNewDataPanel.oneOffButton.addActionListener(this);

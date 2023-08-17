@@ -19,9 +19,11 @@ import javax.swing.JToggleButton;
 public class AddNewDataPanel extends JPanel {
 
     Config config = new Config();
+
     final int INPUT_ROW_HEIGHT = 30;
     final int DATE_SEPARATOR_WIDTH = 15;
 
+    JPanel sourcePanel;
     ButtonGroup isExpenseButtonGroup;
     ButtonGroup isRecurringButtonGroup;
     JToggleButton oneOffButton;
@@ -47,7 +49,9 @@ public class AddNewDataPanel extends JPanel {
     HashMap<String, JButton> categoryShortcutButtonsMap = new HashMap<>();
     ArrayList<String> frequencyList = new ArrayList<>();
 
-    AddNewDataPanel() {
+    AddNewDataPanel(JPanel sourcePanel) {
+
+        this.sourcePanel = sourcePanel;
 
         // POPULATING categoryShortcuts
         categoryShortcutsOneOff.add("Shops");
