@@ -42,16 +42,16 @@ public class AppFrame extends JFrame implements ActionListener{
     AppFrame() {
 
         // LOADING DATA
-        dataList = CSVHandler.readDataFromCSV(config.DATA_FILEPATH);
-        CSVHandler.assignIds(dataList);  // assigning IDs.
-        listsHashMap = CSVHandler.createMonthLists(dataList);  // creating the listsHashMap.
+        dataList = DataHandler.readDataFromCSV(config.DATA_FILEPATH);
+        DataHandler.assignIds(dataList);  // assigning IDs.
+        listsHashMap = DataHandler.createMonthLists(dataList);  // creating the listsHashMap.
         checkRecurringEntryGenerators(dataList);  // checking the generators.
 
         // SAVE DATA ON CLOSE
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         this.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {  // X window button is pressed.
-                CSVHandler.saveDataToCSV(dataList, config.DATA_FILEPATH);  // saves data.
+                DataHandler.saveDataToCSV(dataList, config.DATA_FILEPATH);  // saves data.
                 System.exit(0);  // exits programme.
             }
         });
@@ -455,7 +455,7 @@ public class AppFrame extends JFrame implements ActionListener{
             }
         }
 
-        listsHashMap = CSVHandler.createMonthLists(dataList);  // remakes the listsHashMap
+        listsHashMap = DataHandler.createMonthLists(dataList);  // remakes the listsHashMap
         this.remove(currentPanel);  // removes the old panel.
 
         if (sourcePanel instanceof ViewGeneratorsPanel) {
@@ -487,13 +487,13 @@ public class AppFrame extends JFrame implements ActionListener{
         metadata[7] = addNewDataPanel.categoryInput.getText();  // category.
         metadata[8] = addNewDataPanel.valueInput.getText();  // value.
 
-        DataEntry newDataEntry = CSVHandler.createDataEntry(metadata);
+        DataEntry newDataEntry = DataHandler.createDataEntry(metadata);
         dataList.add(newDataEntry);
 
         // POST PROCESSING
-        CSVHandler.assignIds(dataList);  // reassigning IDs.
+        DataHandler.assignIds(dataList);  // reassigning IDs.
         checkRecurringEntryGenerators(dataList);  // check for any due generators and handle these.
-        listsHashMap = CSVHandler.createMonthLists(dataList);   // create monthLists.
+        listsHashMap = DataHandler.createMonthLists(dataList);   // create monthLists.
 
         // change this for something in the app.
         addNewDataPanel.categoryInput.setText("");
@@ -528,7 +528,7 @@ public class AppFrame extends JFrame implements ActionListener{
                     metadata[7] = dataEntry.getCategory();  // category.
                     metadata[8] = Float.toString(dataEntry.getValue());  // value.
 
-                    DataEntry newDataEntry = CSVHandler.createDataEntry(metadata);
+                    DataEntry newDataEntry = DataHandler.createDataEntry(metadata);
                     tempAddList.add(newDataEntry);
 
                     // UPDATING GENERATOR
@@ -575,7 +575,7 @@ public class AppFrame extends JFrame implements ActionListener{
 
         }
 
-        CSVHandler.assignIds(dataList);  // reassigning IDs after all the new entries.
+        DataHandler.assignIds(dataList);  // reassigning IDs after all the new entries.
 
     }
 

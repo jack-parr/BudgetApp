@@ -12,11 +12,11 @@ import java.time.format.DateTimeFormatter;
 import com.opencsv.*;
 
 
-public class CSVHandler {
+public class DataHandler {
 
     static Config config = new Config();
 
-    CSVHandler() {
+    DataHandler() {
 
     }
 
