@@ -12,8 +12,8 @@ import javax.swing.JLabel;
 public class Config {
 
     // DIMENSIONS
-    public final int DISPLAY_WIDTH = 600;
-    public final int DISPLAY_HEIGHT = 600;
+    public final int DISPLAY_WIDTH = Toolkit.getDefaultToolkit().getScreenSize().width - 50;
+    public final int DISPLAY_HEIGHT = Toolkit.getDefaultToolkit().getScreenSize().height - 100;
     public final int MENU_HEIGHT = 50;
     public final int PANEL_HEIGHT = DISPLAY_HEIGHT - MENU_HEIGHT;
     public final int DATA_ROW_HEIGHT = 30;
