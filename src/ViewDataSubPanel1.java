@@ -14,6 +14,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 public class ViewDataSubPanel1 extends JPanel {
 
@@ -21,6 +22,10 @@ public class ViewDataSubPanel1 extends JPanel {
     JLabel yearSelectLabel = new JLabel("Year:");
     JComboBox<Integer> yearComboBox = new JComboBox<>();
     JButton newDataButton;
+    JLabel filterLabel = new JLabel("Filter:");
+    JTextField filterInput;
+    JButton applyFilterButton;
+    JButton resetFilterButton;
 
     ViewDataSubPanel1() {
 
@@ -40,7 +45,7 @@ public class ViewDataSubPanel1 extends JPanel {
         // PAINTING PANEL
         yearSelectLabel.setFont(config.PRIMARY_FONT);
         yearSelectLabel.setForeground(config.PRIMARY_TEXT_COLOR);
-        yearSelectLabel.setPreferredSize(new Dimension(100, ViewDataPanel.PANEL_HEADER_HEIGHT));
+        yearSelectLabel.setPreferredSize(new Dimension(50, ViewDataPanel.PANEL_HEADER_HEIGHT));
         this.add(yearSelectLabel);
 
         yearComboBox.setPreferredSize(new Dimension(100, ViewDataPanel.PANEL_HEADER_HEIGHT));
@@ -49,6 +54,24 @@ public class ViewDataSubPanel1 extends JPanel {
         newDataButton = new JButton("Add Data");
         newDataButton.setPreferredSize(new Dimension(100, ViewDataPanel.PANEL_HEADER_HEIGHT));
         this.add(newDataButton);
+
+        filterLabel.setFont(config.PRIMARY_FONT);
+        filterLabel.setForeground(config.PRIMARY_TEXT_COLOR);
+        filterLabel.setPreferredSize(new Dimension(60, ViewDataPanel.PANEL_HEADER_HEIGHT));
+        this.add(filterLabel);
+
+        filterInput = new JTextField();
+        filterInput.setFont(config.PRIMARY_FONT);
+        filterInput.setPreferredSize(new Dimension(100, ViewDataPanel.PANEL_HEADER_HEIGHT));
+        this.add(filterInput);
+
+        applyFilterButton = new JButton("Apply");
+        applyFilterButton.setPreferredSize(new Dimension(80, ViewDataPanel.PANEL_HEADER_HEIGHT));
+        this.add(applyFilterButton);
+
+        resetFilterButton = new JButton("Reset");
+        resetFilterButton.setPreferredSize(new Dimension(80, ViewDataPanel.PANEL_HEADER_HEIGHT));
+        this.add(resetFilterButton);
 
     }
     

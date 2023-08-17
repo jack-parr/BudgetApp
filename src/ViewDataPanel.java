@@ -38,10 +38,10 @@ public class ViewDataPanel extends JPanel {
         }
 
         if (checkedYear != 0) {
-            dataPanel = new ViewDataSubPanel2(selectedYear);
+            dataPanel = new ViewDataSubPanel2(selectedYear, headerPanel.filterInput.getText());
         }
         else {
-            dataPanel = new ViewDataSubPanel2((Integer) headerPanel.yearComboBox.getSelectedItem());
+            dataPanel = new ViewDataSubPanel2((Integer) headerPanel.yearComboBox.getSelectedItem(), headerPanel.filterInput.getText());
         }
         dataPanelScrollPane = new JScrollPane(dataPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         dataPanelScrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(config.SCROLLBAR_WIDTH, 0));

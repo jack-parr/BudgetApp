@@ -159,16 +159,7 @@ public class AppFrame extends JFrame implements ActionListener{
             
             // HANDLING YEAR CHANGE
             if (e.getSource() == viewDataPanel.headerPanel.yearComboBox) {
-                viewDataPanel.remove(viewDataPanel.dataPanelScrollPane);  // remove old dataPanel.
-                viewDataPanel.dataPanel = new ViewDataSubPanel2((Integer) viewDataPanel.headerPanel.yearComboBox.getSelectedItem());
-                viewDataPanel.dataPanelScrollPane = new JScrollPane(viewDataPanel.dataPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-                viewDataPanel.dataPanelScrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(config.SCROLLBAR_WIDTH, 0));
-                viewDataPanel.dataPanelScrollPane.getVerticalScrollBar().setUnitIncrement(config.SCROLLBAR_INCREMENT);
-                viewDataPanel.dataPanelScrollPane.setBorder(null);
-                assignDeleteButtons(viewDataPanel);  // assign listeners to delete row buttons.
-                viewDataPanel.dataPanelScrollPane.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT - ViewDataPanel.PANEL_HEADER_HEIGHT));
-                viewDataPanel.add(viewDataPanel.dataPanelScrollPane, BorderLayout.SOUTH);
-                viewDataPanel.revalidate();
+                remakeViewDataSubPanel2();
             }
 
             // HANDLING NEW DATA BUTTON
@@ -177,6 +168,17 @@ public class AppFrame extends JFrame implements ActionListener{
                 createAddNewDataPanel();
                 this.revalidate();
                 this.repaint();
+            }
+
+            // HANDLING APPLY FILTER BUTTON
+            else if (e.getSource() == viewDataPanel.headerPanel.applyFilterButton) {
+                viewDataPanel.remove(viewDataPanel.dataPanelScrollPane);  // remove old dataPanel.
+                remakeViewDataSubPanel2();
+            }
+
+            else if (e.getSource() == viewDataPanel.headerPanel.resetFilterButton) {
+                viewDataPanel.headerPanel.filterInput.setText("");
+                remakeViewDataSubPanel2();
             }
 
             // HANDLING DELETE ROW BUTTONS
@@ -300,6 +302,8 @@ public class AppFrame extends JFrame implements ActionListener{
         // SETTING ACTION LISTENERS
         viewDataPanel.headerPanel.yearComboBox.addActionListener(this);
         viewDataPanel.headerPanel.newDataButton.addActionListener(this);
+        viewDataPanel.headerPanel.applyFilterButton.addActionListener(this);
+        viewDataPanel.headerPanel.resetFilterButton.addActionListener(this);
         assignDeleteButtons(viewDataPanel);
 
         // PAINTING PANEL
@@ -309,6 +313,23 @@ public class AppFrame extends JFrame implements ActionListener{
         this.pack();
         this.repaint();
         
+    }
+
+    public void remakeViewDataSubPanel2() {
+
+        // Removes the old dataPanel and replaces it with newly specified conditions.
+
+        viewDataPanel.remove(viewDataPanel.dataPanelScrollPane);  // remove old dataPanel.
+        viewDataPanel.dataPanel = new ViewDataSubPanel2((Integer) viewDataPanel.headerPanel.yearComboBox.getSelectedItem(), viewDataPanel.headerPanel.filterInput.getText());
+        viewDataPanel.dataPanelScrollPane = new JScrollPane(viewDataPanel.dataPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        viewDataPanel.dataPanelScrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(config.SCROLLBAR_WIDTH, 0));
+        viewDataPanel.dataPanelScrollPane.getVerticalScrollBar().setUnitIncrement(config.SCROLLBAR_INCREMENT);
+        viewDataPanel.dataPanelScrollPane.setBorder(null);
+        assignDeleteButtons(viewDataPanel);  // assign listeners to delete row buttons.
+        viewDataPanel.dataPanelScrollPane.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT - ViewDataPanel.PANEL_HEADER_HEIGHT));
+        viewDataPanel.add(viewDataPanel.dataPanelScrollPane, BorderLayout.SOUTH);
+        viewDataPanel.revalidate();
+
     }
 
     public void createAddNewDataPanel() {

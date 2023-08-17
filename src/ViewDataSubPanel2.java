@@ -30,27 +30,27 @@ public class ViewDataSubPanel2 extends JPanel {
     final Font MONTH_HEADER_FONT = new Font("Arial Rounded MT Bold", Font.PLAIN, 40);
 
     HashMap<String, Component> deleteButtonsMap = new HashMap<>();
+    boolean containsFilter;
+    boolean noDataCheck;
 
-    ViewDataSubPanel2(Integer year) {
+    ViewDataSubPanel2(Integer year, String filter) {
 
         this.setLayout(new GridBagLayout());
         GridBagConstraints layoutConstraints = new GridBagConstraints();
         layoutConstraints.gridx = 0;  // makes it so every added panel is added vertically.
         this.setBackground(config.VIEW_DATA_PANEL_COLOR);
 
-        // HANDLING NO DATA
+        // HANDLING NO DATA IN DATALIST
         if (year == null) {
-            JLabel nullLabel = new JLabel("No Data", SwingConstants.CENTER);
-            nullLabel.setFont(config.PRIMARY_FONT);
-            nullLabel.setForeground(config.SECONDARY_TEXT_COLOR);       
-            nullLabel.setPreferredSize(new Dimension(config.SCROLLABLE_DISPLAY_WIDTH, config.PANEL_HEIGHT - ViewDataPanel.PANEL_HEADER_HEIGHT));
-            this.add(nullLabel);
+            paintNoData();
         }
         // HANDLING DATA
         else {
 
             List<Integer> monthKeys = new ArrayList<Integer>(AppFrame.listsHashMap.keySet().stream().toList());  // get list of monthListIDs.
             Collections.sort(monthKeys, Collections.reverseOrder());  // sort it descending.
+
+            noDataCheck = true;  // initially assumes the filter returns no data.
 
             for (int monthListKey : monthKeys) {
                 if (ViewDataPanel.getYearFromMonthKey(monthListKey) != year) {
@@ -59,6 +59,14 @@ public class ViewDataSubPanel2 extends JPanel {
 
                 ArrayList<DataEntry> monthList = AppFrame.listsHashMap.get(monthListKey);  // get list.
 
+                // CHECKING FILTER
+                containsFilter = false;
+                if (!filter.isEmpty()) {
+                    monthList.forEach(de -> {if (de.getCategory().equals(filter)) {containsFilter = true;}});
+                    if (!containsFilter) {continue;}  // skips this monthList since no data matches the filter.
+                }
+
+                noDataCheck = false;
 
                 // MONTH HEADER ROW
                 RowPanel rowPanelMonth = new RowPanel();
@@ -77,6 +85,7 @@ public class ViewDataSubPanel2 extends JPanel {
                 float monthTotal = 0;
                 int sign = 0;
                 for (DataEntry dataEntry : monthList) {
+                    if (!filter.isEmpty()) {if (!dataEntry.getCategory().equals(filter)) {continue;}}
                     if (dataEntry.getIsExpense()) {sign = -1;} 
                     else {sign = 1;}
                     monthTotal += sign * dataEntry.getValue();
@@ -129,6 +138,8 @@ public class ViewDataSubPanel2 extends JPanel {
                 Collections.sort(monthList, Comparator.comparing(DataEntry::getSortCode));
 
                 for (DataEntry dataEntry : monthList) {
+
+                    if (!filter.isEmpty()) {if (!dataEntry.getCategory().equals(filter)) {continue;}}
 
                     RowPanel rowPanelDataEntry = new RowPanel();
                     rowPanelDataEntry.setBackground(config.VIEW_DATA_PANEL_COLOR);
@@ -184,6 +195,11 @@ public class ViewDataSubPanel2 extends JPanel {
                 
             }
 
+            // PAINT NO DATA LABEL IF FILTER BLOCKS ALL DATA
+            if (noDataCheck) {
+                paintNoData();
+            }
+
             // ADD PANEL FILLER TO ALIGN TO TOP OF JSCROLLPANE WHEN NOT OVERFLOWING
             int remainingVerticalSpace = (config.PANEL_HEIGHT - ViewDataPanel.PANEL_HEADER_HEIGHT) - (this.getPreferredSize().height);
             if (remainingVerticalSpace > 0) {
@@ -194,6 +210,18 @@ public class ViewDataSubPanel2 extends JPanel {
             }
 
         }
+
+    }
+
+    public void paintNoData() {
+
+        // Paints a panel with "No Data" on it.
+
+        JLabel nullLabel = new JLabel("No Data", SwingConstants.CENTER);
+        nullLabel.setFont(config.PRIMARY_FONT);
+        nullLabel.setForeground(config.SECONDARY_TEXT_COLOR);       
+        nullLabel.setPreferredSize(new Dimension(config.SCROLLABLE_DISPLAY_WIDTH, config.PANEL_HEIGHT - ViewDataPanel.PANEL_HEADER_HEIGHT));
+        this.add(nullLabel);
 
     }
     
