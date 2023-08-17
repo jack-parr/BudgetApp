@@ -121,20 +121,25 @@ public class GraphPanel extends JPanel {
             
             currYCoord = graphZeroCoord + (currYValue * graphPoundStep);  // convert value into cartesian Coord.
 
-            // DRAWING NEW MONTH LINES
-            g2d.setStroke(new BasicStroke(3));
+            // DRAWING DAY TICKS
+            g2d.setStroke(new BasicStroke(1));
             g2d.setColor(Color.lightGray);
+            g2d.draw(new Line2D.Float(transformXCoord(currXCoord), transformYCoord(graphHeight), transformXCoord(currXCoord), transformYCoord(-4)));
+
+            // DRAWING WEEK TICKS
+            if (date.getDayOfWeek().toString() == "MONDAY") {
+                g2d.setStroke(new BasicStroke(3));
+                g2d.setColor(Color.lightGray);
+                g2d.draw(new Line2D.Float(transformXCoord(currXCoord), transformYCoord(graphHeight), transformXCoord(currXCoord), transformYCoord(-8)));
+            }
+
+            // DRAWING NEW MONTH TICKS
             if (date.getDayOfMonth() == 1) {
+                g2d.setStroke(new BasicStroke(3));
+                g2d.setColor(Color.gray);
                 g2d.draw(new Line2D.Float(transformXCoord(currXCoord), transformYCoord((float) -0.9* MARGIN), transformXCoord(currXCoord), transformYCoord(graphHeight)));
                 g2d.setColor(Color.gray);
                 drawRotate(g2d, transformXCoord(currXCoord + 2), transformYCoord(-10), 90, date.getMonth().toString().substring(0, 3) + " " + Integer.toString(date.getYear()).substring(2));
-            }
-
-            // DRAWING WEEK TICKS
-            g2d.setStroke(new BasicStroke(1));
-            g2d.setColor(Color.lightGray);
-            if (date.getDayOfWeek().toString() == "MONDAY") {
-                g2d.draw(new Line2D.Float(transformXCoord(currXCoord), transformYCoord(graphHeight), transformXCoord(currXCoord), transformYCoord(-4)));
             }
 
             // DRAWING DATA LINE
