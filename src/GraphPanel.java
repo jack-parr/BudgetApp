@@ -2,10 +2,13 @@
  * This is the panel that plots the graph shown in SummaryPanel.
  */
 
+import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -27,15 +30,25 @@ public class GraphPanel extends JPanel {
     final float MARGIN = 60;
     final float Y_TICK_MULTIPLE = 100;
 
+    Graphics2D g2d;
     float graphWidth;
     float graphHeight;
+    float graphDateStep;
+    float graphZeroCoord;
+    float graphPoundStep;
+    LinkedHashSet<LocalDate> graphDates;
+    ArrayList<Float> adjustedValuesList;
     float graphStartValue = 0;
     HashMap<LocalDate, Float> savingsMap;
+    HashMap<LocalDate, Float> graphMap = new HashMap<>();
 
     LocalDate startDate;
     LocalDate endDate;
 
     GraphPanel(String startDate, String endDate) {
+
+        this.setBackground(Color.white);
+        this.setOpaque(true);
 
         this.startDate = LocalDate.parse(startDate, config.DATE_TIME_FORMATTER);
         this.endDate = LocalDate.parse(endDate, config.DATE_TIME_FORMATTER);
@@ -48,7 +61,7 @@ public class GraphPanel extends JPanel {
     protected void paintComponent(Graphics g) {
 
         super.paintComponent(g);
-        Graphics2D g2d = (Graphics2D) g;
+        g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         graphWidth = getWidth() - 2*MARGIN;
         graphHeight = getHeight() - 2*MARGIN;
@@ -60,18 +73,18 @@ public class GraphPanel extends JPanel {
             }
             else {break;}  // breaks at first one that is not before startDate, since dates are in chronological order.
         }
-        LinkedHashSet<LocalDate> graphDates = startDate.datesUntil(endDate.plusDays(1)).collect(Collectors.toCollection(LinkedHashSet::new));  // creates set of relevant dates for selectedPeriod.
+        graphDates = startDate.datesUntil(endDate.plusDays(1)).collect(Collectors.toCollection(LinkedHashSet::new));  // creates set of relevant dates for selectedPeriod.
         Set<LocalDate> datasetDates = savingsMap.keySet();  // creates a set of dates from the dataset.
         datasetDates.retainAll(graphDates);  // intersection.
-        ArrayList<Float> adjustedValuesList = new ArrayList<>();
+        adjustedValuesList = new ArrayList<>();
         datasetDates.forEach(date -> adjustedValuesList.add(savingsMap.get(date) - graphStartValue));  // extracting all relevant values from savingsMap.
 
         float graphMaxValue = Math.max(Collections.max(adjustedValuesList), 0) + 10;  // maximum value on the graph.
         float graphMinValue = Math.min(Collections.min(adjustedValuesList), 0) - 20;  // minimum value on the graph.
         float graphRange = graphMaxValue - graphMinValue;  // absolute range of values on the graph.
-        float graphZeroCoord = (Math.abs(graphMinValue) / graphRange) * graphHeight;  // yCoord of zero line.
-        float graphPoundStep = graphHeight / graphRange;  // £1 in graph coord units.
-        float graphDateStep = graphWidth / (graphDates.size() - 1);  // 1 day in graph coord units. The minus 1 is because it plots the first point at xCoord = 0.
+        graphZeroCoord = (Math.abs(graphMinValue) / graphRange) * graphHeight;  // yCoord of zero line.
+        graphPoundStep = graphHeight / graphRange;  // £1 in graph coord units.
+        graphDateStep = graphWidth / (graphDates.size() - 1);  // 1 day in graph coord units. The minus 1 is because it plots the first point at xCoord = 0.
 
         // DRAW GRAPH SKELETON
         g2d.setStroke(new BasicStroke(5));
@@ -120,6 +133,7 @@ public class GraphPanel extends JPanel {
             }
             
             currYCoord = graphZeroCoord + (currYValue * graphPoundStep);  // convert value into cartesian Coord.
+            graphMap.put(date, currYCoord);
 
             // DRAWING DAY TICKS
             g2d.setStroke(new BasicStroke(1));

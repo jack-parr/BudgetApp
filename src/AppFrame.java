@@ -7,6 +7,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.time.LocalDate;
@@ -21,7 +23,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-public class AppFrame extends JFrame implements ActionListener{
+public class AppFrame extends JFrame implements ActionListener, MouseListener{
 
     Config config = new Config();
     static ArrayList<DataEntry> dataList;
@@ -81,6 +83,31 @@ public class AppFrame extends JFrame implements ActionListener{
         this.setVisible(true);
 
     }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+
+        // Handles the mouse click on the GraphFrontPane.
+
+        float xCoord = e.getX() - summaryPanel.graphPanel.MARGIN;  // into cartesian coords.
+        float yCoord = summaryPanel.graphPanel.MARGIN + summaryPanel.graphPanel.graphHeight - e.getY();
+        if (xCoord>0 && xCoord<summaryPanel.graphPanel.graphWidth && yCoord>0 && yCoord<summaryPanel.graphPanel.graphHeight) {
+            summaryPanel.graphClick(xCoord, yCoord);
+        }
+
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {}
+
+    @Override
+    public void mouseReleased(MouseEvent e) {}
+
+    @Override
+    public void mouseEntered(MouseEvent e) {}
+
+    @Override
+    public void mouseExited(MouseEvent e) {}
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -153,6 +180,7 @@ public class AppFrame extends JFrame implements ActionListener{
                 }
                 summaryPanel.remove(summaryPanel.graphPanel);  // remove old graphPanel.
                 summaryPanel.graphPanel = new GraphPanel(summaryPanel.startDateInput.getText(), summaryPanel.endDateInput.getText());
+                summaryPanel.graphPanel.addMouseListener(this);
                 summaryPanel.graphPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT - summaryPanel.PANEL_HEADER_HEIGHT));
                 summaryPanel.add(summaryPanel.graphPanel);
                 summaryPanel.revalidate();
@@ -321,6 +349,7 @@ public class AppFrame extends JFrame implements ActionListener{
         // SETTING ACTION LISTENERS
         summaryPanel.periodComboBox.addActionListener(this);
         summaryPanel.applyCustomPeriodButton.addActionListener(this);
+        summaryPanel.graphPanel.addMouseListener(this);
 
         currentPanel = summaryPanel;
         currentPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT));

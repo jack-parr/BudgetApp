@@ -13,6 +13,7 @@ public class SummaryPanel extends JPanel {
     JTextField startDateInput;
     JTextField endDateInput;
     JButton applyCustomPeriodButton;
+    JLabel clickDataLabel;
     GraphPanel graphPanel;
 
     final int PANEL_HEADER_HEIGHT = 40;
@@ -57,14 +58,12 @@ public class SummaryPanel extends JPanel {
         applyCustomPeriodButton.setPreferredSize(new Dimension(100, PANEL_HEADER_HEIGHT));
         this.add(applyCustomPeriodButton);
 
-        // JLabel summmaryPanelHeaderGapFiller = new JLabel();
-        // summmaryPanelHeaderGapFiller.setBackground(config.SUMMARY_PANEL_COLOR);
-        // summmaryPanelHeaderGapFiller.setOpaque(true);
-        // summmaryPanelHeaderGapFiller.setPreferredSize(new Dimension(config.DISPLAY_WIDTH - (periodSelectLabel.getPreferredSize().width + periodComboBox.getPreferredSize().width), PANEL_HEADER_HEIGHT));
-        // this.add(summmaryPanelHeaderGapFiller);
+        clickDataLabel = new JLabel();
+        clickDataLabel.setFont(config.PRIMARY_FONT);
+        clickDataLabel.setForeground(config.PRIMARY_TEXT_COLOR);
+        clickDataLabel.setPreferredSize(new Dimension(500, PANEL_HEADER_HEIGHT));
+        this.add(clickDataLabel);
 
-        // change graphPanel arguments to be contents of the startDateInput and endDateInput.
-        // the action listener for the periodComboBox will change these values and generate a new graphPanel.
         graphPanel = new GraphPanel(startDateInput.getText(), endDateInput.getText());
         graphPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT - PANEL_HEADER_HEIGHT));
         this.add(graphPanel);
@@ -72,5 +71,22 @@ public class SummaryPanel extends JPanel {
         this.setVisible(true);
 
     }
-    
-}
+
+    public void graphClick(float xCoord, float yCoord) {
+
+        // This handles a click on the graph and places the information into the header bar.
+
+        float datePoint = Math.round(xCoord / graphPanel.graphDateStep);
+        LocalDate clickDate = (LocalDate) graphPanel.graphDates.toArray()[(int) datePoint];
+
+        if (clickDate.isBefore(LocalDate.now().plusDays(1))) {
+            float clickYCoord = graphPanel.graphMap.get(clickDate);
+            float clickValue = (clickYCoord - graphPanel.graphZeroCoord) / graphPanel.graphPoundStep;
+
+            clickDataLabel.setText(clickDate.format(config.DATE_TIME_FORMATTER) + ": £" + String.format("$%.2f", Math.abs(clickValue)));
+        }
+            
+        }
+
+
+    }

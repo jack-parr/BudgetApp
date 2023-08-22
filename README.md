@@ -4,7 +4,6 @@ AppFrame acts as the actionListener for all components.
 
 # TO DO:
 - Add ability to click on graph to place marker and read precise value.
-- Add ability to resize window.
 
 - Add input checks to all action handlers.
 - Format everything.
