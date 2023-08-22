@@ -2,10 +2,13 @@
  * This is the panel that plots the graph shown in SummaryPanel.
  */
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -62,19 +65,33 @@ public class GraphPanel extends JPanel {
         graphWidth = getWidth() - 2*MARGIN;
         graphHeight = getHeight() - 2*MARGIN;
 
-        // CALCULATE GRAPH PARAMETERS
+        // CALCULATE GRAPH START VALUE
         for (LocalDate date : savingsMap.keySet()) {
             if (date.isBefore(startDate)) {
                 graphStartValue = savingsMap.get(date);
             }
             else {break;}  // breaks at first one that is not before startDate, since dates are in chronological order.
         }
+
+        // ADJUSTING DATA
         graphDates = startDate.datesUntil(endDate.plusDays(1)).collect(Collectors.toCollection(LinkedHashSet::new));  // creates set of relevant dates for selectedPeriod.
         Set<LocalDate> datasetDates = savingsMap.keySet();  // creates a set of dates from the dataset.
         datasetDates.retainAll(graphDates);  // intersection.
         adjustedValuesList = new ArrayList<>();
         datasetDates.forEach(date -> adjustedValuesList.add(savingsMap.get(date) - graphStartValue));  // extracting all relevant values from savingsMap.
 
+        // CHECKING IF THERE IS NO DATA
+        if (adjustedValuesList.isEmpty()) {
+            JLabel noDataLabel = new JLabel("No Data", SwingConstants.CENTER);
+            noDataLabel.setFont(config.PRIMARY_FONT);
+            noDataLabel.setForeground(config.SECONDARY_TEXT_COLOR);
+            noDataLabel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, getHeight()));
+            this.add(noDataLabel);
+            this.revalidate();
+            return;
+        }
+
+        // CALCULATING GRAPH PARAMETERS
         float graphMaxValue = Math.max(Collections.max(adjustedValuesList), 0) + 10;  // maximum value on the graph.
         float graphMinValue = Math.min(Collections.min(adjustedValuesList), 0) - 20;  // minimum value on the graph.
         float graphRange = graphMaxValue - graphMinValue;  // absolute range of values on the graph.

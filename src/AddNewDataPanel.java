@@ -42,11 +42,14 @@ public class AddNewDataPanel extends JPanel {
     JComboBox<Integer> endDateDayInput = new JComboBox<>();
     JComboBox<Integer> endDateMonthInput = new JComboBox<>();
     JComboBox<Integer> endDateYearInput = new JComboBox<>();
+    JLabel categoryHeading;
     JPanel categoryInputPanel;
     JTextField categoryInput;
+    JLabel valueHeading;
     JTextField valueInput;
     JButton closeButton;
     JButton confirmButton;
+    JLabel systemResponseLabel;
 
     ArrayList<String> categoryShortcutsOneOff = new ArrayList<>();
     ArrayList<String> categoryShortcutsRecurring = new ArrayList<>();
@@ -282,7 +285,7 @@ public class AddNewDataPanel extends JPanel {
         categoryInputPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 3));
         categoryInputPanel.setBackground(config.ADD_NEW_DATA_PANEL_COLOR);
 
-        JLabel categoryHeading = new JLabel("Category:");
+        categoryHeading = new JLabel("Category:");
         categoryHeading.setFont(config.PRIMARY_FONT);
         categoryHeading.setForeground(config.PRIMARY_TEXT_COLOR);
         categoryHeading.setPreferredSize(new Dimension(100 + config.PANEL_X_GAP, INPUT_ROW_HEIGHT));
@@ -317,7 +320,7 @@ public class AddNewDataPanel extends JPanel {
 
         // Paints the value input row.
 
-        JLabel valueHeading = new JLabel("Amount:          £");
+        valueHeading = new JLabel("Amount:          £");
         valueHeading.setFont(config.PRIMARY_FONT);
         valueHeading.setForeground(config.PRIMARY_TEXT_COLOR);
         valueHeading.setPreferredSize(new Dimension(100, INPUT_ROW_HEIGHT));
@@ -332,7 +335,7 @@ public class AddNewDataPanel extends JPanel {
 
     public void paintCancelConfirm() {
 
-        // Paints the cancel and confirm buttons.
+        // Paints the cancel and confirm buttons, and the system response label.
 
         closeButton = new JButton("Close");
         closeButton.setFont(config.PRIMARY_FONT);
@@ -347,6 +350,12 @@ public class AddNewDataPanel extends JPanel {
         confirmButton.setBackground(config.APPLY_BUTTON_COLOR);
         confirmButton.setFocusable(false);
         this.add(confirmButton);
+
+        systemResponseLabel = new JLabel();
+        systemResponseLabel.setFont(config.PRIMARY_FONT);
+        systemResponseLabel.setForeground(config.PRIMARY_TEXT_COLOR);
+        systemResponseLabel.setPreferredSize(new Dimension(250, confirmButton.getPreferredSize().height));
+        this.add(systemResponseLabel);
 
     }
 

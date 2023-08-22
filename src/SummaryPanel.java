@@ -10,10 +10,12 @@ public class SummaryPanel extends JPanel {
 
     Config config = new Config();
     JComboBox<String> periodComboBox;
+    JLabel startDateLabel;
     JTextField startDateInput;
+    JLabel endDateLabel;
     JTextField endDateInput;
     JButton applyCustomPeriodButton;
-    JLabel clickDataLabel;
+    JLabel systemResponseLabel;
     GraphPanel graphPanel;
 
     SummaryPanel() {
@@ -43,11 +45,11 @@ public class SummaryPanel extends JPanel {
 
         paintHeaderSpacer();
 
-        JLabel startDataLabel = new JLabel("From: ");
-        startDataLabel.setFont(config.PRIMARY_FONT);
-        startDataLabel.setForeground(config.PRIMARY_TEXT_COLOR);
-        startDataLabel.setPreferredSize(new Dimension(45, config.PANEL_HEADER_HEIGHT));
-        this.add(startDataLabel);
+        startDateLabel = new JLabel("From: ");
+        startDateLabel.setFont(config.PRIMARY_FONT);
+        startDateLabel.setForeground(config.PRIMARY_TEXT_COLOR);
+        startDateLabel.setPreferredSize(new Dimension(45, config.PANEL_HEADER_HEIGHT));
+        this.add(startDateLabel);
 
         startDateInput = new JTextField();
         startDateInput.setFont(config.PRIMARY_FONT);
@@ -56,11 +58,11 @@ public class SummaryPanel extends JPanel {
         startDateInput.setPreferredSize(new Dimension(100, config.PANEL_HEADER_HEIGHT));
         this.add(startDateInput);
 
-        JLabel endDataLabel = new JLabel("Until: ");
-        endDataLabel.setFont(config.PRIMARY_FONT);
-        endDataLabel.setForeground(config.PRIMARY_TEXT_COLOR);
-        endDataLabel.setPreferredSize(new Dimension(40, config.PANEL_HEADER_HEIGHT));
-        this.add(endDataLabel);
+        endDateLabel = new JLabel("Until: ");
+        endDateLabel.setFont(config.PRIMARY_FONT);
+        endDateLabel.setForeground(config.PRIMARY_TEXT_COLOR);
+        endDateLabel.setPreferredSize(new Dimension(40, config.PANEL_HEADER_HEIGHT));
+        this.add(endDateLabel);
 
         endDateInput = new JTextField();
         endDateInput.setFont(config.PRIMARY_FONT);
@@ -80,11 +82,11 @@ public class SummaryPanel extends JPanel {
 
         paintHeaderSpacer();
 
-        clickDataLabel = new JLabel("Click Graph");
-        clickDataLabel.setFont(config.PRIMARY_FONT);
-        clickDataLabel.setForeground(config.PRIMARY_TEXT_COLOR);
-        clickDataLabel.setPreferredSize(new Dimension(150, config.PANEL_HEADER_HEIGHT));
-        this.add(clickDataLabel);
+        systemResponseLabel = new JLabel("Click Graph");
+        systemResponseLabel.setFont(config.PRIMARY_FONT);
+        systemResponseLabel.setForeground(config.PRIMARY_TEXT_COLOR);
+        systemResponseLabel.setPreferredSize(new Dimension(200, config.PANEL_HEADER_HEIGHT));
+        this.add(systemResponseLabel);
 
         graphPanel = new GraphPanel(startDateInput.getText(), endDateInput.getText());
         graphPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT - config.PANEL_HEADER_HEIGHT - (2*config.PANEL_Y_GAP)));
@@ -106,7 +108,7 @@ public class SummaryPanel extends JPanel {
             float clickValue = (clickYCoord - graphPanel.graphZeroCoord) / graphPanel.graphPoundStep;
 
             String signString = clickValue < 0 ? ": -£" : ": £";
-            clickDataLabel.setText(clickDate.format(config.DATE_TIME_FORMATTER) + signString + String.format("%.2f", Math.abs(clickValue)));
+            systemResponseLabel.setText(clickDate.format(config.DATE_TIME_FORMATTER) + signString + String.format("%.2f", Math.abs(clickValue)));
         }
             
     }

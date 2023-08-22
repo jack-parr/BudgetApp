@@ -3,6 +3,7 @@
  */
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -142,6 +143,12 @@ public class AppFrame extends JFrame implements ActionListener, MouseListener{
 
             // HANDLING PERIOD CHANGE
             if (e.getSource() == summaryPanel.periodComboBox) {
+                // RESETTING ALL LABEL COLORS
+                summaryPanel.startDateLabel.setForeground(config.PRIMARY_TEXT_COLOR);
+                summaryPanel.endDateLabel.setForeground(config.PRIMARY_TEXT_COLOR);
+                summaryPanel.systemResponseLabel.setText("Click Graph");
+                
+                // PROCESSING DECISION
                 String todayDateString = LocalDate.now().format(config.DATE_TIME_FORMATTER);
                 switch ((String) summaryPanel.periodComboBox.getSelectedItem()) {
                 case "This Month":
@@ -188,11 +195,17 @@ public class AppFrame extends JFrame implements ActionListener, MouseListener{
 
             // HANDLING APPLY CUSTOM DATES BUTTON
             if (e.getSource() == summaryPanel.applyCustomPeriodButton) {
-                summaryPanel.remove(summaryPanel.graphPanel);  // remove old graphPanel.
-                summaryPanel.graphPanel = new GraphPanel(summaryPanel.startDateInput.getText(), summaryPanel.endDateInput.getText());
-                summaryPanel.graphPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT - config.PANEL_HEADER_HEIGHT - (2*config.PANEL_Y_GAP)));
-                summaryPanel.add(summaryPanel.graphPanel);
-                summaryPanel.revalidate();
+                // INPUT CHECKS
+                boolean checksPassed = false;
+                checksPassed = checkUserInputsCustomDates();
+                if (checksPassed) {
+                    summaryPanel.remove(summaryPanel.graphPanel);  // remove old graphPanel.
+                    summaryPanel.graphPanel = new GraphPanel(summaryPanel.startDateInput.getText(), summaryPanel.endDateInput.getText());
+                    summaryPanel.graphPanel.addMouseListener(this);
+                    summaryPanel.graphPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT - config.PANEL_HEADER_HEIGHT - (2*config.PANEL_Y_GAP)));
+                    summaryPanel.add(summaryPanel.graphPanel);
+                    summaryPanel.revalidate();
+                }
             }
 
         }
@@ -518,32 +531,146 @@ public class AppFrame extends JFrame implements ActionListener, MouseListener{
         // Adds a DataEntry based on information currently in the newExpensesPanel.
 
         // INPUT CHECKS
-        System.out.println("UNIMPLEMENTED INPUT CHECKS");
+        boolean checksPassed = false;
+        checksPassed = checkUserInputsAddNewData();
+        if (checksPassed) {
 
-        // ADDING DATA ENTRY
-        String[] metadata = new String[9];  // creating metadata.
-        metadata[0] = "0";  // placeholder id.
-        metadata[1] = addNewDataPanel.isExpenseButtonGroup.getSelection().getActionCommand();
-        metadata[2] = addNewDataPanel.isRecurringButtonGroup.getSelection().getActionCommand();
-        metadata[3] = (String) addNewDataPanel.frequencyInput.getSelectedItem();
-        metadata[4] = addNewDataPanel.startDateYearInput.getSelectedItem() + "-" + String.format("%02d", addNewDataPanel.startDateMonthInput.getSelectedItem()) + "-" + String.format("%02d", addNewDataPanel.startDateDayInput.getSelectedItem());  // date in correct format.
-        metadata[5] = addNewDataPanel.endDateYearInput.getSelectedItem() + "-" + String.format("%02d", addNewDataPanel.endDateMonthInput.getSelectedItem()) + "-" + String.format("%02d", addNewDataPanel.endDateDayInput.getSelectedItem());  // date in correct format.
-        metadata[6] = metadata[4];  // this is so that recurring entry generators start with the first startDate.
-        metadata[7] = addNewDataPanel.categoryInput.getText();  // category.
-        metadata[8] = addNewDataPanel.valueInput.getText();  // value.
+            // ADDING DATA ENTRY
+            String[] metadata = new String[9];  // creating metadata.
+            metadata[0] = "0";  // placeholder id.
+            metadata[1] = addNewDataPanel.isExpenseButtonGroup.getSelection().getActionCommand();
+            metadata[2] = addNewDataPanel.isRecurringButtonGroup.getSelection().getActionCommand();
+            metadata[3] = (String) addNewDataPanel.frequencyInput.getSelectedItem();
+            metadata[4] = addNewDataPanel.startDateYearInput.getSelectedItem() + "-" + String.format("%02d", addNewDataPanel.startDateMonthInput.getSelectedItem()) + "-" + String.format("%02d", addNewDataPanel.startDateDayInput.getSelectedItem());  // date in correct format.
+            metadata[5] = addNewDataPanel.endDateYearInput.getSelectedItem() + "-" + String.format("%02d", addNewDataPanel.endDateMonthInput.getSelectedItem()) + "-" + String.format("%02d", addNewDataPanel.endDateDayInput.getSelectedItem());  // date in correct format.
+            metadata[6] = metadata[4];  // this is so that recurring entry generators start with the first startDate.
+            metadata[7] = addNewDataPanel.categoryInput.getText();  // category.
+            metadata[8] = addNewDataPanel.valueInput.getText();  // value.
 
-        DataEntry newDataEntry = DataHandler.createDataEntry(metadata);
-        dataList.add(newDataEntry);
+            DataEntry newDataEntry = DataHandler.createDataEntry(metadata);
+            dataList.add(newDataEntry);
 
-        // POST PROCESSING
-        DataHandler.assignIds(dataList);  // reassigning IDs.
-        checkRecurringEntryGenerators(dataList);  // check for any due generators and handle these.
-        listsHashMap = DataHandler.createMonthLists(dataList);   // create monthLists.
+            // POST PROCESSING
+            DataHandler.assignIds(dataList);  // reassigning IDs.
+            checkRecurringEntryGenerators(dataList);  // check for any due generators and handle these.
+            listsHashMap = DataHandler.createMonthLists(dataList);   // create monthLists.
 
-        // change this for something in the app.
-        addNewDataPanel.categoryInput.setText("");
-        addNewDataPanel.valueInput.setText("");
+            // change this for something in the app.
+            addNewDataPanel.categoryInput.setText("");
+            addNewDataPanel.valueInput.setText("");
 
+        }
+
+    }
+
+    public boolean checkUserInputsAddNewData() {
+
+        String positiveResponse = "New Data Entry Successfully Added";
+        String negativeResponse = "Error - Please Review Inputs";
+        LocalDate startDateInput;
+        LocalDate endDateInput;
+        Float valueInput;
+
+        // RESETTING ALL LABEL COLORS
+        addNewDataPanel.startDateHeading.setForeground(config.PRIMARY_TEXT_COLOR);
+        addNewDataPanel.endDateHeading.setForeground(config.PRIMARY_TEXT_COLOR);
+        addNewDataPanel.categoryHeading.setForeground(config.PRIMARY_TEXT_COLOR);
+        addNewDataPanel.valueHeading.setForeground(config.PRIMARY_TEXT_COLOR);
+
+        // START DATE VALID
+        try {
+            startDateInput = LocalDate.of((int) addNewDataPanel.startDateYearInput.getSelectedItem(), (int) addNewDataPanel.startDateMonthInput.getSelectedItem(), (int) addNewDataPanel.startDateDayInput.getSelectedItem());
+        } catch (Exception e) {
+            addNewDataPanel.systemResponseLabel.setText(negativeResponse);
+            addNewDataPanel.startDateHeading.setForeground(Color.red);
+            return false;
+        }
+        
+        // END DATE VALID
+        try {
+            endDateInput = LocalDate.of((int) addNewDataPanel.endDateYearInput.getSelectedItem(), (int) addNewDataPanel.endDateMonthInput.getSelectedItem(), (int) addNewDataPanel.endDateDayInput.getSelectedItem());
+        } catch (Exception e) {
+            addNewDataPanel.systemResponseLabel.setText(negativeResponse);
+            addNewDataPanel.endDateHeading.setForeground(Color.red);
+            return false;
+        }
+
+        // START DATE BEFORE OR ON END DATE
+        if (!startDateInput.isBefore(endDateInput.plusDays(1))) {
+            addNewDataPanel.systemResponseLabel.setText(negativeResponse);
+            addNewDataPanel.startDateHeading.setForeground(Color.red);
+            addNewDataPanel.endDateHeading.setForeground(Color.red);
+            return false;
+        }
+
+        // CATEGORY STRING POPULATED
+        if (addNewDataPanel.categoryInput.getText().isEmpty()) {
+            addNewDataPanel.systemResponseLabel.setText(negativeResponse);
+            addNewDataPanel.categoryHeading.setForeground(Color.red);
+            return false;
+        }
+
+        // VALUE VALID
+        try {
+            valueInput = Float.parseFloat(addNewDataPanel.valueInput.getText());
+        } catch (Exception e) {
+            addNewDataPanel.systemResponseLabel.setText(negativeResponse);
+            addNewDataPanel.valueHeading.setForeground(Color.red);
+            return false;
+        }
+
+        // VALUE POSITIVE
+        if (valueInput < 0) {
+            addNewDataPanel.systemResponseLabel.setText(negativeResponse);
+            addNewDataPanel.valueHeading.setForeground(Color.red);
+            return false;
+        }
+
+        // ALL CHECKS PASSED
+        addNewDataPanel.systemResponseLabel.setText(positiveResponse);
+        return true;
+
+    }
+
+    public boolean checkUserInputsCustomDates() {
+
+        String negativeReponse = "Error - Please Review Dates";
+        LocalDate startDateInput;
+        LocalDate endDateInput;
+
+        // RESETTING ALL LABEL COLORS
+        summaryPanel.startDateLabel.setForeground(config.PRIMARY_TEXT_COLOR);
+        summaryPanel.endDateLabel.setForeground(config.PRIMARY_TEXT_COLOR);
+
+        // START DATE VALID
+        try {
+            startDateInput = LocalDate.parse(summaryPanel.startDateInput.getText(), config.DATE_TIME_FORMATTER);
+        } catch (Exception e) {
+            summaryPanel.startDateLabel.setForeground(Color.red);
+            summaryPanel.systemResponseLabel.setText(negativeReponse);
+            return false;
+        }
+
+        // END DATE VALID
+        try {
+            endDateInput = LocalDate.parse(summaryPanel.endDateInput.getText(), config.DATE_TIME_FORMATTER);
+        } catch (Exception e) {
+            summaryPanel.endDateLabel.setForeground(Color.red);
+            summaryPanel.systemResponseLabel.setText(negativeReponse);
+            return false;
+        }
+
+        // START DATE BEFORE END DATE
+        if (!startDateInput.isBefore(endDateInput)) {
+            summaryPanel.startDateLabel.setForeground(Color.red);
+            summaryPanel.endDateLabel.setForeground(Color.red);
+            summaryPanel.systemResponseLabel.setText(negativeReponse);
+            return false;
+        }
+        
+        // ALL CHECKS PASSED
+        summaryPanel.systemResponseLabel.setText("Click Graph");
+        return true;
     }
 
     public void checkRecurringEntryGenerators(ArrayList<DataEntry> dataList) {
