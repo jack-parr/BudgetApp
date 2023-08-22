@@ -266,8 +266,20 @@ public class AppFrame extends JFrame implements ActionListener, MouseListener{
 
         // ADD NEW DATA PANEL ACTIONS
         if (currentPanel instanceof AddNewDataPanel) {
+
+            if (e.getSource() == addNewDataPanel.incomeButton) {
+                addNewDataPanel.incomeButton.setBorder(config.SELECTED_BUTTON_BORDER);
+                addNewDataPanel.expenseButton.setBorder(null);
+            }
+
+            else if (e.getSource() == addNewDataPanel.expenseButton) {
+                addNewDataPanel.incomeButton.setBorder(null);
+                addNewDataPanel.expenseButton.setBorder(config.SELECTED_BUTTON_BORDER);
+            }
             
-            if (e.getSource() == addNewDataPanel.oneOffButton) {
+            else if (e.getSource() == addNewDataPanel.oneOffButton) {
+                addNewDataPanel.oneOffButton.setBorder(config.SELECTED_BUTTON_BORDER);
+                addNewDataPanel.recurringButton.setBorder(null);
                 // Disables frequencyInput and endDateInput.
                 addNewDataPanel.frequencyHeading.setForeground(config.SECONDARY_TEXT_COLOR);
                 addNewDataPanel.frequencyInput.setSelectedIndex(-1);  // clears selection.
@@ -293,6 +305,8 @@ public class AppFrame extends JFrame implements ActionListener, MouseListener{
             }
 
             else if (e.getSource() == addNewDataPanel.recurringButton) {
+                addNewDataPanel.oneOffButton.setBorder(null);
+                addNewDataPanel.recurringButton.setBorder(config.SELECTED_BUTTON_BORDER);
                 // Enables frequencyInput and endDateInput.
                 addNewDataPanel.frequencyHeading.setForeground(config.PRIMARY_TEXT_COLOR);
                 addNewDataPanel.frequencyInput.setEnabled(true);
@@ -430,6 +444,8 @@ public class AppFrame extends JFrame implements ActionListener, MouseListener{
         addNewDataPanel = new AddNewDataPanel(sourcePanel);
 
         // SETTING ACTION LISTENERS
+        addNewDataPanel.incomeButton.addActionListener(this);
+        addNewDataPanel.expenseButton.addActionListener(this);
         addNewDataPanel.oneOffButton.addActionListener(this);
         addNewDataPanel.recurringButton.addActionListener(this);
 

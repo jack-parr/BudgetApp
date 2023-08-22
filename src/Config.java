@@ -7,7 +7,9 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
+import javax.swing.border.Border;
 
 public class Config {
 
@@ -47,6 +49,7 @@ public class Config {
     public final Color ADD_NEW_DATA_BUTTON_COLOR = new Color(0, 57, 117);
     public final Color INCOME_COLOR = Color.green;
     public final Color EXPENSE_COLOR = Color.red;
+    public final Border SELECTED_BUTTON_BORDER = BorderFactory.createLineBorder(Color.white, 3, true);
     
     // DATA SOURCE
     public final String DATA_FILEPATH = "data.csv";
