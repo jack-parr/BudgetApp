@@ -3,7 +3,5 @@ Data is stored as DataEntry objects in variable 'AppFrame.dataList' and is group
 AppFrame acts as the actionListener for all components.
 
 # TO DO:
-- Add ability to click on graph to place marker and read precise value.
-
 - Add input checks to all action handlers.
 - Format everything.

@@ -16,18 +16,16 @@ public class SummaryPanel extends JPanel {
     JLabel clickDataLabel;
     GraphPanel graphPanel;
 
-    final int PANEL_HEADER_HEIGHT = 40;
-
     SummaryPanel() {
         
-        this.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        this.setLayout(new FlowLayout(FlowLayout.LEFT, config.PANEL_X_GAP, config.PANEL_Y_GAP));
         this.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT));
         this.setBackground(config.SUMMARY_PANEL_COLOR);
 
         JLabel periodSelectLabel = new JLabel("Period: ");
         periodSelectLabel.setFont(config.PRIMARY_FONT);
         periodSelectLabel.setForeground(config.PRIMARY_TEXT_COLOR);
-        periodSelectLabel.setPreferredSize(new Dimension(70, PANEL_HEADER_HEIGHT));
+        periodSelectLabel.setPreferredSize(new Dimension(55, config.PANEL_HEADER_HEIGHT));
         this.add(periodSelectLabel);
 
         periodComboBox = new JComboBox<>();
@@ -38,34 +36,58 @@ public class SummaryPanel extends JPanel {
         periodComboBox.addItem("Last 12 Months");
         periodComboBox.addItem("All-Time");
         periodComboBox.addItem("Custom");
-        periodComboBox.setPreferredSize(new Dimension(120, PANEL_HEADER_HEIGHT));
+        periodComboBox.setFont(config.PRIMARY_FONT);
+        periodComboBox.setBackground(Color.white);
+        periodComboBox.setPreferredSize(new Dimension(130, config.PANEL_HEADER_HEIGHT));
         this.add(periodComboBox);
 
+        paintHeaderSpacer();
+
+        JLabel startDataLabel = new JLabel("From: ");
+        startDataLabel.setFont(config.PRIMARY_FONT);
+        startDataLabel.setForeground(config.PRIMARY_TEXT_COLOR);
+        startDataLabel.setPreferredSize(new Dimension(45, config.PANEL_HEADER_HEIGHT));
+        this.add(startDataLabel);
+
         startDateInput = new JTextField();
+        startDateInput.setFont(config.PRIMARY_FONT);
         startDateInput.setText(LocalDate.now().minusDays(LocalDate.now().getDayOfMonth() - 1).format(config.DATE_TIME_FORMATTER));
         startDateInput.setEnabled(false);
-        startDateInput.setPreferredSize(new Dimension(100, PANEL_HEADER_HEIGHT));
+        startDateInput.setPreferredSize(new Dimension(100, config.PANEL_HEADER_HEIGHT));
         this.add(startDateInput);
 
+        JLabel endDataLabel = new JLabel("Until: ");
+        endDataLabel.setFont(config.PRIMARY_FONT);
+        endDataLabel.setForeground(config.PRIMARY_TEXT_COLOR);
+        endDataLabel.setPreferredSize(new Dimension(40, config.PANEL_HEADER_HEIGHT));
+        this.add(endDataLabel);
+
         endDateInput = new JTextField();
+        endDateInput.setFont(config.PRIMARY_FONT);
         endDateInput.setText(LocalDate.now().plusDays(LocalDate.now().lengthOfMonth() - LocalDate.now().getDayOfMonth()).format(config.DATE_TIME_FORMATTER));
         endDateInput.setEnabled(false);
-        endDateInput.setPreferredSize(new Dimension(100, PANEL_HEADER_HEIGHT));
+        endDateInput.setPreferredSize(new Dimension(100, config.PANEL_HEADER_HEIGHT));
         this.add(endDateInput);
 
         applyCustomPeriodButton = new JButton("Apply");
+        applyCustomPeriodButton.setFont(config.PRIMARY_FONT);
+        applyCustomPeriodButton.setForeground(config.PRIMARY_TEXT_COLOR);
+        applyCustomPeriodButton.setBackground(config.APPLY_BUTTON_COLOR);
+        applyCustomPeriodButton.setFocusable(false);
         applyCustomPeriodButton.setEnabled(false);
-        applyCustomPeriodButton.setPreferredSize(new Dimension(100, PANEL_HEADER_HEIGHT));
+        applyCustomPeriodButton.setPreferredSize(new Dimension(100, config.PANEL_HEADER_HEIGHT));
         this.add(applyCustomPeriodButton);
 
-        clickDataLabel = new JLabel();
+        paintHeaderSpacer();
+
+        clickDataLabel = new JLabel("Click Graph");
         clickDataLabel.setFont(config.PRIMARY_FONT);
         clickDataLabel.setForeground(config.PRIMARY_TEXT_COLOR);
-        clickDataLabel.setPreferredSize(new Dimension(500, PANEL_HEADER_HEIGHT));
+        clickDataLabel.setPreferredSize(new Dimension(150, config.PANEL_HEADER_HEIGHT));
         this.add(clickDataLabel);
 
         graphPanel = new GraphPanel(startDateInput.getText(), endDateInput.getText());
-        graphPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT - PANEL_HEADER_HEIGHT));
+        graphPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT - config.PANEL_HEADER_HEIGHT - (2*config.PANEL_Y_GAP)));
         this.add(graphPanel);
 
         this.setVisible(true);
@@ -83,10 +105,22 @@ public class SummaryPanel extends JPanel {
             float clickYCoord = graphPanel.graphMap.get(clickDate);
             float clickValue = (clickYCoord - graphPanel.graphZeroCoord) / graphPanel.graphPoundStep;
 
-            clickDataLabel.setText(clickDate.format(config.DATE_TIME_FORMATTER) + ": £" + String.format("$%.2f", Math.abs(clickValue)));
+            String signString = clickValue < 0 ? ": -£" : ": £";
+            clickDataLabel.setText(clickDate.format(config.DATE_TIME_FORMATTER) + signString + String.format("%.2f", Math.abs(clickValue)));
         }
             
-        }
+    }
 
+    public void paintHeaderSpacer() {
+
+        // Paints a blank spacer label to separate elements within the header.
+
+        JLabel spacerLabel = new JLabel();
+        spacerLabel.setBackground(config.SUMMARY_PANEL_COLOR);
+        spacerLabel.setOpaque(true);
+        spacerLabel.setPreferredSize(new Dimension(50, config.PANEL_HEADER_HEIGHT));
+        this.add(spacerLabel);
 
     }
+
+}

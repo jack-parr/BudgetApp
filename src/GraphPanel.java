@@ -47,8 +47,7 @@ public class GraphPanel extends JPanel {
 
     GraphPanel(String startDate, String endDate) {
 
-        this.setBackground(Color.white);
-        this.setOpaque(true);
+        this.setBackground(config.PANEL_BACKGROUND_COLOR);
 
         this.startDate = LocalDate.parse(startDate, config.DATE_TIME_FORMATTER);
         this.endDate = LocalDate.parse(endDate, config.DATE_TIME_FORMATTER);
@@ -88,18 +87,20 @@ public class GraphPanel extends JPanel {
 
         // DRAW GRAPH SKELETON
         g2d.setStroke(new BasicStroke(5));
+        g2d.setColor(config.PRIMARY_TEXT_COLOR);
         g2d.draw(new Line2D.Float(transformXCoord(0), transformYCoord(0), transformXCoord(0), transformYCoord(graphHeight)));  // y-axis.
         g2d.draw(new Line2D.Float(transformXCoord(0), transformYCoord(0), transformXCoord(graphWidth), transformYCoord(0)));  // x-axis.
         drawRotate(g2d, transformXCoord(-40), transformYCoord(graphHeight/3), -90, "Cummulative Savings (£)");
         
         // DRAW ZERO LINE
         g2d.setStroke(new BasicStroke(2));
-        g2d.setColor(Color.gray);
+        g2d.setColor(Color.lightGray);
         g2d.draw(new Line2D.Float(transformXCoord(-28), transformYCoord(graphZeroCoord), transformXCoord(graphWidth), transformYCoord(graphZeroCoord)));
         g2d.drawString("0", transformXCoord((float) -15), transformYCoord(graphZeroCoord + 2));
 
         // DRAW VALUE GRID LINES
         g2d.setStroke(new BasicStroke(1));
+        g2d.setColor(config.PRIMARY_TEXT_COLOR);
         float yTickStep = (float) ((Math.ceil((graphRange / 10) / Y_TICK_MULTIPLE)) * Y_TICK_MULTIPLE) * graphPoundStep;  // coord step for each y-tick.
         float yTickCoord = (float) (graphZeroCoord - (Math.floor(graphZeroCoord / yTickStep) * yTickStep));  // starting at lowest y-tick on graph.
         while (yTickCoord < graphHeight) {  // stops when highest y-tick is processed.
@@ -143,16 +144,16 @@ public class GraphPanel extends JPanel {
             // DRAWING WEEK TICKS
             if (date.getDayOfWeek().toString() == "MONDAY") {
                 g2d.setStroke(new BasicStroke(3));
-                g2d.setColor(Color.lightGray);
+                g2d.setColor(config.SECONDARY_TEXT_COLOR);
                 g2d.draw(new Line2D.Float(transformXCoord(currXCoord), transformYCoord(graphHeight), transformXCoord(currXCoord), transformYCoord(-8)));
             }
 
             // DRAWING NEW MONTH TICKS
             if (date.getDayOfMonth() == 1) {
                 g2d.setStroke(new BasicStroke(3));
-                g2d.setColor(Color.gray);
+                g2d.setColor(config.PRIMARY_TEXT_COLOR);
                 g2d.draw(new Line2D.Float(transformXCoord(currXCoord), transformYCoord((float) -0.9* MARGIN), transformXCoord(currXCoord), transformYCoord(graphHeight)));
-                g2d.setColor(Color.gray);
+                g2d.setColor(config.PRIMARY_TEXT_COLOR);
                 drawRotate(g2d, transformXCoord(currXCoord + 2), transformYCoord(-10), 90, date.getMonth().toString().substring(0, 3) + " " + Integer.toString(date.getYear()).substring(2));
             }
 

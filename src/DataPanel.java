@@ -10,6 +10,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.text.DateFormatSymbols;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -78,6 +79,8 @@ public class DataPanel extends JPanel {
                 JLabel monthHeader = new JLabel(monthString);
                 monthHeader.setFont(MONTH_HEADER_FONT);
                 monthHeader.setForeground(config.PRIMARY_TEXT_COLOR);
+                monthHeader.setBackground(config.PANEL_BACKGROUND_COLOR);
+                monthHeader.setOpaque(true);
                 monthHeader.setPreferredSize(new Dimension(250, MONTH_HEADER_HEIGHT));
                 rowPanelMonth.add(monthHeader);
 
@@ -101,6 +104,8 @@ public class DataPanel extends JPanel {
                     totalLabel.setForeground(Color.GREEN);
                 }
                 totalLabel.setFont(config.DATA_ROW_FONT);
+                totalLabel.setBackground(config.PANEL_BACKGROUND_COLOR);
+                totalLabel.setOpaque(true);
                 totalLabel.setPreferredSize(new Dimension(config.SCROLLABLE_DISPLAY_WIDTH - monthHeader.getPreferredSize().width, MONTH_HEADER_HEIGHT));
                 rowPanelMonth.add(totalLabel);
 
@@ -109,7 +114,7 @@ public class DataPanel extends JPanel {
 
                 // COLUMNS ROW
                 RowPanel rowPanelColumns = new RowPanel();
-                rowPanelColumns.setBackground(config.VIEW_DATA_PANEL_COLOR);
+                rowPanelColumns.setBackground(config.PANEL_BACKGROUND_COLOR);
 
                 ArrayList<Component> headerRowComponents = config.makeDataHeaderRowComponents();  // makes a list containing all the components.
 
@@ -142,7 +147,7 @@ public class DataPanel extends JPanel {
                     if (!filter.isEmpty()) {if (!dataEntry.getCategory().equals(filter)) {continue;}}
 
                     RowPanel rowPanelDataEntry = new RowPanel();
-                    rowPanelDataEntry.setBackground(config.VIEW_DATA_PANEL_COLOR);
+                    rowPanelDataEntry.setBackground(config.PANEL_BACKGROUND_COLOR);
 
                     JLabel spacerLabel = config.makeDataSpacerLabel();
                     spacerLabel.setPreferredSize(new Dimension(config.SCROLLABLE_DISPLAY_WIDTH, 1));
@@ -176,10 +181,13 @@ public class DataPanel extends JPanel {
                     prevDate = thisDate;
 
                     // CREATE AND PAINT DELETE BUTTON
-                    JButton deleteDataEntryButton = new JButton();
+                    JButton deleteDataEntryButton = new JButton("X");
+                    deleteDataEntryButton.setMargin(new Insets(0, 0, 0, 0));
+                    deleteDataEntryButton.setFont(config.PRIMARY_FONT);
+                    deleteDataEntryButton.setForeground(Color.RED);
                     deleteDataEntryButton.setFocusable(false);
                     deleteDataEntryButton.setBorderPainted(false);
-                    deleteDataEntryButton.setBackground(Color.RED);
+                    deleteDataEntryButton.setBackground(config.PANEL_BACKGROUND_COLOR);
                     deleteDataEntryButton.setName("deleteButton" + dataEntry.getId());
                     deleteDataEntryButton.setActionCommand("delete" + dataEntry.getId());
                     deleteDataEntryButton.setPreferredSize(new Dimension(config.DELETE_BUTTON_WIDTH, config.DATA_ROW_HEIGHT));
@@ -201,7 +209,7 @@ public class DataPanel extends JPanel {
             }
 
             // ADD PANEL FILLER TO ALIGN TO TOP OF JSCROLLPANE WHEN NOT OVERFLOWING
-            int remainingVerticalSpace = (config.PANEL_HEIGHT - ViewDataPanel.PANEL_HEADER_HEIGHT) - (this.getPreferredSize().height);
+            int remainingVerticalSpace = (config.PANEL_HEIGHT - config.PANEL_HEADER_HEIGHT - (2*config.PANEL_Y_GAP)) - (this.getPreferredSize().height);
             if (remainingVerticalSpace > 0) {
                 JPanel panelFillerLabel = new JPanel();
                 panelFillerLabel.setBackground(config.VIEW_DATA_PANEL_COLOR);
@@ -220,7 +228,7 @@ public class DataPanel extends JPanel {
         JLabel nullLabel = new JLabel("No Data", SwingConstants.CENTER);
         nullLabel.setFont(config.PRIMARY_FONT);
         nullLabel.setForeground(config.SECONDARY_TEXT_COLOR);       
-        nullLabel.setPreferredSize(new Dimension(config.SCROLLABLE_DISPLAY_WIDTH, config.PANEL_HEIGHT - ViewDataPanel.PANEL_HEADER_HEIGHT));
+        nullLabel.setPreferredSize(new Dimension(config.SCROLLABLE_DISPLAY_WIDTH, config.PANEL_HEIGHT - config.PANEL_HEADER_HEIGHT - (2*config.PANEL_Y_GAP)));
         this.add(nullLabel);
 
     }

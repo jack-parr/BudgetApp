@@ -14,28 +14,39 @@ public class Config {
     // DIMENSIONS
     public final int DISPLAY_WIDTH = Toolkit.getDefaultToolkit().getScreenSize().width - 50;
     public final int DISPLAY_HEIGHT = Toolkit.getDefaultToolkit().getScreenSize().height - 100;
-    public final int MENU_HEIGHT = 50;
+    public final int MENU_HEIGHT = 40;
     public final int PANEL_HEIGHT = DISPLAY_HEIGHT - MENU_HEIGHT;
+    public final int PANEL_HEADER_HEIGHT = 35;
+    public final int PANEL_Y_GAP = 10;
+    public final int PANEL_X_GAP = 5;
     public final int DATA_ROW_HEIGHT = 30;
-    public final int DELETE_BUTTON_WIDTH = 50;
+    public final int DELETE_BUTTON_WIDTH = 40;
     public final int SCROLLBAR_WIDTH = 10;
     public final int SCROLLBAR_INCREMENT = 10;
-    public final int SCROLLABLE_DISPLAY_WIDTH = DISPLAY_WIDTH - SCROLLBAR_WIDTH;
+    public final int SCROLLABLE_DISPLAY_WIDTH = DISPLAY_WIDTH - SCROLLBAR_WIDTH - (2*PANEL_X_GAP);
 
     // PANEL COLORS
-    public final Color SUMMARY_PANEL_COLOR = Color.gray;
-    public final Color GENERATORS_PANEL_COLOR = Color.blue;
+    public final Color SUMMARY_PANEL_COLOR = new Color(80, 80, 80);
+    public final Color VIEW_GENERATORS_PANEL_COLOR = new Color(70, 70, 70);
     public final Color VIEW_DATA_PANEL_COLOR = new Color(60, 60, 60);
-    public final Color ADD_NEW_DATA_PANEL_COLOR = new Color(60, 60, 60);
+    public final Color ADD_NEW_DATA_PANEL_COLOR = new Color(50, 50, 50);
+    public final Color PANEL_BACKGROUND_COLOR = new Color(50, 50, 50);
 
     // TEXT FONT AND COLORS
     public final Color PRIMARY_TEXT_COLOR = new Color(235, 235, 235);
-    public final Font PRIMARY_FONT = new Font("Arial Rounded MT Bold", Font.PLAIN, 16);
+    public final Font PRIMARY_FONT = new Font("Arial Rounded MT Bold", Font.PLAIN, 14);
     public final Color SECONDARY_TEXT_COLOR = new Color(150, 150, 150);
     public final Font MENU_FONT = new Font("Arial Rounded MT Bold", Font.PLAIN, 14);
     public final Font HEADINGS_FONT = new Font("Arial Rounded MT Bold", Font.PLAIN, 24);
     public final Font HEADER_ROW_FONT = new Font("Arial Rounded MT Bold", Font.PLAIN, 12);
     public final Font DATA_ROW_FONT = new Font("Arial Rounded MT Bold", Font.PLAIN, 14);
+
+    // OTHER COLORS
+    public final Color APPLY_BUTTON_COLOR = new Color(50, 120, 0);
+    public final Color RESET_BUTTON_COLOR = new Color(117, 0, 0);
+    public final Color ADD_NEW_DATA_BUTTON_COLOR = new Color(0, 57, 117);
+    public final Color INCOME_COLOR = Color.green;
+    public final Color EXPENSE_COLOR = Color.red;
     
     // DATA SOURCE
     public final String DATA_FILEPATH = "data.csv";

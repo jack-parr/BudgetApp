@@ -181,7 +181,7 @@ public class AppFrame extends JFrame implements ActionListener, MouseListener{
                 summaryPanel.remove(summaryPanel.graphPanel);  // remove old graphPanel.
                 summaryPanel.graphPanel = new GraphPanel(summaryPanel.startDateInput.getText(), summaryPanel.endDateInput.getText());
                 summaryPanel.graphPanel.addMouseListener(this);
-                summaryPanel.graphPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT - summaryPanel.PANEL_HEADER_HEIGHT));
+                summaryPanel.graphPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT - config.PANEL_HEADER_HEIGHT - (2*config.PANEL_Y_GAP)));
                 summaryPanel.add(summaryPanel.graphPanel);
                 summaryPanel.revalidate();
             }
@@ -190,7 +190,7 @@ public class AppFrame extends JFrame implements ActionListener, MouseListener{
             if (e.getSource() == summaryPanel.applyCustomPeriodButton) {
                 summaryPanel.remove(summaryPanel.graphPanel);  // remove old graphPanel.
                 summaryPanel.graphPanel = new GraphPanel(summaryPanel.startDateInput.getText(), summaryPanel.endDateInput.getText());
-                summaryPanel.graphPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT - summaryPanel.PANEL_HEADER_HEIGHT));
+                summaryPanel.graphPanel.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT - config.PANEL_HEADER_HEIGHT - (2*config.PANEL_Y_GAP)));
                 summaryPanel.add(summaryPanel.graphPanel);
                 summaryPanel.revalidate();
             }
@@ -209,7 +209,7 @@ public class AppFrame extends JFrame implements ActionListener, MouseListener{
                 viewGeneratorsPanel.generatorsPanelScrollPane.getVerticalScrollBar().setUnitIncrement(config.SCROLLBAR_INCREMENT);
                 viewGeneratorsPanel.generatorsPanelScrollPane.setBorder(null);
                 assignDeleteButtons(viewGeneratorsPanel);  // assign listeners to delete row buttons.
-                viewGeneratorsPanel.generatorsPanelScrollPane.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT - ViewDataPanel.PANEL_HEADER_HEIGHT));
+                viewGeneratorsPanel.generatorsPanelScrollPane.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT - config.PANEL_HEADER_HEIGHT - (2*config.PANEL_Y_GAP)));
                 viewGeneratorsPanel.add(viewGeneratorsPanel.generatorsPanelScrollPane, BorderLayout.SOUTH);
                 viewGeneratorsPanel.revalidate();
             }
@@ -417,7 +417,7 @@ public class AppFrame extends JFrame implements ActionListener, MouseListener{
         viewDataPanel.dataPanelScrollPane.getVerticalScrollBar().setUnitIncrement(config.SCROLLBAR_INCREMENT);
         viewDataPanel.dataPanelScrollPane.setBorder(null);
         assignDeleteButtons(viewDataPanel);  // assign listeners to delete row buttons.
-        viewDataPanel.dataPanelScrollPane.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT - ViewDataPanel.PANEL_HEADER_HEIGHT));
+        viewDataPanel.dataPanelScrollPane.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT - config.PANEL_HEADER_HEIGHT - (2*config.PANEL_Y_GAP)));
         viewDataPanel.add(viewDataPanel.dataPanelScrollPane, BorderLayout.SOUTH);
         viewDataPanel.revalidate();
 

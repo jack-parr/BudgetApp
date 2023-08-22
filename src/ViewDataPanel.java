@@ -4,6 +4,7 @@
 
 import javax.swing.*;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.util.ArrayList;
@@ -15,13 +16,11 @@ import java.util.stream.Collectors;
 public class ViewDataPanel extends JPanel {
 
     Config config = new Config();
-
-    final static int PANEL_HEADER_HEIGHT = 40;  // height of the first subpanel.
     
-    JLabel yearSelectLabel = new JLabel("Year:");
-    JComboBox<Integer> yearComboBox = new JComboBox<>();
+    JLabel yearSelectLabel;
+    JComboBox<Integer> yearComboBox;
     JButton newDataButton;
-    JLabel filterLabel = new JLabel("Filter:");
+    JLabel filterLabel;
     JTextField filterInput;
     JButton applyFilterButton;
     JButton resetFilterButton;
@@ -31,10 +30,11 @@ public class ViewDataPanel extends JPanel {
 
     ViewDataPanel(int selectedYear) {
 
-        this.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        this.setLayout(new FlowLayout(FlowLayout.LEFT, config.PANEL_X_GAP, config.PANEL_Y_GAP));
         this.setBackground(config.VIEW_DATA_PANEL_COLOR);
 
         // POPULATING YEAR SELECTOR
+        yearComboBox = new JComboBox<>();
         List<Integer> monthKeys = new ArrayList<Integer>(AppFrame.listsHashMap.keySet().stream().toList());  // get list of monthListIDs.
         Collections.sort(monthKeys, Collections.reverseOrder());  // sort it descending.
 
@@ -45,36 +45,53 @@ public class ViewDataPanel extends JPanel {
         yearComboBox.addItem(null);  // adding the null entry for when there is no data.
 
         // PAINTING THE HEADER
+        yearSelectLabel = new JLabel("Year:");
         yearSelectLabel.setFont(config.PRIMARY_FONT);
         yearSelectLabel.setForeground(config.PRIMARY_TEXT_COLOR);
-        yearSelectLabel.setPreferredSize(new Dimension(50, ViewDataPanel.PANEL_HEADER_HEIGHT));
+        yearSelectLabel.setPreferredSize(new Dimension(40, config.PANEL_HEADER_HEIGHT));
         this.add(yearSelectLabel);
 
+        yearComboBox.setFont(config.PRIMARY_FONT);
+        yearComboBox.setBackground(Color.white);
         yearComboBox.setSelectedItem(selectedYear);
-        yearComboBox.setPreferredSize(new Dimension(100, ViewDataPanel.PANEL_HEADER_HEIGHT));
+        yearComboBox.setPreferredSize(new Dimension(100, config.PANEL_HEADER_HEIGHT));
         this.add(yearComboBox);
 
-        newDataButton = new JButton("Add Data");
-        newDataButton.setPreferredSize(new Dimension(100, ViewDataPanel.PANEL_HEADER_HEIGHT));
-        this.add(newDataButton);
+        paintHeaderSpacer();
 
+        filterLabel = new JLabel("Filter:");
         filterLabel.setFont(config.PRIMARY_FONT);
         filterLabel.setForeground(config.PRIMARY_TEXT_COLOR);
-        filterLabel.setPreferredSize(new Dimension(60, ViewDataPanel.PANEL_HEADER_HEIGHT));
+        filterLabel.setPreferredSize(new Dimension(40, config.PANEL_HEADER_HEIGHT));
         this.add(filterLabel);
 
         filterInput = new JTextField();
         filterInput.setFont(config.PRIMARY_FONT);
-        filterInput.setPreferredSize(new Dimension(100, ViewDataPanel.PANEL_HEADER_HEIGHT));
+        filterInput.setPreferredSize(new Dimension(100, config.PANEL_HEADER_HEIGHT));
         this.add(filterInput);
 
         applyFilterButton = new JButton("Apply");
-        applyFilterButton.setPreferredSize(new Dimension(80, ViewDataPanel.PANEL_HEADER_HEIGHT));
+        applyFilterButton.setFont(config.PRIMARY_FONT);
+        applyFilterButton.setForeground(config.PRIMARY_TEXT_COLOR);
+        applyFilterButton.setBackground(config.APPLY_BUTTON_COLOR);
+        applyFilterButton.setPreferredSize(new Dimension(80, config.PANEL_HEADER_HEIGHT));
         this.add(applyFilterButton);
 
         resetFilterButton = new JButton("Reset");
-        resetFilterButton.setPreferredSize(new Dimension(80, ViewDataPanel.PANEL_HEADER_HEIGHT));
+        resetFilterButton.setFont(config.PRIMARY_FONT);
+        resetFilterButton.setForeground(config.PRIMARY_TEXT_COLOR);
+        resetFilterButton.setBackground(config.RESET_BUTTON_COLOR);
+        resetFilterButton.setPreferredSize(new Dimension(80, config.PANEL_HEADER_HEIGHT));
         this.add(resetFilterButton);
+
+        paintHeaderSpacer();
+
+        newDataButton = new JButton("Add Data");
+        newDataButton.setBackground(config.ADD_NEW_DATA_BUTTON_COLOR);
+        newDataButton.setFont(config.PRIMARY_FONT);
+        newDataButton.setForeground(config.PRIMARY_TEXT_COLOR);
+        newDataButton.setPreferredSize(new Dimension(100, config.PANEL_HEADER_HEIGHT));
+        this.add(newDataButton);
 
         // MAKING DATA PANEL
         int checkedYear = 0;
@@ -96,7 +113,7 @@ public class ViewDataPanel extends JPanel {
         dataPanelScrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(config.SCROLLBAR_WIDTH, 0));
         dataPanelScrollPane.getVerticalScrollBar().setUnitIncrement(config.SCROLLBAR_INCREMENT);
         dataPanelScrollPane.setBorder(null);
-        dataPanelScrollPane.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, config.PANEL_HEIGHT - PANEL_HEADER_HEIGHT));
+        dataPanelScrollPane.setPreferredSize(new Dimension(config.DISPLAY_WIDTH - (2*config.PANEL_X_GAP), config.PANEL_HEIGHT - config.PANEL_HEADER_HEIGHT - (2*config.PANEL_Y_GAP)));
         this.add(dataPanelScrollPane);
         
         this.setVisible(true);
@@ -108,6 +125,18 @@ public class ViewDataPanel extends JPanel {
         // Rrturns the int year from a month key.
 
         return Integer.valueOf(Integer.toString(i).substring(0, 4));
+
+    }
+
+    public void paintHeaderSpacer() {
+
+        // Paints a blank spacer label to separate elements within the header.
+
+        JLabel spacerLabel = new JLabel();
+        spacerLabel.setBackground(config.VIEW_DATA_PANEL_COLOR);
+        spacerLabel.setOpaque(true);
+        spacerLabel.setPreferredSize(new Dimension(50, config.PANEL_HEADER_HEIGHT));
+        this.add(spacerLabel);
 
     }
     

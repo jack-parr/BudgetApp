@@ -28,7 +28,7 @@ public class MenuPanel extends JPanel {
         viewGeneratorsButton = new JButton("Generators");
         viewGeneratorsButton.setPreferredSize(new Dimension(config.DISPLAY_WIDTH / 3, config.MENU_HEIGHT));
         viewGeneratorsButton.setFocusable(false);
-        viewGeneratorsButton.setBackground(config.GENERATORS_PANEL_COLOR);
+        viewGeneratorsButton.setBackground(config.VIEW_GENERATORS_PANEL_COLOR);
         viewGeneratorsButton.setFont(config.MENU_FONT);
         viewGeneratorsButton.setForeground(config.PRIMARY_TEXT_COLOR);
         viewGeneratorsButton.setBorderPainted(false);

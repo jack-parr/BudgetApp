@@ -9,7 +9,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-
+import java.awt.Insets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -31,12 +31,12 @@ public class GeneratorsPanel extends JPanel {
         this.setLayout(new GridBagLayout());
         GridBagConstraints layoutConstraints = new GridBagConstraints();
         layoutConstraints.gridx = 0;  // makes it so every added panel is added vertically.
-        this.setBackground(config.GENERATORS_PANEL_COLOR);
+        this.setBackground(config.PANEL_BACKGROUND_COLOR);
 
 
         // COLUMNS ROW
         RowPanel rowPanelColumns = new RowPanel();
-        rowPanelColumns.setBackground(config.GENERATORS_PANEL_COLOR);
+        rowPanelColumns.setBackground(config.PANEL_BACKGROUND_COLOR);
 
         ArrayList<Component> headerRowComponents = config.makeDataHeaderRowComponents();  // makes a list containing all the components.
 
@@ -77,7 +77,7 @@ public class GeneratorsPanel extends JPanel {
                 spacerLabel.setPreferredSize(new Dimension(config.SCROLLABLE_DISPLAY_WIDTH, 1));
 
                 RowPanel rowPanelDataEntry = new RowPanel();
-                rowPanelDataEntry.setBackground(config.GENERATORS_PANEL_COLOR);
+                rowPanelDataEntry.setBackground(config.PANEL_BACKGROUND_COLOR);
                 ArrayList<Component> dataRowComponents = config.makeDataDisplayRowComponents(dataEntry);
 
                 Component dataCategoryLabel = dataRowComponents.get(1);
@@ -98,10 +98,13 @@ public class GeneratorsPanel extends JPanel {
                 rowPanelDataEntry.add(dataTerminatesLabel);
 
                 // CREATE AND PAINT DELETE BUTTON
-                JButton deleteDataEntryButton = new JButton();
+                JButton deleteDataEntryButton = new JButton("X");
+                deleteDataEntryButton.setMargin(new Insets(0, 0, 0, 0));
+                deleteDataEntryButton.setFont(config.PRIMARY_FONT);
+                deleteDataEntryButton.setForeground(Color.RED);
                 deleteDataEntryButton.setFocusable(false);
                 deleteDataEntryButton.setBorderPainted(false);
-                deleteDataEntryButton.setBackground(Color.RED);
+                deleteDataEntryButton.setBackground(config.PANEL_BACKGROUND_COLOR);
                 deleteDataEntryButton.setName("deleteButton" + dataEntry.getId());
                 deleteDataEntryButton.setActionCommand("delete" + dataEntry.getId());
                 deleteDataEntryButton.setPreferredSize(new Dimension(config.DELETE_BUTTON_WIDTH, config.DATA_ROW_HEIGHT));
@@ -123,15 +126,15 @@ public class GeneratorsPanel extends JPanel {
             JLabel nullLabel = new JLabel("No Data", SwingConstants.CENTER);
             nullLabel.setFont(config.PRIMARY_FONT);
             nullLabel.setForeground(config.SECONDARY_TEXT_COLOR);       
-            nullLabel.setPreferredSize(new Dimension(config.SCROLLABLE_DISPLAY_WIDTH, config.PANEL_HEIGHT - ViewDataPanel.PANEL_HEADER_HEIGHT - config.DATA_ROW_HEIGHT));
+            nullLabel.setPreferredSize(new Dimension(config.SCROLLABLE_DISPLAY_WIDTH, config.PANEL_HEIGHT - config.PANEL_HEADER_HEIGHT - (2*config.PANEL_Y_GAP) - config.DATA_ROW_HEIGHT));
             this.add(nullLabel, layoutConstraints);
         }
 
         // ADD PANEL FILLER TO ALIGN TO TOP OF JSCROLLPANE WHEN NOT OVERFLOWING
-        int remainingVerticalSpace = (config.PANEL_HEIGHT - ViewGeneratorsPanel.PANEL_HEADER_HEIGHT) - (this.getPreferredSize().height);
+        int remainingVerticalSpace = (config.PANEL_HEIGHT - config.PANEL_HEADER_HEIGHT - (2*config.PANEL_Y_GAP)) - (this.getPreferredSize().height);
         if (remainingVerticalSpace > 0) {
             JPanel panelFillerLabel = new JPanel();
-            panelFillerLabel.setBackground(config.GENERATORS_PANEL_COLOR);
+            panelFillerLabel.setBackground(config.VIEW_GENERATORS_PANEL_COLOR);
             panelFillerLabel.setPreferredSize(new Dimension(config.SCROLLABLE_DISPLAY_WIDTH, remainingVerticalSpace));
             this.add(panelFillerLabel, layoutConstraints);
         }
