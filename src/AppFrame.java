@@ -207,7 +207,7 @@ public class AppFrame extends JFrame implements ActionListener, MouseListener{
                     summaryPanel.revalidate();
                 }
             }
-
+        
         }
 
         // GENERATORS PANEL ACTIONS

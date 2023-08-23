@@ -1,7 +1,4 @@
-Budget and expenses tracking application.
-Data is stored as DataEntry objects in variable 'AppFrame.dataList' and is grouped into monthly lists in 'AppFrame.listsHashMap'.
-AppFrame acts as the actionListener for all components.
+This is a money managing app that I have designed and created in java to replace the spreadsheets I have used up until now. I decided on this project since I wanted something practical to test and apply my newly self-taught java programming skills too, while also producing something useful. This app allows you to view and manage individual income and expense data entries, as well as set up generators for auto-creating new entries at specified time intervals. A summary tab allows you to view your cummulative savings throughout either one of the preset time periods, or a custom one, enabling savings goals to be tracked.
 
-# TO DO:
-- Add input checks to all action handlers.
-- Format everything.
+# How To Run
+Download and run the 'BudgetApp.jar' file to use the application. If no CSV file is present, a new one will be created when data is created and the application is closed. Download 'data.csv' and place in the same location as the JAR file to start with some sample data.

@@ -320,7 +320,7 @@ public class AddNewDataPanel extends JPanel {
 
         // Paints the value input row.
 
-        valueHeading = new JLabel("Amount:          £");
+        valueHeading = new JLabel("Amount:         £");
         valueHeading.setFont(config.PRIMARY_FONT);
         valueHeading.setForeground(config.PRIMARY_TEXT_COLOR);
         valueHeading.setPreferredSize(new Dimension(100, INPUT_ROW_HEIGHT));
