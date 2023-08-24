@@ -573,7 +573,10 @@ public class AppFrame extends JFrame implements ActionListener, MouseListener{
 
         // RESETTING ALL LABEL COLORS
         addNewDataPanel.startDateHeading.setForeground(config.PRIMARY_TEXT_COLOR);
-        addNewDataPanel.endDateHeading.setForeground(config.PRIMARY_TEXT_COLOR);
+        if (addNewDataPanel.recurringButton.isSelected()) {
+            addNewDataPanel.endDateHeading.setForeground(config.PRIMARY_TEXT_COLOR);
+        }
+        else {addNewDataPanel.endDateHeading.setForeground(config.SECONDARY_TEXT_COLOR);}
         addNewDataPanel.categoryHeading.setForeground(config.PRIMARY_TEXT_COLOR);
         addNewDataPanel.valueHeading.setForeground(config.PRIMARY_TEXT_COLOR);
 
