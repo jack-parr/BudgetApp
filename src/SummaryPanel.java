@@ -96,7 +96,7 @@ public class SummaryPanel extends JPanel {
 
     }
 
-    public void graphClick(float xCoord, float yCoord) {
+    protected void graphClick(float xCoord, float yCoord) {
 
         // This handles a click on the graph and places the information into the header bar.
 
@@ -113,7 +113,7 @@ public class SummaryPanel extends JPanel {
             
     }
 
-    public void paintHeaderSpacer() {
+    private void paintHeaderSpacer() {
 
         // Paints a blank spacer label to separate elements within the header.
 

@@ -188,17 +188,17 @@ public class GraphPanel extends JPanel {
 
     }
 
-    public float transformXCoord(float xCoord) {
+    private float transformXCoord(float xCoord) {
         // Transforms a conventional xCoord into the value needed for the g2d.draw()
         return MARGIN + xCoord;
     }
 
-    public float transformYCoord(float yCoord) {
+    private float transformYCoord(float yCoord) {
         // Transforms a conventional yCoord into the value needed for the g2d.draw()
         return MARGIN + (graphHeight - yCoord);
     }
 
-    public static void drawRotate(Graphics2D g2d, double x, double y, int angle, String text) {
+    private static void drawRotate(Graphics2D g2d, double x, double y, int angle, String text) {
 
         g2d.translate((float) x, (float) y);  // translate coord system.
         g2d.rotate(Math.toRadians(angle));  // rotate coord system.
@@ -208,9 +208,9 @@ public class GraphPanel extends JPanel {
 
     }  
 
-    public LinkedHashMap<LocalDate, Float> calculateCummulative() {
+    private LinkedHashMap<LocalDate, Float> calculateCummulative() {
 
-        // Calculates the cummulative savings.
+        // Calculates the cummulative savings across the entire dataset.
 
         ArrayList<DataEntry> dataList = AppFrame.dataList;
         Collections.sort(dataList, Comparator.comparing(de -> de.getStartDate()));

@@ -20,7 +20,7 @@ public class DataHandler {
 
     }
 
-    public static ArrayList<DataEntry> readDataFromCSV(String fileName) {
+    protected static ArrayList<DataEntry> readDataFromCSV(String fileName) {
 
         // this function takes the String fileName and returns a list of DataEntry, using a BufferedReader.
 
@@ -49,7 +49,7 @@ public class DataHandler {
 
         }
 
-    public static DataEntry createDataEntry(String[] metadata) {
+    protected static DataEntry createDataEntry(String[] metadata) {
 
         // takes a String array of attributes and turns them into the correct datatypes for the DataEntry class.
 
@@ -68,7 +68,7 @@ public class DataHandler {
 
     }
 
-    public static HashMap<Integer, ArrayList<DataEntry>> createMonthLists(ArrayList<DataEntry> dataList) {
+    protected static HashMap<Integer, ArrayList<DataEntry>> createMonthLists(ArrayList<DataEntry> dataList) {
 
         // Creates a HashMap with a list of relevant data entries for every month of each year.
 
@@ -102,7 +102,7 @@ public class DataHandler {
 
     }
 
-    public static int makeMonthListID(LocalDate date) {
+    private static int makeMonthListID(LocalDate date) {
 
         // turns a LocalDate object into a MonthListID for identifying which list it belongs to.
         // Eg: June 2023 = 202306, December 2021 = 202112
@@ -114,7 +114,7 @@ public class DataHandler {
         
     }
 
-    public static void saveDataToCSV(ArrayList<DataEntry> dataList, String filePath) {
+    protected static void saveDataToCSV(ArrayList<DataEntry> dataList, String filePath) {
 
         // Saves the data from 'monthTables' into 'data.csv'.
 
@@ -146,7 +146,7 @@ public class DataHandler {
 
     }
 
-    public static String[] dataEntryToStringArray(DataEntry dataEntry) {
+    private static String[] dataEntryToStringArray(DataEntry dataEntry) {
 
         // Returns a String array based on a DataEntry. Used when writing the dataList to CSV.
 
@@ -165,7 +165,7 @@ public class DataHandler {
 
     }
 
-    public static void assignIds(ArrayList<DataEntry> dataList) {
+    protected static void assignIds(ArrayList<DataEntry> dataList) {
 
         // Labels each DataEntry with a unique integer ID.
         // Format: ONE_1 for one-offs, REC_1 for recurring entry generators.
@@ -216,7 +216,7 @@ class DataEntry {
 
     }
 
-    public int makeSortCode(LocalDate date, String category) {
+    private int makeSortCode(LocalDate date, String category) {
 
         // Makes a Sort Code from the date and category of the DataEntry. 
         // When codes are sorted from lowest to highest, sorts descending by day, then ascending by first letter of 'category'.
@@ -228,83 +228,83 @@ class DataEntry {
 
     }
 
-    public String getId() {
+    protected String getId() {
         return id;
     }
 
-    public void setId(String id) {
+    protected void setId(String id) {
         this.id = id;
     }
 
-    public boolean getIsExpense() {
+    protected boolean getIsExpense() {
         return isExpense;
     }
 
-    public void setIsExpense(boolean isExpense) {
+    protected void setIsExpense(boolean isExpense) {
         this.isExpense = isExpense;
     }
 
-    public boolean getIsRecurring() {
+    protected boolean getIsRecurring() {
         return isRecurring;
     }
 
-    public void setIsRecurring(boolean isRecurring) {
+    protected void setIsRecurring(boolean isRecurring) {
         this.isRecurring = isRecurring;
     }
 
-    public String getFrequency() {
+    protected String getFrequency() {
         return frequency;
     }
 
-    public void setFrequency(String frequency) {
+    protected void setFrequency(String frequency) {
         this.frequency = frequency;
     }
 
-    public LocalDate getStartDate() {
+    protected LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(LocalDate startDate) {
+    protected void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
-    public LocalDate getEndDate() {
+    protected LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(LocalDate endDate) {
+    protected void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 
-    public LocalDate getNextDueDate() {
+    protected LocalDate getNextDueDate() {
         return nextDueDate;
     }
 
-    public void setNextDueDate(LocalDate nextDueDate) {
+    protected void setNextDueDate(LocalDate nextDueDate) {
         this.nextDueDate = nextDueDate;
     }
 
-    public String getCategory() {
+    protected String getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
+    protected void setCategory(String category) {
         this.category = category;
     }
 
-    public float getValue() {
+    protected float getValue() {
         return value;
     }
 
-    public void setValue(float value) {
+    protected void setValue(float value) {
         this.value = value;
     }
 
-    public int getSortCode() {
+    protected int getSortCode() {
         return sortCode;
     }
 
-    public void setSortCode(int sortCode) {
+    protected void setSortCode(int sortCode) {
         this.sortCode = sortCode;
     }
 

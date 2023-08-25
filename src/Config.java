@@ -55,7 +55,7 @@ public class Config {
     public final String DATA_FILEPATH = "data.csv";
     final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-    public ArrayList<Component> makeDataHeaderRowComponents() {
+    protected ArrayList<Component> makeDataHeaderRowComponents() {
 
         // Makes a list of components of a header row for a month list.
         // Contents:
@@ -103,7 +103,7 @@ public class Config {
 
     }
 
-    public ArrayList<Component> makeDataDisplayRowComponents(DataEntry dataEntry) {
+    protected ArrayList<Component> makeDataDisplayRowComponents(DataEntry dataEntry) {
 
         // Makes a list of components of a data row from a DataEntry.
         // Contents:
@@ -151,9 +151,9 @@ public class Config {
 
     }
 
-    public JLabel makeDataSpacerLabel() {
+    protected JLabel makeDataSpacerLabel() {
 
-        // Makes a colored label to insert throughout the ViewDataPanel and GeneratorsPanel.
+        // Makes a colored row separator label to insert throughout the ViewDataPanel and GeneratorsPanel.
 
         JLabel spacerLabel = new JLabel();
         spacerLabel.setBackground(SECONDARY_TEXT_COLOR);
@@ -163,7 +163,7 @@ public class Config {
 
     }
 
-    public String dateToLabelString(LocalDate date, boolean includeYear) {
+    protected String dateToLabelString(LocalDate date, boolean includeYear) {
 
         // Returns a string of day/month based on the LocalDate 'date'.
 

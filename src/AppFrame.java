@@ -367,7 +367,7 @@ public class AppFrame extends JFrame implements ActionListener, MouseListener{
 
     }
 
-    public void createSummaryPanel() {
+    private void createSummaryPanel() {
 
         // Creates and paints the summary panel.
 
@@ -386,13 +386,61 @@ public class AppFrame extends JFrame implements ActionListener, MouseListener{
 
     }
 
-    public void setCustomPeriodComponents(boolean bool) {
+    private void setCustomPeriodComponents(boolean bool) {
+
+        // This toggles the custom period components within the SummaryPanel.
+
         summaryPanel.startDateInput.setEnabled(bool);
         summaryPanel.endDateInput.setEnabled(bool);
         summaryPanel.applyCustomPeriodButton.setEnabled(bool);
+
     }
 
-    public void createViewGeneratorsPanel(String selectedType) {
+    private boolean checkUserInputsCustomDates() {
+
+        // Checks the user inputs when inputting a custom time period to view on the graph in SummaryPanel.
+
+        String negativeReponse = "Error - Please Review Dates";
+        LocalDate startDateInput;
+        LocalDate endDateInput;
+
+        // RESETTING ALL LABEL COLORS
+        summaryPanel.startDateLabel.setForeground(config.PRIMARY_TEXT_COLOR);
+        summaryPanel.endDateLabel.setForeground(config.PRIMARY_TEXT_COLOR);
+
+        // START DATE VALID
+        try {
+            startDateInput = LocalDate.parse(summaryPanel.startDateInput.getText(), config.DATE_TIME_FORMATTER);
+        } catch (Exception e) {
+            summaryPanel.startDateLabel.setForeground(Color.red);
+            summaryPanel.systemResponseLabel.setText(negativeReponse);
+            return false;
+        }
+
+        // END DATE VALID
+        try {
+            endDateInput = LocalDate.parse(summaryPanel.endDateInput.getText(), config.DATE_TIME_FORMATTER);
+        } catch (Exception e) {
+            summaryPanel.endDateLabel.setForeground(Color.red);
+            summaryPanel.systemResponseLabel.setText(negativeReponse);
+            return false;
+        }
+
+        // START DATE BEFORE END DATE
+        if (!startDateInput.isBefore(endDateInput)) {
+            summaryPanel.startDateLabel.setForeground(Color.red);
+            summaryPanel.endDateLabel.setForeground(Color.red);
+            summaryPanel.systemResponseLabel.setText(negativeReponse);
+            return false;
+        }
+        
+        // ALL CHECKS PASSED
+        summaryPanel.systemResponseLabel.setText("Click Graph");
+        return true;
+        
+    }
+
+    private void createViewGeneratorsPanel(String selectedType) {
 
         // Creates and paints the viewGeneratorsPanel.
 
@@ -411,7 +459,7 @@ public class AppFrame extends JFrame implements ActionListener, MouseListener{
         
     }
 
-    public void createViewDataPanel(int selectedYear) {
+    private void createViewDataPanel(int selectedYear) {
 
         // Creates and paints the viewDataPanel.
 
@@ -433,7 +481,7 @@ public class AppFrame extends JFrame implements ActionListener, MouseListener{
         
     }
 
-    public void remakeDataPanel() {
+    private void remakeDataPanel() {
 
         // Removes the old dataPanel and replaces it with newly specified conditions.
 
@@ -450,7 +498,52 @@ public class AppFrame extends JFrame implements ActionListener, MouseListener{
 
     }
 
-    public void createAddNewDataPanel(JPanel sourcePanel) {
+    private void assignDeleteButtons(JPanel createdPanel) {
+
+        // Assigns listeners to the delete buttons in the created panel. This is a separate method so that JComboBox can also trigger it.
+
+        HashMap<String, Component> deleteButtonsMap = new HashMap<>();  // temporary initialise to remove errors.
+
+        if (createdPanel instanceof ViewGeneratorsPanel) {
+            deleteButtonsMap = ((ViewGeneratorsPanel) createdPanel).generatorsPanel.deleteButtonsMap;
+        }
+        else if (createdPanel instanceof ViewDataPanel) {
+            deleteButtonsMap = ((ViewDataPanel) createdPanel).dataPanel.deleteButtonsMap;
+        }
+        
+        Object[] mapKeys = deleteButtonsMap.keySet().toArray();  // makes an array of the keySet.
+        for (Object key : mapKeys) {
+            JButton deleteButton = (JButton) deleteButtonsMap.get(key);
+            deleteButton.addActionListener(this);
+        }
+
+    }
+
+    private void deleteDataEntry(String id, JPanel sourcePanel, String comboBoxSelection) {
+
+        // Deletes the DataEntry corresponding to id.
+
+        for (DataEntry dataEntry : dataList) {
+            if (dataEntry.getId().equals(id)) {
+                dataList.remove(dataEntry);
+                break;
+            }
+        }
+
+        listsHashMap = DataHandler.createMonthLists(dataList);  // remakes the listsHashMap
+        this.remove(currentPanel);  // removes the old panel.
+
+        if (sourcePanel instanceof ViewGeneratorsPanel) {
+            createViewGeneratorsPanel(comboBoxSelection);  // recreates ViewGeneratorsPanel.
+        }
+        else if (sourcePanel instanceof ViewDataPanel) {
+            createViewDataPanel(Integer.parseInt(comboBoxSelection));  // recreates ViewDataPanel.
+        }
+        
+
+    }
+
+    private void createAddNewDataPanel(JPanel sourcePanel) {
 
         // Creates and paints the new data panel.
 
@@ -481,52 +574,7 @@ public class AppFrame extends JFrame implements ActionListener, MouseListener{
 
     }
 
-    public void assignDeleteButtons(JPanel createdPanel) {
-
-        // Assigns listeners to the delete buttons in the created panel. This is a separate method so that JComboBox can also trigger it.
-
-        HashMap<String, Component> deleteButtonsMap = new HashMap<>();  // temporary initialise to remove errors.
-
-        if (createdPanel instanceof ViewGeneratorsPanel) {
-            deleteButtonsMap = ((ViewGeneratorsPanel) createdPanel).generatorsPanel.deleteButtonsMap;
-        }
-        else if (createdPanel instanceof ViewDataPanel) {
-            deleteButtonsMap = ((ViewDataPanel) createdPanel).dataPanel.deleteButtonsMap;
-        }
-        
-        Object[] mapKeys = deleteButtonsMap.keySet().toArray();  // makes an array of the keySet.
-        for (Object key : mapKeys) {
-            JButton deleteButton = (JButton) deleteButtonsMap.get(key);
-            deleteButton.addActionListener(this);
-        }
-
-    }
-
-    public void deleteDataEntry(String id, JPanel sourcePanel, String comboBoxSelection) {
-
-        // Deletes the DataEntry corresponding to id.
-
-        for (DataEntry dataEntry : dataList) {
-            if (dataEntry.getId().equals(id)) {
-                dataList.remove(dataEntry);
-                break;
-            }
-        }
-
-        listsHashMap = DataHandler.createMonthLists(dataList);  // remakes the listsHashMap
-        this.remove(currentPanel);  // removes the old panel.
-
-        if (sourcePanel instanceof ViewGeneratorsPanel) {
-            createViewGeneratorsPanel(comboBoxSelection);  // recreates ViewGeneratorsPanel.
-        }
-        else if (sourcePanel instanceof ViewDataPanel) {
-            createViewDataPanel(Integer.parseInt(comboBoxSelection));  // recreates ViewDataPanel.
-        }
-        
-
-    }
-
-    public void addNewDataEntryFromUser() {
+    private void addNewDataEntryFromUser() {
 
         // Adds a DataEntry based on information currently in the newExpensesPanel.
 
@@ -563,7 +611,9 @@ public class AppFrame extends JFrame implements ActionListener, MouseListener{
 
     }
 
-    public boolean checkUserInputsAddNewData() {
+    private boolean checkUserInputsAddNewData() {
+
+        // Checks the user inputs when attempting to add a new data entry from the AddNewDataPanel. 
 
         String positiveResponse = "New Data Entry Successfully Added";
         String negativeResponse = "Error - Please Review Inputs";
@@ -635,48 +685,7 @@ public class AppFrame extends JFrame implements ActionListener, MouseListener{
 
     }
 
-    public boolean checkUserInputsCustomDates() {
-
-        String negativeReponse = "Error - Please Review Dates";
-        LocalDate startDateInput;
-        LocalDate endDateInput;
-
-        // RESETTING ALL LABEL COLORS
-        summaryPanel.startDateLabel.setForeground(config.PRIMARY_TEXT_COLOR);
-        summaryPanel.endDateLabel.setForeground(config.PRIMARY_TEXT_COLOR);
-
-        // START DATE VALID
-        try {
-            startDateInput = LocalDate.parse(summaryPanel.startDateInput.getText(), config.DATE_TIME_FORMATTER);
-        } catch (Exception e) {
-            summaryPanel.startDateLabel.setForeground(Color.red);
-            summaryPanel.systemResponseLabel.setText(negativeReponse);
-            return false;
-        }
-
-        // END DATE VALID
-        try {
-            endDateInput = LocalDate.parse(summaryPanel.endDateInput.getText(), config.DATE_TIME_FORMATTER);
-        } catch (Exception e) {
-            summaryPanel.endDateLabel.setForeground(Color.red);
-            summaryPanel.systemResponseLabel.setText(negativeReponse);
-            return false;
-        }
-
-        // START DATE BEFORE END DATE
-        if (!startDateInput.isBefore(endDateInput)) {
-            summaryPanel.startDateLabel.setForeground(Color.red);
-            summaryPanel.endDateLabel.setForeground(Color.red);
-            summaryPanel.systemResponseLabel.setText(negativeReponse);
-            return false;
-        }
-        
-        // ALL CHECKS PASSED
-        summaryPanel.systemResponseLabel.setText("Click Graph");
-        return true;
-    }
-
-    public void checkRecurringEntryGenerators(ArrayList<DataEntry> dataList) {
+    private void checkRecurringEntryGenerators(ArrayList<DataEntry> dataList) {
 
         // This checks all the recurring entry generators for if they're due a new DataEntry, and handles it.
 

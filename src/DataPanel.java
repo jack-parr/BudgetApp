@@ -221,7 +221,7 @@ public class DataPanel extends JPanel {
 
     }
 
-    public void paintNoData() {
+    private void paintNoData() {
 
         // Paints a panel with "No Data" on it.
 

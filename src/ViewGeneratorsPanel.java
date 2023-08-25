@@ -60,7 +60,7 @@ public class ViewGeneratorsPanel extends JPanel {
 
     }
 
-    public void paintHeaderSpacer() {
+    private void paintHeaderSpacer() {
 
         // Paints a blank spacer label to separate elements within the header.
 

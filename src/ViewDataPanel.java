@@ -120,7 +120,7 @@ public class ViewDataPanel extends JPanel {
 
     }
 
-    public static int getYearFromMonthKey(int i) {
+    protected static int getYearFromMonthKey(int i) {
 
         // Rrturns the int year from a month key.
 
@@ -128,7 +128,7 @@ public class ViewDataPanel extends JPanel {
 
     }
 
-    public void paintHeaderSpacer() {
+    private void paintHeaderSpacer() {
 
         // Paints a blank spacer label to separate elements within the header.
 

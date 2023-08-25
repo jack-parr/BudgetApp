@@ -138,7 +138,7 @@ public class AddNewDataPanel extends JPanel {
 
     }
 
-    public void paintSignInput() {
+    private void paintSignInput() {
 
         // Paints the income or expense select row.
 
@@ -173,7 +173,7 @@ public class AddNewDataPanel extends JPanel {
 
     }
 
-    public void paintIsRecurringInput() {
+    private void paintIsRecurringInput() {
 
         // Paints the isRecurring select row.
 
@@ -208,7 +208,7 @@ public class AddNewDataPanel extends JPanel {
 
     }
     
-    public void paintFrequencyInput() {
+    private void paintFrequencyInput() {
 
         // Paints the frequency select row.
         // On generation, isRecurring = false, so this is disabled.
@@ -229,7 +229,7 @@ public class AddNewDataPanel extends JPanel {
 
     }
 
-    public void paintDateInput(boolean defaultEnabled, JLabel dateHeading, JComboBox<Integer> dayInput, JComboBox<Integer> monthInput, JComboBox<Integer> yearInput) {
+    private void paintDateInput(boolean defaultEnabled, JLabel dateHeading, JComboBox<Integer> dayInput, JComboBox<Integer> monthInput, JComboBox<Integer> yearInput) {
 
         // Paints the date input row.
 
@@ -316,7 +316,27 @@ public class AddNewDataPanel extends JPanel {
 
     }
 
-    public void paintValueInput() {
+    private void paintCategoryShortcutButton(String category, int i) {
+
+        // Paints a single category shortcut button containing the string argument. Also adds it the HashMap.
+        
+        // CREATE AND PAINT BUTTON
+        JButton categoryButton = new JButton(category);
+        categoryButton.setFont(config.PRIMARY_FONT);
+        categoryButton.setForeground(config.PRIMARY_TEXT_COLOR);
+        categoryButton.setBackground(CATEGORY_BUTTON_COLORS[i]);
+        categoryButton.setFocusable(false);
+        categoryButton.setActionCommand("category" + category);
+        categoryInputPanel.add(categoryButton);
+
+        // ADD BUTTON TO HASHMAP
+        categoryShortcutButtonsMap.put(category, categoryButton);
+        
+        categoryButtonColorSelect = 1 - i;
+
+    }
+
+    private void paintValueInput() {
 
         // Paints the value input row.
 
@@ -333,7 +353,7 @@ public class AddNewDataPanel extends JPanel {
 
     }
 
-    public void paintCancelConfirm() {
+    private void paintCancelConfirm() {
 
         // Paints the cancel and confirm buttons, and the system response label.
 
@@ -359,9 +379,9 @@ public class AddNewDataPanel extends JPanel {
 
     }
 
-    public void paintRowSeparator() {
+    private void paintRowSeparator() {
 
-        // Paints the row separator between the input rows.
+        // Paints the row separator between the input rows. This is needed to make the FlowLayout work.
 
         JLabel rowSeparator = new JLabel();
         rowSeparator.setPreferredSize(new Dimension(config.DISPLAY_WIDTH, 3));
@@ -371,35 +391,15 @@ public class AddNewDataPanel extends JPanel {
 
     }
 
-    public void paintDateSeparator() {
+    private void paintDateSeparator() {
 
-        // Paints the separator containing "/" within the date input row.
+        // Paints the separator containing "/" within the date input rows.
 
         JLabel dateSeparator = new JLabel(" / ");
         dateSeparator.setFont(config.PRIMARY_FONT);
         dateSeparator.setForeground(config.PRIMARY_TEXT_COLOR);
         dateSeparator.setPreferredSize(new Dimension(DATE_SEPARATOR_WIDTH, INPUT_ROW_HEIGHT));
         this.add(dateSeparator);
-
-    }
-
-    public void paintCategoryShortcutButton(String category, int i) {
-
-        // Paints a single category shortcut button containing the string argument. Also adds it the HashMap.
-        
-        // CREATE AND PAINT BUTTON
-        JButton categoryButton = new JButton(category);
-        categoryButton.setFont(config.PRIMARY_FONT);
-        categoryButton.setForeground(config.PRIMARY_TEXT_COLOR);
-        categoryButton.setBackground(CATEGORY_BUTTON_COLORS[i]);
-        categoryButton.setFocusable(false);
-        categoryButton.setActionCommand("category" + category);
-        categoryInputPanel.add(categoryButton);
-
-        // ADD BUTTON TO HASHMAP
-        categoryShortcutButtonsMap.put(category, categoryButton);
-        
-        categoryButtonColorSelect = 1 - i;
 
     }
     
