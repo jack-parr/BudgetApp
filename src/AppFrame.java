@@ -47,8 +47,8 @@ public class AppFrame extends JFrame implements ActionListener, MouseListener{
         // LOADING DATA
         dataList = DataHandler.readDataFromCSV(config.DATA_FILEPATH);
         DataHandler.assignIds(dataList);  // assigning IDs.
-        listsHashMap = DataHandler.createMonthLists(dataList);  // creating the listsHashMap.
         checkRecurringEntryGenerators(dataList);  // checking the generators.
+        listsHashMap = DataHandler.createMonthLists(dataList);  // creating the listsHashMap.
 
         // SAVE DATA ON CLOSE
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -743,7 +743,7 @@ public class AppFrame extends JFrame implements ActionListener, MouseListener{
                 }
                 else if (dataEntry.isRecurring && dataEntry.getEndDate().isBefore(LocalDate.now())) {
                     
-                    // PREPARING TO DELETE THE DATAENTRY
+                    // PREPARING TO DELETE THE EXPIRED DATAENTRY
                     tempDeleteList.add(dataEntry);
                     
                 }
