@@ -63,7 +63,10 @@ public class DataPanel extends JPanel {
                 // CHECKING FILTER
                 containsFilter = false;
                 if (!filter.isEmpty()) {
-                    monthList.forEach(de -> {if (de.getCategory().equals(filter)) {containsFilter = true;}});
+                    if (filter.equals("Income")) {monthList.forEach(de -> {if (!de.getIsExpense()) {containsFilter = true;}});}  // just shows incomes.
+                    else if (filter.equals("Expense")) {monthList.forEach(de -> {if (de.getIsExpense()) {containsFilter = true;}});}  // just shows expenses.
+                    else {monthList.forEach(de -> {if (de.getCategory().equals(filter)) {containsFilter = true;}});}  // just shows specified category.
+
                     if (!containsFilter) {continue;}  // skips this monthList since no data matches the filter.
                 }
 
@@ -88,7 +91,11 @@ public class DataPanel extends JPanel {
                 float monthTotal = 0;
                 int sign = 0;
                 for (DataEntry dataEntry : monthList) {
-                    if (!filter.isEmpty()) {if (!dataEntry.getCategory().equals(filter)) {continue;}}
+                    if (!filter.isEmpty()) {
+                        if (filter.equals("Income") && dataEntry.getIsExpense()) {continue;}  // skipping if filtering for income and is expense.
+                        else if (filter.equals("Expense") && !dataEntry.getIsExpense()) {continue;}  // skipping if filtering for expense and is income.
+                        else if (!filter.equals("Income") && !filter.equals("Expense") && !dataEntry.getCategory().equals(filter)) {continue;}  // skipping if filtering for category and does not match.
+                    }
                     if (dataEntry.getIsExpense()) {sign = -1;} 
                     else {sign = 1;}
                     monthTotal += sign * dataEntry.getValue();
@@ -144,7 +151,11 @@ public class DataPanel extends JPanel {
 
                 for (DataEntry dataEntry : monthList) {
 
-                    if (!filter.isEmpty()) {if (!dataEntry.getCategory().equals(filter)) {continue;}}
+                    if (!filter.isEmpty()) {
+                        if (filter.equals("Income") && dataEntry.getIsExpense()) {continue;}  // skipping if filtering for income and is expense.
+                        else if (filter.equals("Expense") && !dataEntry.getIsExpense()) {continue;}  // skipping if filtering for expense and is income.
+                        else if (!filter.equals("Income") && !filter.equals("Expense") && !dataEntry.getCategory().equals(filter)) {continue;}  // skipping if filtering for category and does not match.
+                    }
 
                     RowPanel rowPanelDataEntry = new RowPanel();
                     rowPanelDataEntry.setBackground(config.PANEL_BACKGROUND_COLOR);
