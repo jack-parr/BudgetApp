@@ -355,6 +355,12 @@ public class AppFrame extends JFrame implements ActionListener, MouseListener{
 
             // HANDLING CONFIRM BUTTON
             else if (e.getSource() == addNewDataPanel.confirmButton) {
+                // FIXING END DATE IF ONE-OFF ENTRY
+                if (!Boolean.parseBoolean(addNewDataPanel.isRecurringButtonGroup.getSelection().getActionCommand())) {
+                    addNewDataPanel.endDateDayInput.setSelectedItem(addNewDataPanel.startDateDayInput.getSelectedItem());
+                    addNewDataPanel.endDateMonthInput.setSelectedItem(addNewDataPanel.startDateMonthInput.getSelectedItem());
+                    addNewDataPanel.endDateYearInput.setSelectedItem(addNewDataPanel.startDateYearInput.getSelectedItem());
+                }
                 addNewDataEntryFromUser();
             }
 
