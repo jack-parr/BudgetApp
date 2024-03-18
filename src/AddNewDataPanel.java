@@ -66,6 +66,7 @@ public class AddNewDataPanel extends JPanel {
         categoryShortcutsOneOff.add("Eating Out");
         categoryShortcutsOneOff.add("Education");
         categoryShortcutsOneOff.add("Fitness");
+        categoryShortcutsOneOff.add("Fuel");
         categoryShortcutsOneOff.add("Gift");
         categoryShortcutsOneOff.add("Groceries");
         categoryShortcutsOneOff.add("Hobby");

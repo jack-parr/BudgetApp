@@ -14,6 +14,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.Line2D;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -151,15 +152,19 @@ public class GraphPanel extends JPanel {
             graphMap.put(date, currYCoord);
 
             // DRAWING DAY TICKS
-            g2d.setStroke(new BasicStroke(1));
-            g2d.setColor(Color.lightGray);
-            g2d.draw(new Line2D.Float(transformXCoord(currXCoord), transformYCoord(graphHeight), transformXCoord(currXCoord), transformYCoord(-4)));
+            if (ChronoUnit.DAYS.between(this.startDate, this.endDate) < 93) {
+                g2d.setStroke(new BasicStroke(1));
+                g2d.setColor(Color.lightGray);
+                g2d.draw(new Line2D.Float(transformXCoord(currXCoord), transformYCoord(graphHeight), transformXCoord(currXCoord), transformYCoord(-4)));
+            }
 
             // DRAWING WEEK TICKS
-            if (date.getDayOfWeek().toString() == "MONDAY") {
-                g2d.setStroke(new BasicStroke(3));
-                g2d.setColor(config.SECONDARY_TEXT_COLOR);
-                g2d.draw(new Line2D.Float(transformXCoord(currXCoord), transformYCoord(graphHeight), transformXCoord(currXCoord), transformYCoord(-8)));
+            if (ChronoUnit.DAYS.between(this.startDate, this.endDate) < 367) {
+                if (date.getDayOfWeek().toString() == "MONDAY") {
+                    g2d.setStroke(new BasicStroke(3));
+                    g2d.setColor(config.SECONDARY_TEXT_COLOR);
+                    g2d.draw(new Line2D.Float(transformXCoord(currXCoord), transformYCoord(graphHeight), transformXCoord(currXCoord), transformYCoord(-8)));
+                }
             }
 
             // DRAWING NEW MONTH TICKS
