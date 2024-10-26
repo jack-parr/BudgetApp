@@ -538,17 +538,19 @@ public class AppFrame extends JFrame implements ActionListener, MouseListener{
         listsHashMap = DataHandler.createMonthLists(dataList);  // remakes the listsHashMap
 
         if (!startUp) {
-            this.remove(currentPanel);  // removes the old panel.
 
             if (sourcePanel instanceof SummaryPanel) {
+                this.remove(currentPanel);  // removes the old panel.
                 createSummaryPanel();  // recreates summary panel if occuring during startup.
             }
 
             if (sourcePanel instanceof ViewGeneratorsPanel) {
+                this.remove(currentPanel);  // removes the old panel.
                 createViewGeneratorsPanel(comboBoxSelection);  // recreates ViewGeneratorsPanel.
             }
             else if (sourcePanel instanceof ViewDataPanel) {
-                createViewDataPanel(Integer.parseInt(comboBoxSelection));  // recreates ViewDataPanel.
+                viewDataPanel.remove(viewDataPanel.dataPanelScrollPane);  // remove old dataPanel.
+                remakeDataPanel();
             }
         }
         
