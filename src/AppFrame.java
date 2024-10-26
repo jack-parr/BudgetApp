@@ -36,7 +36,6 @@ public class AppFrame extends JFrame implements ActionListener, MouseListener{
     ViewGeneratorsPanel viewGeneratorsPanel;
     ViewDataPanel viewDataPanel;
     AddNewDataPanel addNewDataPanel;
-    JPanel tempPanel = new JPanel();  // this is only to fulfil deleteDataEntry arguments.
     
     final static String SUMMARY_ACTION_COMMAND = "summaryButton";
     final static String VIEW_GENERATORS_ACTION_COMMAND = "viewGeneratorsButton";
@@ -47,7 +46,7 @@ public class AppFrame extends JFrame implements ActionListener, MouseListener{
         // LOADING DATA
         dataList = DataHandler.readDataFromCSV(config.DATA_FILEPATH);
         DataHandler.assignIds(dataList);  // assigning IDs.
-        checkRecurringEntryGenerators(dataList);  // checking the generators.
+        checkRecurringEntryGenerators(dataList, true);  // checking the generators.
         listsHashMap = DataHandler.createMonthLists(dataList);  // creating the listsHashMap.
 
         // SAVE DATA ON CLOSE
@@ -237,7 +236,7 @@ public class AppFrame extends JFrame implements ActionListener, MouseListener{
 
             // HANDLING DELETE ROW BUTTONS
             else if (actionCommand.startsWith("delete")) {
-                deleteDataEntry(actionCommand.substring(6), viewGeneratorsPanel, (String) viewGeneratorsPanel.typeComboBox.getSelectedItem());  // calls the method for deleting DataEntry according to int id.
+                deleteDataEntry(actionCommand.substring(6), viewGeneratorsPanel, (String) viewGeneratorsPanel.typeComboBox.getSelectedItem(), false);  // calls the method for deleting DataEntry according to int id.
             }
 
         }
@@ -272,7 +271,7 @@ public class AppFrame extends JFrame implements ActionListener, MouseListener{
 
             // HANDLING DELETE ROW BUTTONS
             else if (actionCommand.startsWith("delete")) {
-                deleteDataEntry(actionCommand.substring(6), viewDataPanel, Integer.toString((Integer) viewDataPanel.yearComboBox.getSelectedItem()));  // calls the method for deleting DataEntry according to int id.
+                deleteDataEntry(actionCommand.substring(6), viewDataPanel, Integer.toString((Integer) viewDataPanel.yearComboBox.getSelectedItem()), false);  // calls the method for deleting DataEntry according to int id.
             }
 
         }
@@ -525,7 +524,7 @@ public class AppFrame extends JFrame implements ActionListener, MouseListener{
 
     }
 
-    private void deleteDataEntry(String id, JPanel sourcePanel, String comboBoxSelection) {
+    private void deleteDataEntry(String id, JPanel sourcePanel, String comboBoxSelection, boolean startUp) {
 
         // Deletes the DataEntry corresponding to id.
 
@@ -537,14 +536,22 @@ public class AppFrame extends JFrame implements ActionListener, MouseListener{
         }
 
         listsHashMap = DataHandler.createMonthLists(dataList);  // remakes the listsHashMap
-        this.remove(currentPanel);  // removes the old panel.
 
-        if (sourcePanel instanceof ViewGeneratorsPanel) {
-            createViewGeneratorsPanel(comboBoxSelection);  // recreates ViewGeneratorsPanel.
+        if (!startUp) {
+            this.remove(currentPanel);  // removes the old panel.
+
+            if (sourcePanel instanceof SummaryPanel) {
+                createSummaryPanel();  // recreates summary panel if occuring during startup.
+            }
+
+            if (sourcePanel instanceof ViewGeneratorsPanel) {
+                createViewGeneratorsPanel(comboBoxSelection);  // recreates ViewGeneratorsPanel.
+            }
+            else if (sourcePanel instanceof ViewDataPanel) {
+                createViewDataPanel(Integer.parseInt(comboBoxSelection));  // recreates ViewDataPanel.
+            }
         }
-        else if (sourcePanel instanceof ViewDataPanel) {
-            createViewDataPanel(Integer.parseInt(comboBoxSelection));  // recreates ViewDataPanel.
-        }
+        
         
 
     }
@@ -606,7 +613,7 @@ public class AppFrame extends JFrame implements ActionListener, MouseListener{
 
             // POST PROCESSING
             DataHandler.assignIds(dataList);  // reassigning IDs.
-            checkRecurringEntryGenerators(dataList);  // check for any due generators and handle these.
+            checkRecurringEntryGenerators(dataList, false);  // check for any due generators and handle these.
             listsHashMap = DataHandler.createMonthLists(dataList);   // create monthLists.
 
             // change this for something in the app.
@@ -691,7 +698,7 @@ public class AppFrame extends JFrame implements ActionListener, MouseListener{
 
     }
 
-    private void checkRecurringEntryGenerators(ArrayList<DataEntry> dataList) {
+    private void checkRecurringEntryGenerators(ArrayList<DataEntry> dataList, boolean startUp) {
 
         // This checks all the recurring entry generators for if they're due a new DataEntry, and handles it.
 
@@ -705,7 +712,6 @@ public class AppFrame extends JFrame implements ActionListener, MouseListener{
 
             for (DataEntry dataEntry : dataList) {
                 if (dataEntry.isRecurring && dataEntry.getNextDueDate().isBefore(Collections.min(Arrays.asList(LocalDate.now().plusDays(1), dataEntry.getEndDate().plusDays(1))))) {
-                    
                     // CREATE NEW ONE-OFF DataEntry
                     String[] metadata = new String[9];
                     metadata[0] = "0";  // placeholder id.
@@ -760,7 +766,7 @@ public class AppFrame extends JFrame implements ActionListener, MouseListener{
             }
 
             if (!tempDeleteList.isEmpty()) {
-                tempDeleteList.forEach(de -> deleteDataEntry(de.getId(), tempPanel, ""));
+                tempDeleteList.forEach(de -> deleteDataEntry(de.getId(), new JPanel(), "", startUp));
             }
 
         }
